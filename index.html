@@ -165,7 +165,7 @@
         </button>
 
         <!-- Admin Button (Protected by Password admin1234) -->
-        <button type="button" onclick="requestAdminAccess()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
+        <button type="button" onclick="requestAdminAccess()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5 cursor-pointer">
           <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>Admin</span>
         </button>
@@ -1059,6 +1059,7 @@
     // Populate Landing Store Dropdown (Clean Thai Names Only)
     function populateLandingStoreSelect() {
       const select = document.getElementById('landingStoreSelect');
+      if (!select) return;
       select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
         <option value="${s.id}">${s.nameTh} ${s.campB ? '✨ (ร่วมแคมเปญ B)' : ''}</option>
       `).join('');
@@ -2019,9 +2020,7 @@
 
     // --- ADMIN DELETE ALL SUBMISSIONS ---
     async function adminDeleteAllSubmissions() {
-      const confirmInput = prompt('⚠️ คำเตือน: คุณกำลังจะลบข้อมูลการลงทะเบียนและรูปภาพทั้งหมดในระบบ!
-
-หากต้องการยืนยัน โปรดพิมพ์คำว่า "CONFIRM-RESET" ในช่องด้านล่าง:');
+      const confirmInput = prompt('คำเตือน: คุณกำลังจะลบข้อมูลการลงทะเบียนและรูปภาพทั้งหมดในระบบ!\n\nหากต้องการยืนยัน โปรดพิมพ์คำว่า "CONFIRM-RESET" ในช่องด้านล่าง:');
       if (confirmInput !== 'CONFIRM-RESET') {
         if (confirmInput !== null) alert('ยกเลิก: คำยืนยันไม่ถูกต้อง ข้อมูลยังคงปลอดภัย');
         return;
