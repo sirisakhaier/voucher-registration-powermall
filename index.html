@@ -947,7 +947,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.8</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.9</span>
     </div>
   </footer>
 
@@ -1124,7 +1124,6 @@
       document.getElementById('bannerPcName').textContent = currentPc.name;
       document.getElementById('bannerPcPhone').textContent = currentPc.phone;
 
-      // Select current store in filter dropdown if available
       const logFilter = document.getElementById('logStoreFilterSelect');
       if (logFilter) logFilter.value = currentStore.id;
 
@@ -1274,6 +1273,15 @@
         return;
       }
 
+      // Reset form BEFORE applying campaign values so we don't wipe out campaign defaults
+      if (!currentEditingSubmissionId) {
+        document.getElementById('regForm').reset();
+        resetPurchaseDate();
+        clearReceiptImage();
+        clearVoucherImage();
+        document.getElementById('revisionAlertBanner').classList.add('hidden');
+      }
+
       document.getElementById('formCampaignTitle').textContent = selectedCampaign.nameTh;
       document.getElementById('rewardBadge').textContent = 'ของรางวัล: ' + selectedCampaign.rewardName;
 
@@ -1300,14 +1308,6 @@
 
         const modelSelect = document.getElementById('modelSelect');
         modelSelect.innerHTML = '<option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>';
-      }
-
-      if (!currentEditingSubmissionId) {
-        document.getElementById('regForm').reset();
-        resetPurchaseDate();
-        clearReceiptImage();
-        clearVoucherImage();
-        document.getElementById('revisionAlertBanner').classList.add('hidden');
       }
       
       switchView('viewRegisterForm');
@@ -1429,7 +1429,7 @@
         return;
       }
 
-      if (isFixedCampaignA && selectedCampaign.eligibleModels) {
+      if (isFixedCampaignA && selectedCampaign && selectedCampaign.eligibleModels) {
         modelSelect.innerHTML = selectedCampaign.eligibleModels.map(m => `
           <option value="${m.code}">${m.name}</option>
         `).join('');
@@ -1500,7 +1500,7 @@
       document.getElementById('voucherStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
     }
 
-    // Explicit Robust Form Submission Handler
+    // Robust Form Submission Handler with Campaign A Category Bypassing
     async function handleFormSubmit(e) {
       if (e) e.preventDefault();
 
@@ -1513,49 +1513,72 @@
 
       const custName = custNameInput ? custNameInput.value.trim() : '';
       const custPhone = custPhoneInput ? custPhoneInput.value.trim() : '';
-      const catVal = catSelect ? catSelect.value : '';
-      const subCatVal = subCatSelect ? subCatSelect.value : '';
-      const modelVal = modelSelect ? modelSelect.value : '';
+      
+      // Auto-assign fixed category/subCategory for Campaign A to bypass dropdown constraints
+      let catVal = catSelect ? catSelect.value : '';
+      let subCatVal = subCatSelect ? subCatSelect.value : '';
+      let modelVal = modelSelect ? modelSelect.value : '';
+
+      if (selectedCampaign && selectedCampaign.fixedCategory) {
+        catVal = selectedCampaign.fixedCategory; // 'AC'
+      }
+      if (selectedCampaign && selectedCampaign.fixedSubCategory) {
+        subCatVal = selectedCampaign.fixedSubCategory; // 'Inverter'
+      }
+      if (selectedCampaign && selectedCampaign.eligibleModels && !modelVal) {
+        modelVal = selectedCampaign.eligibleModels[0].code;
+      }
+
       const amount = amountInput ? parseFloat(amountInput.value) : 0;
       const pDate = selectedPurchaseDate || document.getElementById('purchaseDate').value || new Date().toISOString().slice(0, 10);
 
-      // Validations with immediate focus
+      // Validation 1: Customer Name
       if (!custName) {
         alert('กรุณากรอกชื่อ-นามสกุล ลูกค้า');
         if (custNameInput) custNameInput.focus();
         return;
       }
 
+      // Validation 2: Customer Phone
       if (!custPhone || custPhone.length < 9) {
         alert('กรุณากรอกเบอร์โทรศัพท์มือถือลูกค้าให้ถูกต้อง');
         if (custPhoneInput) custPhoneInput.focus();
         return;
       }
 
-      if (!catVal) {
-        alert('กรุณาเลือกหมวดหมู่สินค้าหลัก (Category)');
-        if (catSelect) catSelect.focus();
-        return;
+      // Validation 3: Category (Checked only if not fixed by Campaign A)
+      if (!selectedCampaign || !selectedCampaign.fixedCategory) {
+        if (!catVal) {
+          alert('กรุณาเลือกหมวดหมู่สินค้าหลัก (Category)');
+          if (catSelect) catSelect.focus();
+          return;
+        }
       }
 
-      if (!subCatVal) {
-        alert('กรุณาเลือกหมวดหมู่ย่อย (SubCategory)');
-        if (subCatSelect) subCatSelect.focus();
-        return;
+      // Validation 4: SubCategory (Checked only if not fixed by Campaign A)
+      if (!selectedCampaign || !selectedCampaign.fixedSubCategory) {
+        if (!subCatVal) {
+          alert('กรุณาเลือกหมวดหมู่ย่อย (SubCategory)');
+          if (subCatSelect) subCatSelect.focus();
+          return;
+        }
       }
 
+      // Validation 5: Model
       if (!modelVal) {
         alert('กรุณาเลือกรุ่นสินค้า Haier (Model)');
         if (modelSelect) modelSelect.focus();
         return;
       }
 
+      // Validation 6: Purchase Date
       if (!pDate) {
         alert('กรุณาเลือกวันที่ซื้อสินค้าจากปฏิทิน');
         openDatePicker();
         return;
       }
 
+      // Validation 7: Purchase Amount
       if (isNaN(amount) || amount <= 0) {
         alert('กรุณาระบุยอดรวมในใบเสร็จเป็นตัวเลขที่ถูกต้อง');
         if (amountInput) amountInput.focus();
@@ -1568,11 +1591,13 @@
         return;
       }
 
+      // Validation 8: Receipt Photo
       if (!currentReceiptImageData) {
         alert('กรุณาแนบภาพที่ 1: รูปถ่ายใบเสร็จรับเงิน (Receipt)');
         return;
       }
 
+      // Validation 9: Voucher Photo
       if (!currentVoucherImageData) {
         alert('กรุณาแนบภาพที่ 2: รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า (Voucher)');
         return;
@@ -1682,7 +1707,6 @@
       document.getElementById('popupReceiptThumb').src = sub.receiptImage;
       document.getElementById('popupVoucherThumb').src = sub.voucherImage;
 
-      // QR Code generation with error protection
       try {
         const qrContainer = document.getElementById('popupQrCanvas');
         qrContainer.innerHTML = '';
@@ -1736,7 +1760,6 @@
 
     // --- BROWSE SUBMISSIONS (ALWAYS FUNCTIONAL) ---
     function showStoreSubmissions() {
-      // If store is selected, set filter to that store, else ALL
       const filterSelect = document.getElementById('logStoreFilterSelect');
       if (filterSelect) {
         if (currentStore && currentStore.id) {
@@ -1747,7 +1770,6 @@
       }
       renderStoreSubmissionsTable();
       switchView('viewStoreLogs');
-      // Sync in background without blocking
       syncCloudSubmissions().then(() => renderStoreSubmissionsTable()).catch(() => {});
     }
 
