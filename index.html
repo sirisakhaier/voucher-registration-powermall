@@ -19,6 +19,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+  <!-- ExcelJS & FileSaver for Rich Excel Export with Thumbnails & URLs -->
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 
   <script>
     tailwind.config = {
@@ -147,26 +150,31 @@
 
       <div class="flex items-center space-x-3">
         <!-- Cloud Sync Indicator -->
-        <div id="cloudStatusBadge" class="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-[11px] text-emerald-300">
+        <div id="cloudStatusBadge" class="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-[11px] text-emerald-300">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Cloudflare D1 & R2 Connected</span>
+          <span>Cloudflare D1 & R2</span>
         </div>
 
-        <div id="currentStoreBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-haier-900/80 border border-sky-500/30 text-xs">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
-          <span class="text-slate-400">สาขา:</span>
-          <span id="headerStoreName" class="font-semibold text-white">กำลังเลือกสาขา...</span>
+        <!-- PC & Store Info Badge (Active when logged in) -->
+        <div id="headerSessionBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-haier-900/80 border border-sky-500/30 text-xs">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span id="headerPcName" class="font-medium text-slate-200">PC Name</span>
+          <span class="text-slate-500">•</span>
+          <i data-lucide="map-pin" class="w-3 h-3 text-sky-400"></i>
+          <span id="headerStoreName" class="font-semibold text-sky-300">สยามพารากอน</span>
         </div>
         
-        <button onclick="openStoreModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-white/10 transition flex items-center space-x-1.5">
-          <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
-          <span>สลับสาขา</span>
+        <!-- End Shift / Switch PC button -->
+        <button id="btnHeaderEndShift" onclick="confirmEndShift()" class="hidden px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-red-900/40 hover:text-red-300 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          <span>จบกะ/สลับ</span>
         </button>
 
-        <a href="#admin" onclick="showAdminView()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/5 transition flex items-center space-x-1">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-haier-500"></i>
+        <!-- Admin Button (Protected by Password admin1234) -->
+        <button onclick="requestAdminAccess()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>Admin</span>
-        </a>
+        </button>
       </div>
     </div>
   </header>
@@ -174,19 +182,77 @@
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- VIEW 1: Store Menu & Action Selection -->
-    <section id="viewStoreMenu" class="space-y-6">
+    <!-- VIEW 0: PC & STORE LANDING / CHECK-IN SCREEN (MANDATORY INITIAL STEP) -->
+    <section id="viewLandingCheckIn" class="max-w-xl mx-auto space-y-6 pt-4">
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-sky-500/30 shadow-2xl space-y-6 text-center relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="space-y-2">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-haier-600 to-sky-400 text-white flex items-center justify-center shadow-lg shadow-sky-500/30">
+            <i data-lucide="store" class="w-7 h-7"></i>
+          </div>
+          <h2 class="text-2xl font-bold font-display text-white">เข้าสู่ระบบจุดบริการ Power Mall</h2>
+          <p class="text-xs text-slate-300 max-w-sm mx-auto">
+            โปรดเลือกสาขาประจำจุดขาย และระบุข้อมูลพนักงานขาย (PC) เพื่อเริ่มต้นลงทะเบียนรับบัตรกำนัล
+          </p>
+        </div>
+
+        <form onsubmit="handleLandingCheckIn(event)" class="space-y-4 text-left">
+          
+          <!-- 1. Store Selection (All 8 stores) -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>1. เลือกสาขา Power Mall ประจำจุดขาย <span class="text-red-400">*</span></span>
+            </label>
+            <select id="landingStoreSelect" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+              <option value="">-- โปรดเลือกสาขา --</option>
+              <!-- Populated via JS with all active stores -->
+            </select>
+          </div>
+
+          <!-- 2. PC Full Name -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>2. ชื่อ-นามสกุล พนักงานขาย (PC / Promoter) <span class="text-red-400">*</span></span>
+            </label>
+            <input type="text" id="landingPcName" required placeholder="เช่น นายสุรศักดิ์ ใจบริการ (PC Haier)" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+          </div>
+
+          <!-- 3. PC Phone Number -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
+              <i data-lucide="phone" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>3. เบอร์โทรศัพท์มือถือ PC <span class="text-red-400">*</span></span>
+            </label>
+            <input type="tel" id="landingPcPhone" required maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
+              <span>เข้าสู่หน้าขายประจำสาขา</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- VIEW 1: Store Menu & Action Selection (Shown after PC Check-in) -->
+    <section id="viewStoreMenu" class="hidden space-y-6">
       <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-haier-800 via-haier-700 to-slate-900 border border-sky-500/20 p-6 sm:p-8 shadow-2xl">
         <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div class="space-y-2">
             <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-sky-400/10 border border-sky-400/20 text-sky-300 text-xs font-medium">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>ระบบพร้อมให้บริการ ณ จุดจำหน่าย (Multi-Store Cloud Sync)</span>
+              <span>จุดบริการ: <span id="bannerStoreName" class="text-white font-semibold">สยามพารากอน</span></span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-bold font-display text-white">ระบบลงทะเบียนรับบัตรกำนัล</h1>
-            <p class="text-slate-300 text-sm max-w-xl">
-              ยินดีต้อนรับพนักงาน Power Mall ประจำสาขา <span id="bannerStoreName" class="text-sky-300 font-semibold underline decoration-sky-400">สยามพารากอน</span>
+            <p class="text-slate-300 text-sm">
+              พนักงานผู้ให้บริการ: <span id="bannerPcName" class="text-sky-300 font-semibold">สุรศักดิ์</span> | เบอร์ติดต่อ: <span id="bannerPcPhone" class="text-slate-200 font-mono">081-234-5678</span>
             </p>
           </div>
           <div class="flex flex-wrap gap-3">
@@ -196,7 +262,7 @@
             </button>
             <button onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2">
               <i data-lucide="list-checks" class="w-5 h-5 text-sky-400"></i>
-              <span>รายการลงทะเบียนของสาขา</span>
+              <span>รายการของสาขา</span>
             </button>
           </div>
         </div>
@@ -300,7 +366,7 @@
       </div>
     </section>
 
-    <!-- VIEW 2: Dynamic Registration Form -->
+    <!-- VIEW 2: Dynamic Registration Form (Cleaned: PC Name & Phone Removed!) -->
     <section id="viewRegisterForm" class="hidden max-w-3xl mx-auto space-y-6">
       
       <!-- Back & Form Header -->
@@ -347,7 +413,7 @@
 
             <div class="space-y-1.5">
               <label class="block text-xs font-medium text-slate-300">
-                เบอร์โทรศัพท์มือถือ <span class="text-red-400">*</span>
+                เบอร์โทรศัพท์มือถือลูกค้า <span class="text-red-400">*</span>
               </label>
               <input type="tel" id="custPhone" required maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
             </div>
@@ -495,23 +561,14 @@
             </div>
           </div>
 
-          <!-- Staff / Promoter Info -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/5">
-            <div class="space-y-1.5">
-              <label class="block text-xs font-medium text-slate-400">ชื่อพนักงานขาย / PC ผู้ลงทะเบียน</label>
-              <input type="text" id="staffName" placeholder="เช่น สุรศักดิ์ (PC Haier)" class="w-full px-4 py-2 rounded-xl bg-slate-900/70 border border-slate-800 text-white text-xs outline-none focus:border-sky-500">
-            </div>
-            <div class="space-y-1.5">
-              <label class="block text-xs font-medium text-slate-400">รหัสพนักงาน (ถ้ามี)</label>
-              <input type="text" id="staffId" placeholder="เช่น HTH-8821" class="w-full px-4 py-2 rounded-xl bg-slate-900/70 border border-slate-800 text-white text-xs outline-none focus:border-sky-500">
-            </div>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="pt-4">
-            <button type="submit" id="btnSubmitForm" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-base shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
+          <!-- Submit & Actions Buttons -->
+          <div class="pt-4 flex flex-col sm:flex-row gap-3">
+            <button type="submit" id="btnSubmitForm" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-base shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
               <i data-lucide="check-circle" class="w-5 h-5"></i>
               <span id="btnSubmitText">ยืนยันการลงทะเบียน & ออกรหัสบัตรกำนัล</span>
+            </button>
+            <button type="button" onclick="backToStoreMenu()" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-1.5">
+              <span>ยกเลิก</span>
             </button>
           </div>
 
@@ -519,7 +576,7 @@
       </div>
     </section>
 
-    <!-- VIEW 3: Confirmation & Voucher Code Screen -->
+    <!-- VIEW 3: Confirmation & Voucher Code Screen (With Add Next or End) -->
     <section id="viewConfirmation" class="hidden max-w-2xl mx-auto space-y-6">
       <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-sky-400/30 shadow-2xl text-center space-y-6 relative overflow-hidden">
         
@@ -551,12 +608,16 @@
               <p class="font-semibold text-white" id="confCustName">-</p>
             </div>
             <div>
-              <span class="text-slate-400">เบอร์โทรศัพท์:</span>
+              <span class="text-slate-400">เบอร์โทรศัพท์ลูกค้า:</span>
               <p class="font-semibold text-white" id="confCustPhone">-</p>
             </div>
             <div>
               <span class="text-slate-400">สาขา Power Mall:</span>
               <p class="font-semibold text-sky-300" id="confStoreName">-</p>
+            </div>
+            <div>
+              <span class="text-slate-400">พนักงานผู้ลงทะเบียน:</span>
+              <p class="font-semibold text-emerald-400" id="confStaffName">-</p>
             </div>
             <div>
               <span class="text-slate-400">วันที่ซื้อสินค้า:</span>
@@ -565,10 +626,6 @@
             <div>
               <span class="text-slate-400">รุ่นสินค้าที่ซื้อ:</span>
               <p class="font-semibold text-slate-200" id="confModelCode">-</p>
-            </div>
-            <div>
-              <span class="text-slate-400">หมวดหมู่สินค้า:</span>
-              <p class="font-semibold text-sky-300" id="confCategoryCode">-</p>
             </div>
           </div>
 
@@ -599,15 +656,21 @@
           </div>
         </div>
 
-        <!-- Next Customer / Action Buttons -->
+        <!-- Next Customer / Action Buttons: Add Next or End -->
         <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <button onclick="startNextRegistration()" class="px-6 py-3 rounded-xl bg-haier-600 hover:bg-haier-500 text-white font-semibold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
+          <button onclick="startNextRegistration()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
             <i data-lucide="user-plus" class="w-4 h-4"></i>
-            <span>ลงทะเบียนลูกค้ารายต่อไป</span>
+            <span>ลงทะเบียนลูกค้ารายต่อไป (Next)</span>
           </button>
-          <button onclick="window.print()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-2">
+          
+          <button onclick="window.print()" class="px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-1.5">
             <i data-lucide="printer" class="w-4 h-4"></i>
             <span>พิมพ์ใบรับสิทธิ์</span>
+          </button>
+
+          <button onclick="confirmEndShift()" class="px-4 py-3.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-medium text-sm border border-red-500/30 transition flex items-center justify-center space-x-1.5">
+            <i data-lucide="power" class="w-4 h-4 text-red-400"></i>
+            <span>จบการทำงาน (End)</span>
           </button>
         </div>
 
@@ -623,7 +686,7 @@
             <span>กลับหน้าหลักสาขา</span>
           </button>
           <h2 class="text-xl font-bold font-display text-white">รายการที่ลงทะเบียนแล้วประจำสาขา</h2>
-          <p class="text-xs text-slate-400">ค้นหาและตรวจสอบประวัติการลงทะเบียนของ <span id="logStoreTitle" class="text-slate-200 font-semibold">สยามพารากอน</span> (D1 Cloud Database)</p>
+          <p class="text-xs text-slate-400">ค้นหาและตรวจสอบประวัติการลงทะเบียนของ <span id="logStoreTitle" class="text-slate-200 font-semibold">สยามพารากอน</span></p>
         </div>
 
         <div class="flex items-center space-x-2">
@@ -643,6 +706,7 @@
                 <th class="p-3.5">หมวด / ประเภทย่อย / รุ่น</th>
                 <th class="p-3.5">วันที่ซื้อ</th>
                 <th class="p-3.5">ยอดซื้อ</th>
+                <th class="p-3.5">พนักงาน (PC)</th>
                 <th class="p-3.5">ภาพใบเสร็จ / บัตร</th>
                 <th class="p-3.5">สถานะ</th>
               </tr>
@@ -658,7 +722,7 @@
       </div>
     </section>
 
-    <!-- VIEW 5: Admin Panel -->
+    <!-- VIEW 5: Admin Panel (Protected with Password: admin1234) -->
     <section id="viewAdmin" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
@@ -666,13 +730,21 @@
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>กลับหน้า Kiosk</span>
           </button>
-          <h2 class="text-2xl font-bold font-display text-white">Admin Management Dashboard (Cloudflare D1 & R2)</h2>
-          <p class="text-xs text-slate-400">ระบบจัดการแคมเปญ, ตรวจสอบภาพใบเสร็จ/บัตรกำนัล และอนุมัติ Voucher ทั่วประเทศ</p>
+          <div class="flex items-center space-x-3">
+            <h2 class="text-2xl font-bold font-display text-white">Admin Management Dashboard</h2>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">Authenticated</span>
+          </div>
+          <p class="text-xs text-slate-400">ระบบจัดการแคมเปญ, ตรวจสอบภาพใบเสร็จ/บัตรกำนัล และส่งออกไฟล์ Excel พร้อมรูปภาพ</p>
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="exportSubmissionsCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center space-x-1.5">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Export Submissions (CSV)</span>
+          <!-- Excel Export Button with Embedded Thumbnails & Clickable URLs -->
+          <button onclick="exportSubmissionsExcel()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Export to Excel (.xlsx + ภาพ Thumbnail)</span>
+          </button>
+          <button onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center space-x-1">
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>ออกจาก Admin</span>
           </button>
         </div>
       </div>
@@ -695,7 +767,10 @@
 
       <!-- Admin Submissions Table -->
       <div class="glass-panel rounded-2xl p-5 border border-white/10 space-y-4">
-        <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดเพื่อตรวจสอบและอนุมัติ</h3>
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดเพื่อตรวจสอบและอนุมัติ</h3>
+          <span class="text-xs text-slate-400">คลิกที่รูปภาพเพื่อเปิดดูรูปต้นฉบับขนาดเต็ม</span>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
@@ -707,8 +782,9 @@
                 <th class="p-3">หมวด / ประเภทย่อย / รุ่น</th>
                 <th class="p-3">วันที่ซื้อ</th>
                 <th class="p-3">ยอดซื้อ</th>
-                <th class="p-3">1. ใบเสร็จ (R2)</th>
-                <th class="p-3">2. บัตรกำนัล (R2)</th>
+                <th class="p-3">พนักงาน (PC)</th>
+                <th class="p-3">1. ใบเสร็จ</th>
+                <th class="p-3">2. บัตรกำนัล</th>
                 <th class="p-3">สถานะ</th>
               </tr>
             </thead>
@@ -722,22 +798,30 @@
 
   </main>
 
-  <!-- Store Picker Modal -->
-  <div id="storeModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border border-white/15 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-white/10 pb-3">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="store" class="w-5 h-5 text-sky-400"></i>
-          <h3 class="font-bold text-white font-display text-base">เลือกสาขา Power Mall ประจำจุดบริการ</h3>
+  <!-- Admin Password Modal (admin1234) -->
+  <div id="adminPasswordModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-sky-500/30 shadow-2xl space-y-5 text-center">
+      <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/20 border border-amber-400/30 text-amber-400 flex items-center justify-center">
+        <i data-lucide="shield-alert" class="w-6 h-6"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="font-bold text-white font-display text-base">เข้าสู่ระบบผู้ดูแลระบบ (Admin)</h3>
+        <p class="text-xs text-slate-300">กรุณากรอกรหัสผ่านเพื่อเข้าใช้งาน</p>
+      </div>
+
+      <form onsubmit="handleAdminPasswordSubmit(event)" class="space-y-3">
+        <input type="password" id="adminPasswordInput" required placeholder="กรอกรหัสผ่าน Admin..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-center font-mono text-white text-sm outline-none focus:border-sky-500 tracking-widest">
+        <p id="adminPasswordError" class="hidden text-xs text-red-400 font-medium">❌ รหัสผ่านไม่ถูกต้อง โปรดลองอีกครั้ง</p>
+        
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeAdminPasswordModal()" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition">
+            ยกเลิก
+          </button>
+          <button type="submit" class="flex-1 py-2 rounded-xl bg-haier-600 hover:bg-haier-500 text-xs font-bold text-white transition shadow-lg shadow-sky-500/25">
+            ยืนยันรหัสผ่าน
+          </button>
         </div>
-        <button onclick="closeStoreModal()" class="text-slate-400 hover:text-white text-xs">ปิด</button>
-      </div>
-
-      <p class="text-xs text-slate-300">โปรดเลือกสาขาที่คุณกำลังปฏิบัติหน้าที่ เพื่อให้ระบบคำนวณสิทธิ์แคมเปญได้อย่างถูกต้อง</p>
-
-      <div class="space-y-2 max-h-72 overflow-y-auto pr-1" id="storeListContainer">
-        <!-- Populated via JS -->
-      </div>
+      </form>
     </div>
   </div>
 
@@ -745,7 +829,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall. Powered by Cloudflare D1 & R2.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.4 (Full Cloud Sync)</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.5</span>
     </div>
   </footer>
 
@@ -836,23 +920,124 @@
       }
     };
 
-    // State
-    let currentStore = STORES[0]; // default Paragon
+    // State Variables
+    let currentStore = null;
+    let currentPc = { name: '', phone: '' };
     let selectedCampaign = null;
     let submissions = JSON.parse(localStorage.getItem('haier_submissions') || '[]');
     let currentReceiptImageData = '';
     let currentVoucherImageData = '';
     let datePickerInstance = null;
+    let isAdminLoggedIn = false;
 
     // Initialize App
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
-      loadSavedStore();
-      renderStorePickerModal();
-      updateStoreUI();
+      populateLandingStoreSelect();
       initCalendarPicker();
+      checkSavedSession();
       checkCloudHealth();
     });
+
+    // Populate Landing Store Dropdown
+    function populateLandingStoreSelect() {
+      const select = document.getElementById('landingStoreSelect');
+      select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
+        <option value="${s.id}">${s.nameTh} (${s.name}) - ${s.province} ${s.campB ? '✨ ร่วมแคมเปญ B' : ''}</option>
+      `).join('');
+    }
+
+    // Check if PC session already exists
+    function checkSavedSession() {
+      const savedStoreId = localStorage.getItem('haier_session_store_id');
+      const savedPcName = localStorage.getItem('haier_session_pc_name');
+      const savedPcPhone = localStorage.getItem('haier_session_pc_phone');
+
+      if (savedStoreId && savedPcName && savedPcPhone) {
+        const store = STORES.find(s => s.id === savedStoreId);
+        if (store) {
+          currentStore = store;
+          currentPc = { name: savedPcName, phone: savedPcPhone };
+          applyPcSessionUI();
+          switchView('viewStoreMenu');
+          return;
+        }
+      }
+      // Otherwise stay on landing check-in view
+      switchView('viewLandingCheckIn');
+    }
+
+    // Handle Landing Check-In Submit
+    function handleLandingCheckIn(e) {
+      e.preventDefault();
+      const storeId = document.getElementById('landingStoreSelect').value;
+      const pcName = document.getElementById('landingPcName').value.trim();
+      const pcPhone = document.getElementById('landingPcPhone').value.trim();
+
+      if (!storeId || !pcName || !pcPhone) {
+        alert('กรุณากรอกข้อมูลสาขา ชื่อพนักงาน และเบอร์โทรศัพท์ให้ครบถ้วน');
+        return;
+      }
+
+      const store = STORES.find(s => s.id === storeId);
+      if (!store) return;
+
+      currentStore = store;
+      currentPc = { name: pcName, phone: pcPhone };
+
+      localStorage.setItem('haier_session_store_id', currentStore.id);
+      localStorage.setItem('haier_session_pc_name', currentPc.name);
+      localStorage.setItem('haier_session_pc_phone', currentPc.phone);
+
+      applyPcSessionUI();
+      switchView('viewStoreMenu');
+    }
+
+    function applyPcSessionUI() {
+      document.getElementById('headerPcName').textContent = currentPc.name;
+      document.getElementById('headerStoreName').textContent = currentStore.nameTh;
+      document.getElementById('headerSessionBadge').classList.remove('hidden');
+      document.getElementById('btnHeaderEndShift').classList.remove('hidden');
+
+      document.getElementById('bannerStoreName').textContent = currentStore.nameTh;
+      document.getElementById('bannerPcName').textContent = currentPc.name;
+      document.getElementById('bannerPcPhone').textContent = currentPc.phone;
+
+      // Update Campaign B gating based on chosen store
+      const isCampBEligible = currentStore.campB && currentStore.active;
+      const overlay = document.getElementById('campBStoreRestrictedOverlay');
+      const btnB = document.getElementById('btnSelectCampB');
+      const cardB = document.getElementById('cardCampB');
+
+      if (isCampBEligible) {
+        overlay.classList.add('hidden');
+        btnB.disabled = false;
+        btnB.classList.remove('opacity-50', 'cursor-not-allowed');
+        cardB.classList.remove('opacity-60');
+      } else {
+        overlay.classList.remove('hidden');
+        btnB.disabled = true;
+        btnB.classList.add('opacity-50', 'cursor-not-allowed');
+        cardB.classList.add('opacity-60');
+      }
+      lucide.createIcons();
+    }
+
+    function confirmEndShift() {
+      if (confirm('คุณต้องการ "จบการทำงาน (End Shift)" และออกจากระบบประจำสาขาใช่หรือไม่?')) {
+        localStorage.removeItem('haier_session_store_id');
+        localStorage.removeItem('haier_session_pc_name');
+        localStorage.removeItem('haier_session_pc_phone');
+        currentStore = null;
+        currentPc = { name: '', phone: '' };
+        document.getElementById('headerSessionBadge').classList.add('hidden');
+        document.getElementById('btnHeaderEndShift').classList.add('hidden');
+        document.getElementById('landingStoreSelect').value = '';
+        document.getElementById('landingPcName').value = '';
+        document.getElementById('landingPcPhone').value = '';
+        switchView('viewLandingCheckIn');
+      }
+    }
 
     // Check Cloudflare backend health
     async function checkCloudHealth() {
@@ -863,7 +1048,6 @@
           await syncCloudSubmissions();
         }
       } catch(e) {
-        // running standalone offline / local file mode
         console.log('Running in local/standalone storage mode.');
       }
     }
@@ -877,7 +1061,7 @@
             submissions = data.submissions.map(s => ({
               id: s.submission_id,
               storeId: s.store_id,
-              storeName: s.store_name || s.store_name_th || currentStore.nameTh,
+              storeName: s.store_name || s.store_name_th || (currentStore ? currentStore.nameTh : 'สาขา'),
               campaignId: s.campaign_id,
               campaignName: s.campaign_name || s.name_th || 'โปรโมชั่น Haier',
               rewardName: s.reward_name || 'บัตรกำนัล',
@@ -933,74 +1117,16 @@
       }
     }
 
-    function loadSavedStore() {
-      const savedStoreId = localStorage.getItem('haier_kiosk_store_id');
-      if (savedStoreId) {
-        const found = STORES.find(s => s.id === savedStoreId);
-        if (found) currentStore = found;
-      }
-    }
-
-    function updateStoreUI() {
-      document.getElementById('headerStoreName').textContent = currentStore.nameTh;
-      document.getElementById('bannerStoreName').textContent = currentStore.nameTh;
-      document.getElementById('currentStoreBadge').classList.remove('hidden');
-
-      const isCampBEligible = currentStore.campB && currentStore.active;
-      const overlay = document.getElementById('campBStoreRestrictedOverlay');
-      const btnB = document.getElementById('btnSelectCampB');
-      const cardB = document.getElementById('cardCampB');
-
-      if (isCampBEligible) {
-        overlay.classList.add('hidden');
-        btnB.disabled = false;
-        btnB.classList.remove('opacity-50', 'cursor-not-allowed');
-        cardB.classList.remove('opacity-60');
-      } else {
-        overlay.classList.remove('hidden');
-        btnB.disabled = true;
-        btnB.classList.add('opacity-50', 'cursor-not-allowed');
-        cardB.classList.add('opacity-60');
-      }
-      lucide.createIcons();
-    }
-
-    function openStoreModal() {
-      document.getElementById('storeModal').classList.remove('hidden');
-    }
-
-    function closeStoreModal() {
-      document.getElementById('storeModal').classList.add('hidden');
-    }
-
-    function renderStorePickerModal() {
-      const container = document.getElementById('storeListContainer');
-      container.innerHTML = STORES.map(store => `
-        <button onclick="setStore('${store.id}')" class="w-full text-left p-3 rounded-xl border transition flex items-center justify-between ${store.id === currentStore.id ? 'bg-sky-500/20 border-sky-400 text-white' : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800'} ${!store.active ? 'opacity-40 cursor-not-allowed' : ''}">
-          <div>
-            <div class="font-medium text-sm">${store.nameTh} <span class="text-xs text-slate-400 font-mono">(${store.name})</span></div>
-            <div class="text-[11px] text-slate-400">${store.province} • ${store.campB ? '✨ ร่วมแคมเปญ B' : 'ร่วมเฉพาะแคมเปญ A'}</div>
-          </div>
-          ${store.id === currentStore.id ? '<span class="text-xs text-sky-400 font-semibold">กำลังเลือก</span>' : ''}
-        </button>
-      `).join('');
-    }
-
-    function setStore(storeId) {
-      const target = STORES.find(s => s.id === storeId);
-      if (!target || !target.active) return;
-      currentStore = target;
-      localStorage.setItem('haier_kiosk_store_id', target.id);
-      renderStorePickerModal();
-      updateStoreUI();
-      closeStoreModal();
-    }
-
     function startRegistration() {
       window.scrollTo({ top: 300, behavior: 'smooth' });
     }
 
     function selectCampaign(campId) {
+      if (!currentStore) {
+        switchView('viewLandingCheckIn');
+        return;
+      }
+
       selectedCampaign = CAMPAIGNS[campId];
       if (!selectedCampaign) return;
 
@@ -1239,8 +1365,8 @@
           purchaseAmount: amount,
           receiptImageBase64: currentReceiptImageData,
           voucherImageBase64: currentVoucherImageData,
-          staffName: document.getElementById('staffName').value || 'พนักงานประจำสาขา',
-          staffId: document.getElementById('staffId').value || '-'
+          staffName: currentPc.name || 'พนักงานขายประจำสาขา',
+          staffId: currentPc.phone || '-'
         };
 
         const res = await fetch('/api/register', {
@@ -1283,8 +1409,8 @@
         amount: amount,
         receiptImage: receiptUrl,
         voucherImage: voucherUrl,
-        staffName: document.getElementById('staffName').value || 'พนักงานประจำสาขา',
-        staffId: document.getElementById('staffId').value || '-',
+        staffName: currentPc.name,
+        staffId: currentPc.phone,
         status: 'issued',
         timestamp: new Date().toLocaleString('th-TH')
       };
@@ -1301,10 +1427,10 @@
       document.getElementById('confCustName').textContent = sub.customerName;
       document.getElementById('confCustPhone').textContent = sub.customerPhone;
       document.getElementById('confStoreName').textContent = sub.storeName;
+      document.getElementById('confStaffName').textContent = sub.staffName + ' (' + sub.staffId + ')';
       document.getElementById('confPurchaseDate').textContent = sub.purchaseDate;
       document.getElementById('confModelCode').textContent = sub.modelCode;
       document.getElementById('confCategoryCode').textContent = `${sub.category} • ${sub.subCategory}`;
-      document.getElementById('confTimestamp').textContent = sub.timestamp;
 
       document.getElementById('confReceiptThumb').src = sub.receiptImage;
       document.getElementById('confVoucherThumb').src = sub.voucherImage;
@@ -1327,7 +1453,11 @@
     }
 
     function backToStoreMenu() {
-      switchView('viewStoreMenu');
+      if (!currentStore) {
+        switchView('viewLandingCheckIn');
+      } else {
+        switchView('viewStoreMenu');
+      }
     }
 
     async function showStoreSubmissions() {
@@ -1369,9 +1499,17 @@
           <td class="p-3.5 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
           <td class="p-3.5 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
           <td class="p-3.5">
+            <div class="font-medium text-white">${s.staffName || '-'}</div>
+            <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
+          </td>
+          <td class="p-3.5">
             <div class="flex items-center space-x-1.5">
-              <img src="${s.receiptImage}" title="รูปใบเสร็จ (R2)" class="w-7 h-7 object-cover rounded border border-sky-400/40 hover:scale-150 transition cursor-pointer">
-              <img src="${s.voucherImage || s.receiptImage}" title="รูปบัตรกำนัล (R2)" class="w-7 h-7 object-cover rounded border border-purple-400/40 hover:scale-150 transition cursor-pointer">
+              <a href="${s.receiptImage}" target="_blank" title="คลิกดูรูปใบเสร็จขนาดเต็ม">
+                <img src="${s.receiptImage}" class="w-7 h-7 object-cover rounded border border-sky-400/40 hover:scale-150 transition cursor-pointer">
+              </a>
+              <a href="${s.voucherImage || s.receiptImage}" target="_blank" title="คลิกดูรูปบัตรกำนัลขนาดเต็ม">
+                <img src="${s.voucherImage || s.receiptImage}" class="w-7 h-7 object-cover rounded border border-purple-400/40 hover:scale-150 transition cursor-pointer">
+              </a>
             </div>
           </td>
           <td class="p-3.5">
@@ -1388,6 +1526,41 @@
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(query) ? '' : 'none';
       });
+    }
+
+    // --- ADMIN MODULE WITH PASSWORD (admin1234) ---
+    function requestAdminAccess() {
+      if (isAdminLoggedIn) {
+        showAdminView();
+      } else {
+        document.getElementById('adminPasswordInput').value = '';
+        document.getElementById('adminPasswordError').classList.add('hidden');
+        document.getElementById('adminPasswordModal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
+      }
+    }
+
+    function closeAdminPasswordModal() {
+      document.getElementById('adminPasswordModal').classList.add('hidden');
+    }
+
+    function handleAdminPasswordSubmit(e) {
+      e.preventDefault();
+      const pwd = document.getElementById('adminPasswordInput').value;
+      if (pwd === 'admin1234') {
+        isAdminLoggedIn = true;
+        closeAdminPasswordModal();
+        showAdminView();
+      } else {
+        document.getElementById('adminPasswordError').classList.remove('hidden');
+        document.getElementById('adminPasswordInput').value = '';
+        document.getElementById('adminPasswordInput').focus();
+      }
+    }
+
+    function logoutAdmin() {
+      isAdminLoggedIn = false;
+      backToStoreMenu();
     }
 
     async function showAdminView() {
@@ -1418,10 +1591,18 @@
           <td class="p-3 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
           <td class="p-3 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
           <td class="p-3">
-            <img src="${s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-sky-400/40 hover:scale-150 transition cursor-pointer" title="รูปใบเสร็จ (R2)">
+            <div class="text-white">${s.staffName || '-'}</div>
+            <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
           </td>
           <td class="p-3">
-            <img src="${s.voucherImage || s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-purple-400/40 hover:scale-150 transition cursor-pointer" title="รูปบัตรกำนัล (R2)">
+            <a href="${s.receiptImage}" target="_blank" title="คลิกดูภาพใบเสร็จ">
+              <img src="${s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-sky-400/40 hover:scale-150 transition cursor-pointer">
+            </a>
+          </td>
+          <td class="p-3">
+            <a href="${s.voucherImage || s.receiptImage}" target="_blank" title="คลิกดูภาพบัตรกำนัล">
+              <img src="${s.voucherImage || s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-purple-400/40 hover:scale-150 transition cursor-pointer">
+            </a>
           </td>
           <td class="p-3">
             <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">ISSUED</span>
@@ -1430,26 +1611,143 @@
       `).join('');
     }
 
-    function exportSubmissionsCSV() {
+    // --- 2. RICH EXCEL EXPORT (.xlsx) WITH EMBEDDED THUMBNAIL PICTURES & HYPERLINK URLS ---
+    async function exportSubmissionsExcel() {
       if (submissions.length === 0) {
         alert('ไม่มีข้อมูลการลงทะเบียนสำหรับส่งออก');
         return;
       }
-      const headers = ['Voucher Code', 'Store ID', 'Store Name', 'Campaign', 'Customer Name', 'Phone', 'Category', 'SubCategory', 'Model', 'Purchase Date', 'Amount (THB)', 'Receipt Attached', 'Voucher Attached', 'Timestamp', 'Status'];
-      const rows = submissions.map(s => [
-        s.id, s.storeId, `"${s.storeName}"`, `"${s.campaignName}"`, `"${s.customerName}"`, s.customerPhone, s.category, `"${s.subCategory || ''}"`, s.modelCode, s.purchaseDate, s.amount, s.receiptImage ? 'YES' : 'NO', s.voucherImage ? 'YES' : 'NO', `"${s.timestamp}"`, s.status
-      ]);
-      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'haier_voucher_submissions_' + new Date().toISOString().slice(0,10) + '.csv';
-      a.click();
+
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'Haier Power Mall System';
+      workbook.created = new Date();
+
+      const worksheet = workbook.addWorksheet('Submissions', {
+        views: [{ showGridLines: true }]
+      });
+
+      // Define Columns
+      worksheet.columns = [
+        { header: 'No.', key: 'no', width: 6 },
+        { header: 'Voucher Ref Code', key: 'id', width: 18 },
+        { header: 'Store ID', key: 'storeId', width: 10 },
+        { header: 'Store Name (สาขา)', key: 'storeName', width: 22 },
+        { header: 'Campaign Name (แคมเปญ)', key: 'campaignName', width: 28 },
+        { header: 'Customer Name (ลูกค้า)', key: 'customerName', width: 20 },
+        { header: 'Customer Phone (เบอร์โทร)', key: 'customerPhone', width: 15 },
+        { header: 'Category (หมวดหลัก)', key: 'category', width: 12 },
+        { header: 'SubCategory (หมวดย่อย)', key: 'subCategory', width: 18 },
+        { header: 'Model Code (รุ่นสินค้า)', key: 'modelCode', width: 22 },
+        { header: 'Purchase Date (วันที่ซื้อ)', key: 'purchaseDate', width: 15 },
+        { header: 'Amount (THB)', key: 'amount', width: 14 },
+        { header: 'PC Name (พนักงาน)', key: 'staffName', width: 18 },
+        { header: 'PC Phone', key: 'staffPhone', width: 15 },
+        { header: '1. Receipt Thumbnail', key: 'receiptThumb', width: 18 },
+        { header: '1. Receipt URL (คลิกดูภาพจริง)', key: 'receiptUrl', width: 30 },
+        { header: '2. Voucher Thumbnail', key: 'voucherThumb', width: 18 },
+        { header: '2. Voucher URL (คลิกดูภาพจริง)', key: 'voucherUrl', width: 30 },
+        { header: 'Timestamp', key: 'timestamp', width: 20 },
+        { header: 'Status', key: 'status', width: 12 }
+      ];
+
+      // Header Row Styling
+      const headerRow = worksheet.getRow(1);
+      headerRow.height = 30;
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FF004EA2' } // Haier Blue
+        };
+        cell.font = {
+          name: 'Arial',
+          bold: true,
+          color: { argb: 'FFFFFFFF' },
+          size: 11
+        };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      });
+
+      // Insert Data & Pictures
+      for (let i = 0; i < submissions.length; i++) {
+        const s = submissions[i];
+        const rowNum = i + 2;
+
+        const row = worksheet.addRow({
+          no: i + 1,
+          id: s.id,
+          storeId: s.storeId,
+          storeName: s.storeName,
+          campaignName: s.campaignName,
+          customerName: s.customerName,
+          customerPhone: s.customerPhone,
+          category: s.category,
+          subCategory: s.subCategory || '',
+          modelCode: s.modelCode,
+          purchaseDate: s.purchaseDate,
+          amount: s.amount,
+          staffName: s.staffName || '',
+          staffPhone: s.staffId || '',
+          receiptThumb: '',
+          receiptUrl: {
+            text: '🔗 เปิดดูรูปใบเสร็จบนเซิร์ฟเวอร์',
+            hyperlink: s.receiptImage.startsWith('http') || s.receiptImage.startsWith('/') ? (window.location.origin + s.receiptImage) : s.receiptImage
+          },
+          voucherThumb: '',
+          voucherUrl: {
+            text: '🔗 เปิดดูรูปบัตรกำนัลบนเซิร์ฟเวอร์',
+            hyperlink: (s.voucherImage || s.receiptImage).startsWith('http') || (s.voucherImage || s.receiptImage).startsWith('/') ? (window.location.origin + (s.voucherImage || s.receiptImage)) : (s.voucherImage || s.receiptImage)
+          },
+          timestamp: s.timestamp,
+          status: s.status.toUpperCase()
+        });
+
+        row.height = 55; // Height for image thumbnails
+        row.alignment = { vertical: 'middle', horizontal: 'left' };
+
+        // Embed Receipt Image Thumbnail if available
+        if (s.receiptImage && s.receiptImage.includes('base64')) {
+          try {
+            const base64Data = s.receiptImage.split(',')[1];
+            const imageId = workbook.addImage({
+              base64: base64Data,
+              extension: 'jpeg'
+            });
+            worksheet.addImage(imageId, {
+              tl: { col: 14.1, row: rowNum - 1 + 0.1 },
+              ext: { width: 50, height: 50 }
+            });
+          } catch(e) {
+            console.warn('Could not embed thumbnail:', e);
+          }
+        }
+
+        // Embed Voucher Image Thumbnail if available
+        if (s.voucherImage && s.voucherImage.includes('base64')) {
+          try {
+            const base64Data = s.voucherImage.split(',')[1];
+            const imageId2 = workbook.addImage({
+              base64: base64Data,
+              extension: 'jpeg'
+            });
+            worksheet.addImage(imageId2, {
+              tl: { col: 16.1, row: rowNum - 1 + 0.1 },
+              ext: { width: 50, height: 50 }
+            });
+          } catch(e) {
+            console.warn('Could not embed voucher thumbnail:', e);
+          }
+        }
+      }
+
+      // Generate and trigger download
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, `haier_voucher_submissions_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
     function switchView(viewId) {
-      const views = ['viewStoreMenu', 'viewRegisterForm', 'viewConfirmation', 'viewStoreLogs', 'viewAdmin'];
+      const views = ['viewLandingCheckIn', 'viewStoreMenu', 'viewRegisterForm', 'viewConfirmation', 'viewStoreLogs', 'viewAdmin'];
       views.forEach(v => document.getElementById(v).classList.add('hidden'));
       document.getElementById(viewId).classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });

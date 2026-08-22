@@ -1,5 +1,5 @@
 # ระบบลงทะเบียนรับบัตรกำนัล Power Mall x Haier (Voucher Registration for Power Mall)
-**Document Version:** 2.4.0 (Updated: Interactive Visual Calendar Picker for Date of Purchase)  
+**Document Version:** 2.5.0 (Updated: Admin Password Protection, Excel Export with Thumbnails, PC Check-In Landing, and End-Shift Flow)  
 **Target Platform:** Cloudflare Pages + Workers + D1 Database + R2 Object Storage  
 **Brand Design System:** Haier Electric Thailand & Power Mall (The Mall Group)
 
@@ -7,19 +7,21 @@
 
 ## 1. ภาพรวมระบบและข้อกำหนดหลัก (Executive Overview)
 
-ระบบ **Voucher Registration for Power Mall** เป็นเว็บแอปพลิเคชันสำหรับ **พนักงานขาย (PC/Promoter) ณ ห้างสรรพสินค้า Power Mall (เครือ The Mall Group)** เพื่อลงทะเบียนการซื้อสินค้าแบรนด์ Haier ของลูกค้า ตรวจสอบสิทธิ์โปรโมชั่นแบบ Real-time แนบหลักฐานภาพถ่าย 2 รายการ และออกรหัสบัตรกำนัล (Voucher Reference Code / QR Code) ให้แก่ลูกค้าเพื่อนำไปแสดงรับของรางวัลได้ทันที
+ระบบ **Voucher Registration for Power Mall** เป็นเว็บแอปพลิเคชันสำหรับ **พนักงานขาย (PC/Promoter) ณ ห้างสรรพสินค้า Power Mall (เครือ The Mall Group)** เพื่อลงทะเบียนการซื้อสินค้าแบรนด์ Haier ของลูกค้า ตรวจสอบสิทธิ์โปรโมชั่นแบบ Real-time แนบหลักฐานภาพถ่าย 2 รายการ และบันทึกข้อมูลเข้าสู่ระบบกลาง Cloudflare D1 & R2
 
-### ไฮไลต์ฟังก์ชันสำคัญล่าสุด (Latest Features)
-1. **Interactive Visual Calendar Picker (ปฏิทินเลือกวันที่ซื้อสินค้า):**
-   - ช่อง `วันที่ซื้อสินค้า (Date of purchase)` มาพร้อม **ปฏิทิน Pop-up แบบโต้ตอบ (Flatpickr Theme: Haier Dark UI)**
-   - คลิกที่ช่องกรอกหรือไอคอนปฏิทินเพื่อเปิดหน้าต่างปฏิทินภาษาไทย เลือกวัน เดือน และปีได้อย่างสะดวก
-   - แสดงผลวันที่ในรูปแบบที่อ่านง่าย เช่น `21 สิงหาคม 2026 (วันศุกร์)` พร้อมจัดเก็บข้อมูลในรูปแบบมาตรฐาน `YYYY-MM-DD`
-   - กำหนดค่าเริ่มต้นเป็นวันปัจจุบันอัตโนมัติ และป้องกันการเลือกวันที่ในอนาคต (`maxDate: today`)
-2. **Dual Picture Uploads (แนบหลักฐานภาพถ่าย 2 รายการ):**
-   - **ภาพที่ 1 - รูปถ่ายใบเสร็จรับเงิน (Receipt Photo):** แสดงวันที่ซื้อ, สาขา, และยอดเงินรวม
-   - **ภาพที่ 2 - รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า (Voucher Photo):** บัตรเติมน้ำมัน PTT หรือ บัตร The Mall Gift Voucher
-3. **3-Level Cascading Product Selector (Category → SubCategory → Model):**
-   - กรองรุ่นสินค้าตามหมวดหลัก (6 หมวด) และหมวดย่อยอย่างแม่นยำจากฐานข้อมูล 415 รุ่น
+### สรุปฟังก์ชันสำคัญ 4 ข้อล่าสุด (Latest Key Features)
+1. **ระบบความปลอดภัย Admin ด้วยรหัสผ่าน (Password: `admin1234`):**
+   - การเข้าสู่หน้า Admin Management ต้องผ่านการยืนยันรหัสผ่าน `admin1234`
+2. **ระบบส่งออกไฟล์ Excel (`.xlsx`) พร้อมรูปภาพ Thumbnail และลิงก์รูปจริง:**
+   - ส่งออกข้อมูลเป็นไฟล์ Excel แท้ (`.xlsx` ผ่าน ExcelJS)
+   - ฝังรูปภาพขนาด Thumbnail ของ **ใบเสร็จรับเงิน** และ **บัตรกำนัล** ในช่องตาราง Excel โดยตรง
+   - มีคอลัมน์ลิงก์ Hyperlink `🔗 เปิดดูรูปบนเซิร์ฟเวอร์` เพื่อคลิกเปิดดูรูปความละเอียดสูงบนเซิร์ฟเวอร์ได้ทันที
+3. **หน้าแรกเริ่มต้นด้วยการ Check-in สาขาและข้อมูลพนักงาน (PC Check-in Landing Screen):**
+   - พนักงานต้องเลือก **สาขาประจำจุดบริการ (8 สาขา)** และกรอก **ชื่อ-นามสกุล PC** พร้อม **เบอร์โทรศัพท์ PC** ตั้งแต่หน้าแรก
+   - ในฟอร์มลงทะเบียนลูกค้าจึง **ตัดช่องกรอกชื่อ/เบอร์ PC ออก** เพื่อความรวดเร็วในการบริการหน้าร้าน
+4. **ปุ่ม "ลงทะเบียนลูกค้ารายต่อไป (Next)" หรือ "จบการทำงาน (End)":**
+   - เมื่อลงทะเบียนเสร็จ พนักงานสามารถกด `ลงทะเบียนลูกค้ารายต่อไป` เพื่อเปิดรับลูกค้ารายใหม่ได้ทันทีโดยไม่ต้องกรอกข้อมูล PC ซ้ำ
+   - หรือกด `จบการทำงาน (End)` เพื่อเคลียร์กะและเปลี่ยนสาขา/พนักงาน
 
 ---
 
@@ -104,117 +106,30 @@
 
 ---
 
-## 4. โครงสร้างฐานข้อมูล (Database Schema - Cloudflare D1 / SQLite)
-
-```sql
--- 1. ตารางมิติสาขา (Dimension Store)
-CREATE TABLE IF NOT EXISTS dimension_store (
-    store_id TEXT PRIMARY KEY,
-    store_name TEXT NOT NULL,
-    store_name_th TEXT NOT NULL,
-    customer_name TEXT DEFAULT 'เพาเวอร์มอลล์',
-    store_id_customer TEXT,
-    province_th TEXT NOT NULL,
-    region_th TEXT NOT NULL,
-    is_active INTEGER DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 2. ตารางมิติสินค้า (Dimension Model)
-CREATE TABLE IF NOT EXISTS dimension_model (
-    model_code TEXT PRIMARY KEY,
-    brand TEXT NOT NULL DEFAULT 'Haier',
-    category TEXT NOT NULL,     -- AC, RF, WM, TV, FZ, WH
-    sub_category TEXT NOT NULL, -- Inverter, Front Load, QLED, Beverage, etc.
-    is_active INTEGER DEFAULT 1,
-    remark TEXT,
-    update_by TEXT DEFAULT 'admin',
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 3. ตารางแคมเปญ (Campaigns)
-CREATE TABLE IF NOT EXISTS campaigns (
-    campaign_id TEXT PRIMARY KEY,
-    name_th TEXT NOT NULL,
-    name_en TEXT NOT NULL,
-    badge_label TEXT,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
-    eligible_store_ids TEXT,    -- JSON Array เช่น ["S00449", "S00327"] หรือ NULL
-    fixed_category TEXT,        -- เช่น 'AC' สำหรับแคมเปญ A หรือ NULL
-    fixed_sub_category TEXT,    -- เช่น 'Inverter' สำหรับแคมเปญ A หรือ NULL
-    eligible_model_codes TEXT,  -- JSON Array เช่น ["HSU-09VRRA055BF", ...] หรือ NULL
-    min_spend_thb REAL DEFAULT 0,
-    reward_name TEXT NOT NULL,
-    reward_value_thb REAL NOT NULL,
-    reward_image_url TEXT,
-    terms_conditions_th TEXT,
-    is_active INTEGER DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 4. ตารางบันทึกการลงทะเบียน (Submissions / Vouchers)
-CREATE TABLE IF NOT EXISTS submissions (
-    submission_id TEXT PRIMARY KEY, -- Format: 'HR-YYYYMMDD-XXXX' (Voucher Reference No.)
-    store_id TEXT NOT NULL,
-    campaign_id TEXT NOT NULL,
-    customer_name TEXT NOT NULL,
-    customer_phone TEXT NOT NULL,
-    category TEXT NOT NULL,          -- หมวดหลัก เช่น TV
-    sub_category TEXT NOT NULL,      -- หมวดย่อย เช่น OLED
-    model_code TEXT NOT NULL,        -- รุ่นสินค้า เช่น H65C900UX
-    purchase_date DATE NOT NULL,     -- วันที่ซื้อตามใบเสร็จ (YYYY-MM-DD)
-    purchase_amount_thb REAL NOT NULL,
-    receipt_photo_url TEXT NOT NULL, -- 1. รูปถ่ายใบเสร็จรับเงิน ใน Cloudflare R2
-    voucher_photo_url TEXT NOT NULL, -- 2. รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า ใน Cloudflare R2
-    staff_name TEXT,
-    staff_emp_id TEXT,
-    voucher_status TEXT DEFAULT 'issued' CHECK(voucher_status IN ('pending', 'issued', 'rejected', 'redeemed')),
-    voucher_code TEXT UNIQUE,
-    redeemed_at DATETIME,
-    admin_remark TEXT,
-    submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(store_id) REFERENCES dimension_store(store_id),
-    FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_sub_store ON submissions(store_id);
-CREATE INDEX IF NOT EXISTS idx_sub_campaign ON submissions(campaign_id);
-CREATE INDEX IF NOT EXISTS idx_sub_phone ON submissions(customer_phone);
-CREATE INDEX IF NOT EXISTS idx_sub_purchase_date ON submissions(purchase_date);
-```
-
----
-
-## 5. แผนผังการทำงานของผู้ใช้งาน (Kiosk User Journey)
+## 4. แผนผังการทำงานของผู้ใช้งาน (Updated User Journey)
 
 ```mermaid
 flowchart TD
-    Start([1. พนักงานเปิดเว็บแอป Kiosk]) --> Step1[2. เลือกสาขา Power Mall ประจำจุดบริการ]
-    Step1 --> Step2{3. เลือกเมนูการทำงาน}
+    Start([1. เปิดเว็บแอปพลิเคชัน]) --> CheckIn[2. หน้า Landing: เลือกสาขา + กรอกชื่อ & เบอร์โทร PC]
+    CheckIn --> StoreMenu[3. เข้าสู่หน้าหลักประจำสาขา]
     
-    Step2 -->|ลงทะเบียนลูกค้าใหม่| Step3[4. เลือกแคมเปญโปรโมชั่น A หรือ B]
-    Step2 -->|ดูรายการลงทะเบียนแล้ว| ListPage[หน้ารายการย้อนหลังประจำสาขา<br>ค้นหา / กรอง / ดูประวัติ]
+    StoreMenu -->|ลงทะเบียนลูกค้า| Form[4. เลือกแคมเปญ → เลือก Category → SubCategory → Model → ปฏิทินวันที่ซื้อ]
+    StoreMenu -->|ดูประวัติสาขา| Logs[5. รายการลงทะเบียนประจำสาขา]
+    StoreMenu -->|เข้า Admin| AdminPwd[6. ยืนยันรหัสผ่าน Admin: admin1234]
     
-    Step3 --> Step4[5. เลือกหมวดสินค้าหลัก Category]
-    Step4 --> Step5[6. เลือกหมวดหมู่ย่อย SubCategory]
-    Step5 --> Step6[7. เลือกรุ่นสินค้า Model]
-    Step6 --> Step7[8. คลิกเปิดปฏิทินเลือกวันที่ซื้อ + ระบุยอดเงิน]
-    Step7 --> Step8[9. แนบรูปถ่าย 2 ภาพ: 1.ใบเสร็จ + 2.บัตรกำนัล]
+    AdminPwd --> AdminDash[7. Admin Dashboard: ดูภาพจริง / Export Excel พร้อมรูปและลิงก์]
     
-    Step8 --> ValRules{ตรวจสอบเงื่อนไขความถูกต้อง}
-    ValRules -->|ยอดซื้อไม่ถึง หรือขาดรูปถ่ายใดรูปหนึ่ง| FormErr[แจ้งเตือนจุดผิดพลาดทันที]
-    ValRules -->|ข้อมูลถูกต้องครบถ้วน| Step9[10. กดยืนยันการลงทะเบียน]
+    Form --> PhotoAttach[8. แนบรูปถ่าย 2 ภาพ: 1.ใบเสร็จ + 2.บัตรกำนัล]
+    PhotoAttach --> Confirm[9. หน้ายืนยันสิทธิ์ พร้อมออกรหัส Voucher & QR Code]
     
-    Step9 --> Step10[11. หน้าจอยืนยันสิทธิ์ พร้อม Reference No. / QR Code และรูปหลักฐาน 2 ภาพ]
-    Step10 --> NextCust[ปุ่ม 'ลงทะเบียนลูกค้ารายต่อไป' กลับสู่หน้าหลัก]
+    Confirm -->|Next| NextCust[ลงทะเบียนลูกค้ารายต่อไป (คงสาขาและ PC เดิม)]
+    Confirm -->|End| EndShift[จบการทำงาน / ออกจากระบบกลับสู่หน้า Landing]
 ```
 
 ---
 
-## 6. เอกสารแนบและไฟล์อ้างอิงในระบบ (Attached Reference Files)
-- **เว็บแอปพลิเคชันพร้อมใช้งาน:** `index.html` (พร้อมปฏิทินเลือกวันที่แบบโต้ตอบ, แนบ 2 ภาพ & 3-Level Dropdown)
+## 5. เอกสารแนบและไฟล์อ้างอิงในระบบ (Attached Reference Files)
+- **เว็บแอปพลิเคชันพร้อมใช้งาน:** `index.html` (พร้อม Admin Password, Excel Export, PC Check-In, Next/End actions)
 - **รูปภาพโปสเตอร์ Campaign A (Haier x PTT):** `Ad AC PTT vc.png`
 - **รูปภาพโปสเตอร์ Campaign B (Shop More Get More):** `Ad PM vc.jpg`
 - **ไฟล์ข้อมูลสาขา (Dimension Store):** `Dimension Store.csv` / `Dimension Store.json`
