@@ -1,0 +1,14 @@
+name = "voucher-registration-powermall"
+compatibility_date = "2026-08-20"
+pages_build_output_dir = "."
+
+# Cloudflare D1 Database Binding
+[[d1_databases]]
+binding = "DB"
+database_name = "haier-voucher-db"
+database_id = "haier-voucher-db"
+
+# Cloudflare R2 Object Storage Bucket Binding
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "haier-voucher-photos"

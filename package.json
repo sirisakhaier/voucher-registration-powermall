@@ -1,0 +1,16 @@
+{
+  "name": "voucher-registration-powermall",
+  "version": "2.4.0",
+  "description": "Haier Campaign Voucher Registration for Power Mall on Cloudflare Pages, D1, and R2",
+  "scripts": {
+    "dev": "wrangler pages dev . --d1 DB=haier-voucher-db --r2 BUCKET=haier-voucher-photos",
+    "d1:create": "wrangler d1 create haier-voucher-db",
+    "d1:init:local": "wrangler d1 execute haier-voucher-db --local --file=./migrations/0001_init.sql",
+    "d1:init:remote": "wrangler d1 execute haier-voucher-db --remote --file=./migrations/0001_init.sql",
+    "r2:create": "wrangler r2 bucket create haier-voucher-photos",
+    "deploy": "wrangler pages deploy ."
+  },
+  "devDependencies": {
+    "wrangler": "^3.107.0"
+  }
+}
