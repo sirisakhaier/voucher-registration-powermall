@@ -60,7 +60,7 @@
       min-height: 100vh;
     }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -137,7 +137,7 @@
   <header class="sticky top-0 z-40 glass-panel border-b border-white/10 px-4 lg:px-8 py-3.5 shadow-xl">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="backToStoreMenu()">
           <span class="text-2xl font-black tracking-wider text-white font-display uppercase bg-gradient-to-r from-white via-slate-100 to-sky-300 bg-clip-text text-transparent">Haier</span>
           <span class="text-xs px-2 py-0.5 rounded bg-haier-600/80 text-sky-200 font-medium border border-sky-400/30">Official</span>
         </div>
@@ -149,6 +149,12 @@
       </div>
 
       <div class="flex items-center space-x-3">
+        <!-- Browse All Submissions Top Link (Always functional) -->
+        <button type="button" onclick="showStoreSubmissions()" class="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-sky-300 border border-sky-500/20 transition">
+          <i data-lucide="list-checks" class="w-3.5 h-3.5 text-sky-400"></i>
+          <span>ดูรายการทั้งหมด</span>
+        </button>
+
         <!-- PC & Store Info Badge (Active when logged in) -->
         <div id="headerSessionBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-haier-900/80 border border-sky-500/30 text-xs">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -159,7 +165,7 @@
         </div>
         
         <!-- Exit button: "ออก" -->
-        <button id="btnHeaderEndShift" onclick="confirmEndShift()" class="hidden px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-red-300 text-xs font-medium border border-red-500/30 transition flex items-center space-x-1.5">
+        <button id="btnHeaderEndShift" type="button" onclick="confirmEndShift()" class="hidden px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-red-300 text-xs font-medium border border-red-500/30 transition flex items-center space-x-1.5">
           <i data-lucide="log-out" class="w-3.5 h-3.5 text-red-400"></i>
           <span>ออก</span>
         </button>
@@ -328,9 +334,9 @@
               <i data-lucide="plus-circle" class="w-5 h-5"></i>
               <span>ลงทะเบียนลูกค้าใหม่</span>
             </button>
-            <button type="button" onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2">
+            <button type="button" onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2 shadow">
               <i data-lucide="list-checks" class="w-5 h-5 text-sky-400"></i>
-              <span>รายการของสาขา</span>
+              <span>ดูรายการทั้งหมด (Browse)</span>
               <span id="storeBadgeRevisionNotice" class="hidden px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30 animate-pulse">มีรายการต้องแก้ไข</span>
             </button>
           </div>
@@ -654,121 +660,25 @@
       </div>
     </section>
 
-    <!-- VIEW 3: Confirmation & Voucher Code Screen (With Add Next or End: "ออก") -->
-    <section id="viewConfirmation" class="hidden max-w-2xl mx-auto space-y-6">
-      <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-sky-400/30 shadow-2xl text-center space-y-6 relative overflow-hidden">
-        
-        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center">
-          <i data-lucide="badge-check" class="w-10 h-10"></i>
-        </div>
-
-        <div class="space-y-1">
-          <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">ลงทะเบียนสำเร็จ (Registration Complete)</span>
-          <h2 class="text-2xl sm:text-3xl font-black font-display text-white">ยินดีด้วย! คุณได้รับสิทธิ์บัตรกำนัล</h2>
-          <p class="text-xs text-slate-300" id="confRewardDescription">บัตรเติมน้ำมัน PTT Privilege Card มูลค่า 500 บาท</p>
-        </div>
-
-        <!-- Voucher Card Ticket -->
-        <div class="bg-gradient-to-br from-slate-900 to-haier-900 border border-sky-400/40 rounded-2xl p-6 text-left relative shadow-inner space-y-4">
-          <div class="flex items-center justify-between border-b border-white/10 pb-3">
-            <div>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider">รหัสอ้างอิงรับสิทธิ์ (VOUCHER REFERENCE CODE)</span>
-              <div class="text-2xl sm:text-3xl font-black font-mono tracking-wider text-amber-300" id="confVoucherCode">
-                HR-2026-8892
-              </div>
-            </div>
-            <div id="qrcodeCanvas" class="bg-white p-2 rounded-xl shadow-md"></div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div>
-              <span class="text-slate-400">ชื่อลูกค้า:</span>
-              <p class="font-semibold text-white" id="confCustName">-</p>
-            </div>
-            <div>
-              <span class="text-slate-400">เบอร์โทรศัพท์ลูกค้า:</span>
-              <p class="font-semibold text-white" id="confCustPhone">-</p>
-            </div>
-            <div>
-              <span class="text-slate-400">สาขา Power Mall:</span>
-              <p class="font-semibold text-sky-300" id="confStoreName">-</p>
-            </div>
-            <div>
-              <span class="text-slate-400">พนักงานผู้ลงทะเบียน (PC):</span>
-              <p class="font-semibold text-emerald-400" id="confStaffName">-</p>
-            </div>
-            <div>
-              <span class="text-slate-400">วันที่ซื้อสินค้า:</span>
-              <p class="font-semibold text-amber-300" id="confPurchaseDate">-</p>
-            </div>
-            <div>
-              <span class="text-slate-400">รุ่นสินค้าที่ซื้อ:</span>
-              <p class="font-semibold text-slate-200" id="confModelCode">-</p>
-            </div>
-          </div>
-
-          <!-- Dual Photo Thumbnail Attachments in Confirmation -->
-          <div class="pt-2 border-t border-white/10">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-2">หลักฐานภาพถ่ายที่บันทึกเข้าระบบ Cloud (2 Photos Attached):</span>
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-slate-950/60 p-2 rounded-xl border border-white/10 flex items-center space-x-2">
-                <img id="confReceiptThumb" src="" class="w-10 h-10 object-cover rounded-lg border border-sky-400/40">
-                <div class="text-[11px]">
-                  <span class="font-medium text-slate-200 block">รูปใบเสร็จ</span>
-                  <span class="text-[10px] text-emerald-400">✓ บันทึกสู่ R2</span>
-                </div>
-              </div>
-              <div class="bg-slate-950/60 p-2 rounded-xl border border-white/10 flex items-center space-x-2">
-                <img id="confVoucherThumb" src="" class="w-10 h-10 object-cover rounded-lg border border-purple-400/40">
-                <div class="text-[11px]">
-                  <span class="font-medium text-slate-200 block">รูปบัตรกำนัล</span>
-                  <span class="text-[10px] text-emerald-400">✓ บันทึกสู่ R2</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-slate-950/60 rounded-xl p-3 text-[11px] text-slate-300 border border-white/5 flex items-center space-x-2">
-            <i data-lucide="info" class="w-4 h-4 text-sky-400 shrink-0"></i>
-            <span>โปรดแสดงหน้าจอนี้ หรือรหัสอ้างอิง ณ จุดบริการลูกค้าเพื่อรับบัตรกำนัล</span>
-          </div>
-        </div>
-
-        <!-- Next Customer / Action Buttons: Add Next or Exit ("ออก") -->
-        <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <button type="button" onclick="startNextRegistration()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
-            <i data-lucide="user-plus" class="w-4 h-4"></i>
-            <span>ลงทะเบียนลูกค้ารายต่อไป (Next)</span>
-          </button>
-          
-          <button type="button" onclick="window.print()" class="px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-1.5">
-            <i data-lucide="printer" class="w-4 h-4"></i>
-            <span>พิมพ์ใบรับสิทธิ์</span>
-          </button>
-
-          <button type="button" onclick="confirmEndShift()" class="px-5 py-3.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-medium text-sm border border-red-500/30 transition flex items-center justify-center space-x-1.5">
-            <i data-lucide="power" class="w-4 h-4 text-red-400"></i>
-            <span>ออก</span>
-          </button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- VIEW 4: Store Historical Submissions Log (With Revise / Edit Button) -->
+    <!-- VIEW 4: Store Historical Submissions Log (Browse All Submissions) -->
     <section id="viewStoreLogs" class="hidden space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
           <button type="button" onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>กลับหน้าหลักสาขา</span>
           </button>
-          <h2 class="text-xl font-bold font-display text-white">รายการที่ลงทะเบียนแล้วประจำสาขา</h2>
-          <p class="text-xs text-slate-400">ค้นหาและตรวจสอบสถานะการอนุมัติ หรือแก้ไขข้อมูลที่ Admin ร้องขอ</p>
+          <h2 class="text-xl font-bold font-display text-white">รายการลงทะเบียนทั้งหมด (Submissions List)</h2>
+          <p class="text-xs text-slate-400">ค้นหา ตรวจสอบสถานะการอนุมัติ หรือแก้ไขข้อมูลที่ Admin ร้องขอ</p>
         </div>
 
-        <div class="flex items-center space-x-2">
-          <input type="text" id="logSearchInput" oninput="filterStoreSubmissions()" placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่ซื้อ..." class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500 w-64">
+        <!-- Store Filter & Search Bar -->
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="logStoreFilterSelect" onchange="renderStoreSubmissionsTable()" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500">
+            <option value="ALL">ทุกสาขา (All Stores)</option>
+            <!-- Populated via JS -->
+          </select>
+          <input type="text" id="logSearchInput" oninput="filterStoreSubmissions()" placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่ซื้อ, รหัส..." class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500 w-56">
         </div>
       </div>
 
@@ -779,6 +689,7 @@
             <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
               <tr>
                 <th class="p-3.5">รหัสอ้างอิง / เวลา</th>
+                <th class="p-3.5">สาขา</th>
                 <th class="p-3.5">ลูกค้า</th>
                 <th class="p-3.5">แคมเปญ</th>
                 <th class="p-3.5">หมวด / ประเภทย่อย / รุ่น</th>
@@ -795,7 +706,7 @@
           </table>
         </div>
         <div id="storeLogEmpty" class="hidden p-8 text-center text-slate-400 text-xs">
-          ยังไม่พบรายการลงทะเบียนในสาขานี้
+          ยังไม่พบรายการลงทะเบียนในเงื่อนไขที่เลือก
         </div>
       </div>
     </section>
@@ -880,6 +791,105 @@
 
   </main>
 
+  <!-- CONFIRMATION POP-UP MODAL (APPEARS IMMEDIATELY AFTER SUBMITTING) -->
+  <div id="confirmationPopupModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="glass-panel w-full max-w-xl rounded-3xl p-6 sm:p-8 border border-sky-400/40 shadow-2xl text-center space-y-5 my-8">
+      
+      <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <i data-lucide="badge-check" class="w-8 h-8"></i>
+      </div>
+
+      <div class="space-y-1">
+        <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">ส่งข้อมูลสำเร็จ (Submission Complete)</span>
+        <h3 class="text-xl sm:text-2xl font-black font-display text-white">บันทึกข้อมูลผู้รับสิทธิ์เรียบร้อยแล้ว</h3>
+        <p class="text-xs text-slate-300" id="popupRewardDescription">บัตรเติมน้ำมัน PTT Privilege Card มูลค่า 500 บาท</p>
+      </div>
+
+      <!-- Voucher Reference Ticket Box -->
+      <div class="bg-gradient-to-br from-slate-900 to-haier-900 border border-sky-400/40 rounded-2xl p-5 text-left space-y-4 shadow-inner">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider">รหัสอ้างอิงรับสิทธิ์ (VOUCHER REF CODE)</span>
+            <div class="text-2xl font-black font-mono tracking-wider text-amber-300" id="popupVoucherCode">
+              HR-2026-8892
+            </div>
+          </div>
+          <div id="popupQrCanvas" class="bg-white p-1.5 rounded-xl shadow"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 text-xs">
+          <div>
+            <span class="text-slate-400">ลูกค้า:</span>
+            <p class="font-semibold text-white" id="popupCustName">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400">เบอร์โทรศัพท์:</span>
+            <p class="font-semibold text-white" id="popupCustPhone">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400">สาขา:</span>
+            <p class="font-semibold text-sky-300" id="popupStoreName">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400">พนักงาน (PC):</span>
+            <p class="font-semibold text-emerald-400" id="popupStaffName">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400">วันที่ซื้อ:</span>
+            <p class="font-semibold text-amber-300" id="popupPurchaseDate">-</p>
+          </div>
+          <div>
+            <span class="text-slate-400">รุ่นสินค้า:</span>
+            <p class="font-semibold text-slate-200" id="popupModelCode">-</p>
+          </div>
+        </div>
+
+        <!-- 2 Pictures Preview -->
+        <div class="pt-2 border-t border-white/10">
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1.5">ภาพหลักฐานที่แนบ (2 Photos):</span>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-950/60 p-1.5 rounded-xl border border-white/10 flex items-center space-x-2">
+              <img id="popupReceiptThumb" src="" class="w-8 h-8 object-cover rounded-lg border border-sky-400/40">
+              <div class="text-[10px]">
+                <span class="font-medium text-slate-200 block">1. รูปใบเสร็จ</span>
+                <span class="text-emerald-400">✓ บันทึกแล้ว</span>
+              </div>
+            </div>
+            <div class="bg-slate-950/60 p-1.5 rounded-xl border border-white/10 flex items-center space-x-2">
+              <img id="popupVoucherThumb" src="" class="w-8 h-8 object-cover rounded-lg border border-purple-400/40">
+              <div class="text-[10px]">
+                <span class="font-medium text-slate-200 block">2. รูปบัตรกำนัล</span>
+                <span class="text-emerald-400">✓ บันทึกแล้ว</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Pop-up Action Buttons: Next / Browse All / End -->
+      <div class="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
+        <!-- 1. Next Customer -->
+        <button type="button" onclick="handlePopupNextCustomer()" class="flex-1 py-3 px-3 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-xs transition flex items-center justify-center space-x-1.5 shadow-lg">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>ลงทะเบียนลูกค้ารายต่อไป (Next)</span>
+        </button>
+
+        <!-- 2. Browse All Submissions -->
+        <button type="button" onclick="handlePopupBrowseSubmissions()" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 font-semibold text-xs border border-sky-400/30 transition flex items-center justify-center space-x-1.5">
+          <i data-lucide="list-checks" class="w-4 h-4 text-sky-400"></i>
+          <span>ดูรายการทั้งหมด</span>
+        </button>
+
+        <!-- 3. Exit (ออก) -->
+        <button type="button" onclick="handlePopupExit()" class="py-3 px-4 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-semibold text-xs border border-red-500/30 transition flex items-center justify-center space-x-1.5">
+          <i data-lucide="power" class="w-4 h-4 text-red-400"></i>
+          <span>ออก</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Admin Password Modal (admin1234) -->
   <div id="adminPasswordModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
     <div class="glass-panel w-full max-w-sm rounded-3xl p-6 border border-sky-500/30 shadow-2xl space-y-5 text-center">
@@ -937,7 +947,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.7</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.8</span>
     </div>
   </footer>
 
@@ -1038,13 +1048,14 @@
     let datePickerInstance = null;
     let selectedPurchaseDate = '';
     let isAdminLoggedIn = false;
-    let currentEditingSubmissionId = null; // Used when PC is revising a submission
-    let targetRevisionSubmissionId = null; // Used in Admin modal
+    let currentEditingSubmissionId = null;
+    let targetRevisionSubmissionId = null;
 
-    // Initialize App: ALWAYS start on Landing View (do not restore old sessions automatically)
+    // Initialize App
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       populateLandingStoreSelect();
+      populateLogStoreFilterSelect();
       initCalendarPicker();
       switchView('viewLandingCheckIn');
       syncCloudSubmissions();
@@ -1055,6 +1066,14 @@
       const select = document.getElementById('landingStoreSelect');
       select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
         <option value="${s.id}">${s.nameTh} (${s.name}) - ${s.province} ${s.campB ? '✨ ร่วมแคมเปญ B' : ''}</option>
+      `).join('');
+    }
+
+    function populateLogStoreFilterSelect() {
+      const select = document.getElementById('logStoreFilterSelect');
+      if (!select) return;
+      select.innerHTML = '<option value="ALL">ทุกสาขา (All Stores)</option>' + STORES.filter(s => s.active).map(s => `
+        <option value="${s.id}">${s.nameTh} (${s.name})</option>
       `).join('');
     }
 
@@ -1095,6 +1114,7 @@
     }
 
     function applyPcSessionUI() {
+      if (!currentStore) return;
       document.getElementById('headerPcName').textContent = currentPc.name;
       document.getElementById('headerStoreName').textContent = currentStore.nameTh;
       document.getElementById('headerSessionBadge').classList.remove('hidden');
@@ -1103,6 +1123,10 @@
       document.getElementById('bannerStoreName').textContent = currentStore.nameTh;
       document.getElementById('bannerPcName').textContent = currentPc.name;
       document.getElementById('bannerPcPhone').textContent = currentPc.phone;
+
+      // Select current store in filter dropdown if available
+      const logFilter = document.getElementById('logStoreFilterSelect');
+      if (logFilter) logFilter.value = currentStore.id;
 
       const isCampBEligible = currentStore.campB && currentStore.active;
       const overlay = document.getElementById('campBStoreRestrictedOverlay');
@@ -1143,6 +1167,7 @@
         document.getElementById('landingStoreSelect').value = '';
         document.getElementById('landingPcName').value = '';
         document.getElementById('landingPcPhone').value = '';
+        closeConfirmationModal();
         switchView('viewLandingCheckIn');
       }
     }
@@ -1174,7 +1199,7 @@
               voucherImage: s.voucher_photo_url,
               staffName: s.staff_name,
               staffId: s.staff_emp_id,
-              status: s.voucher_status || 'issued',
+              status: s.voucher_status || 'pending',
               adminRemark: s.admin_remark || '',
               timestamp: new Date(s.submitted_at).toLocaleString('th-TH')
             }));
@@ -1486,42 +1511,42 @@
       const modelSelect = document.getElementById('modelSelect');
       const amountInput = document.getElementById('purchaseAmount');
 
-      const custName = custNameInput.value.trim();
-      const custPhone = custPhoneInput.value.trim();
-      const catVal = catSelect.value;
-      const subCatVal = subCatSelect.value;
-      const modelVal = modelSelect.value;
-      const amount = parseFloat(amountInput.value);
+      const custName = custNameInput ? custNameInput.value.trim() : '';
+      const custPhone = custPhoneInput ? custPhoneInput.value.trim() : '';
+      const catVal = catSelect ? catSelect.value : '';
+      const subCatVal = subCatSelect ? subCatSelect.value : '';
+      const modelVal = modelSelect ? modelSelect.value : '';
+      const amount = amountInput ? parseFloat(amountInput.value) : 0;
       const pDate = selectedPurchaseDate || document.getElementById('purchaseDate').value || new Date().toISOString().slice(0, 10);
 
-      // Validations
+      // Validations with immediate focus
       if (!custName) {
         alert('กรุณากรอกชื่อ-นามสกุล ลูกค้า');
-        custNameInput.focus();
+        if (custNameInput) custNameInput.focus();
         return;
       }
 
       if (!custPhone || custPhone.length < 9) {
         alert('กรุณากรอกเบอร์โทรศัพท์มือถือลูกค้าให้ถูกต้อง');
-        custPhoneInput.focus();
+        if (custPhoneInput) custPhoneInput.focus();
         return;
       }
 
       if (!catVal) {
         alert('กรุณาเลือกหมวดหมู่สินค้าหลัก (Category)');
-        catSelect.focus();
+        if (catSelect) catSelect.focus();
         return;
       }
 
       if (!subCatVal) {
         alert('กรุณาเลือกหมวดหมู่ย่อย (SubCategory)');
-        subCatSelect.focus();
+        if (subCatSelect) subCatSelect.focus();
         return;
       }
 
       if (!modelVal) {
         alert('กรุณาเลือกรุ่นสินค้า Haier (Model)');
-        modelSelect.focus();
+        if (modelSelect) modelSelect.focus();
         return;
       }
 
@@ -1533,13 +1558,13 @@
 
       if (isNaN(amount) || amount <= 0) {
         alert('กรุณาระบุยอดรวมในใบเสร็จเป็นตัวเลขที่ถูกต้อง');
-        amountInput.focus();
+        if (amountInput) amountInput.focus();
         return;
       }
 
-      if (selectedCampaign.minSpend > 0 && amount < selectedCampaign.minSpend) {
+      if (selectedCampaign && selectedCampaign.minSpend > 0 && amount < selectedCampaign.minSpend) {
         document.getElementById('minSpendError').classList.remove('hidden');
-        amountInput.focus();
+        if (amountInput) amountInput.focus();
         return;
       }
 
@@ -1555,8 +1580,8 @@
 
       const submitBtn = document.getElementById('btnSubmitForm');
       const submitText = document.getElementById('btnSubmitText');
-      submitBtn.disabled = true;
-      submitText.textContent = 'กำลังส่งข้อมูลผู้รับบัตรกำนัล...';
+      if (submitBtn) submitBtn.disabled = true;
+      if (submitText) submitText.textContent = 'กำลังส่งข้อมูลผู้รับบัตรกำนัล...';
 
       let submissionId = currentEditingSubmissionId || `HR-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
       let receiptUrl = currentReceiptImageData;
@@ -1566,7 +1591,7 @@
         const payload = {
           existingSubmissionId: currentEditingSubmissionId,
           storeId: currentStore ? currentStore.id : 'S00449',
-          campaignId: selectedCampaign.id,
+          campaignId: selectedCampaign ? selectedCampaign.id : 'CAMP-2026-PTT-AC',
           customerName: custName,
           customerPhone: custPhone,
           category: catVal,
@@ -1597,18 +1622,18 @@
       } catch (cloudErr) {
         console.warn('Saved to local storage cache:', cloudErr);
       } finally {
-        submitBtn.disabled = false;
-        submitText.textContent = 'ส่งข้อมูลผู้รับบัตรกำนัล';
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitText) submitText.textContent = 'ส่งข้อมูลผู้รับบัตรกำนัล';
       }
 
       const newSubmission = {
         id: submissionId,
         storeId: currentStore ? currentStore.id : 'S00449',
         storeName: currentStore ? currentStore.nameTh : 'สาขา',
-        campaignId: selectedCampaign.id,
-        campaignName: selectedCampaign.nameTh,
-        rewardName: selectedCampaign.rewardName,
-        rewardValue: selectedCampaign.rewardValue,
+        campaignId: selectedCampaign ? selectedCampaign.id : 'CAMP-2026-PTT-AC',
+        campaignName: selectedCampaign ? selectedCampaign.nameTh : 'โปรโมชั่น Haier',
+        rewardName: selectedCampaign ? selectedCampaign.rewardName : 'บัตรกำนัล',
+        rewardValue: selectedCampaign ? selectedCampaign.rewardValue : 500,
         customerName: custName,
         customerPhone: custPhone,
         category: catVal,
@@ -1638,40 +1663,67 @@
 
       currentEditingSubmissionId = null;
       document.getElementById('revisionAlertBanner').classList.add('hidden');
-      showConfirmation(newSubmission);
+      
+      // SHOW IMMEDIATE CONFIRMATION POPUP MODAL!
+      showConfirmationPopup(newSubmission);
     }
 
-    function showConfirmation(sub) {
-      document.getElementById('confRewardDescription').textContent = sub.rewardName;
-      document.getElementById('confVoucherCode').textContent = sub.id;
-      document.getElementById('confCustName').textContent = sub.customerName;
-      document.getElementById('confCustPhone').textContent = sub.customerPhone;
-      document.getElementById('confStoreName').textContent = sub.storeName;
-      document.getElementById('confStaffName').textContent = sub.staffName + ' (' + sub.staffId + ')';
-      document.getElementById('confPurchaseDate').textContent = sub.purchaseDate;
-      document.getElementById('confModelCode').textContent = sub.modelCode;
-      document.getElementById('confCategoryCode').textContent = `${sub.category} • ${sub.subCategory}`;
+    // --- IMMEDIATE CONFIRMATION POPUP MODAL ---
+    function showConfirmationPopup(sub) {
+      document.getElementById('popupRewardDescription').textContent = sub.rewardName;
+      document.getElementById('popupVoucherCode').textContent = sub.id;
+      document.getElementById('popupCustName').textContent = sub.customerName;
+      document.getElementById('popupCustPhone').textContent = sub.customerPhone;
+      document.getElementById('popupStoreName').textContent = sub.storeName;
+      document.getElementById('popupStaffName').textContent = sub.staffName + ' (' + sub.staffId + ')';
+      document.getElementById('popupPurchaseDate').textContent = sub.purchaseDate;
+      document.getElementById('popupModelCode').textContent = sub.modelCode;
 
-      document.getElementById('confReceiptThumb').src = sub.receiptImage;
-      document.getElementById('confVoucherThumb').src = sub.voucherImage;
+      document.getElementById('popupReceiptThumb').src = sub.receiptImage;
+      document.getElementById('popupVoucherThumb').src = sub.voucherImage;
 
-      const qrContainer = document.getElementById('qrcodeCanvas');
-      qrContainer.innerHTML = '';
-      QRCode.toCanvas(document.createElement('canvas'), sub.id, { width: 90, margin: 1 }, function (error, canvas) {
-        if (!error && canvas) qrContainer.appendChild(canvas);
-      });
+      // QR Code generation with error protection
+      try {
+        const qrContainer = document.getElementById('popupQrCanvas');
+        qrContainer.innerHTML = '';
+        if (typeof QRCode !== 'undefined' && QRCode.toCanvas) {
+          QRCode.toCanvas(document.createElement('canvas'), sub.id, { width: 75, margin: 1 }, function (error, canvas) {
+            if (!error && canvas) qrContainer.appendChild(canvas);
+          });
+        }
+      } catch (qrErr) {
+        console.warn('QR Code generation notice:', qrErr);
+      }
 
-      switchView('viewConfirmation');
+      document.getElementById('confirmationPopupModal').classList.remove('hidden');
+      lucide.createIcons();
     }
 
-    function startNextRegistration() {
-      currentEditingSubmissionId = null;
+    function closeConfirmationModal() {
+      document.getElementById('confirmationPopupModal').classList.add('hidden');
+    }
+
+    // Pop-up Action 1: Next Customer
+    function handlePopupNextCustomer() {
+      closeConfirmationModal();
       document.getElementById('regForm').reset();
       clearReceiptImage();
       clearVoucherImage();
       resetPurchaseDate();
       document.getElementById('revisionAlertBanner').classList.add('hidden');
       switchView('viewStoreMenu');
+    }
+
+    // Pop-up Action 2: Browse All Submissions
+    function handlePopupBrowseSubmissions() {
+      closeConfirmationModal();
+      showStoreSubmissions();
+    }
+
+    // Pop-up Action 3: Exit ("ออก")
+    function handlePopupExit() {
+      closeConfirmationModal();
+      confirmEndShift();
     }
 
     function backToStoreMenu() {
@@ -1682,30 +1734,44 @@
       }
     }
 
-    async function showStoreSubmissions() {
-      if (!currentStore) {
-        switchView('viewLandingCheckIn');
-        return;
+    // --- BROWSE SUBMISSIONS (ALWAYS FUNCTIONAL) ---
+    function showStoreSubmissions() {
+      // If store is selected, set filter to that store, else ALL
+      const filterSelect = document.getElementById('logStoreFilterSelect');
+      if (filterSelect) {
+        if (currentStore && currentStore.id) {
+          filterSelect.value = currentStore.id;
+        } else {
+          filterSelect.value = 'ALL';
+        }
       }
-      document.getElementById('logStoreTitle').textContent = currentStore.nameTh;
-      await syncCloudSubmissions();
       renderStoreSubmissionsTable();
       switchView('viewStoreLogs');
+      // Sync in background without blocking
+      syncCloudSubmissions().then(() => renderStoreSubmissionsTable()).catch(() => {});
     }
 
     function renderStoreSubmissionsTable() {
-      const storeSubs = submissions.filter(s => s.storeId === (currentStore ? currentStore.id : ''));
+      const filterSelect = document.getElementById('logStoreFilterSelect');
+      const selectedFilter = filterSelect ? filterSelect.value : 'ALL';
+      
+      let filteredSubs = submissions;
+      if (selectedFilter && selectedFilter !== 'ALL') {
+        filteredSubs = submissions.filter(s => s.storeId === selectedFilter);
+      }
+
       const tbody = document.getElementById('storeSubmissionsTbody');
       const emptyBox = document.getElementById('storeLogEmpty');
+      if (!tbody) return;
 
-      if (storeSubs.length === 0) {
+      if (filteredSubs.length === 0) {
         tbody.innerHTML = '';
-        emptyBox.classList.remove('hidden');
+        if (emptyBox) emptyBox.classList.remove('hidden');
         return;
       }
 
-      emptyBox.classList.add('hidden');
-      tbody.innerHTML = storeSubs.map(s => {
+      if (emptyBox) emptyBox.classList.add('hidden');
+      tbody.innerHTML = filteredSubs.map(s => {
         let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">รอตรวจสอบ</span>';
         let actionBtn = '';
 
@@ -1731,6 +1797,7 @@
               <span class="font-mono font-bold text-sky-400">${s.id}</span>
               <div class="text-[11px] text-slate-400">${s.timestamp}</div>
             </td>
+            <td class="p-3.5 font-medium text-slate-200">${s.storeName || '-'}</td>
             <td class="p-3.5">
               <div class="font-medium text-white">${s.customerName}</div>
               <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
@@ -1743,7 +1810,7 @@
               <span class="text-[11px] text-sky-300">${s.category} • ${s.subCategory || '-'}</span>
             </td>
             <td class="p-3.5 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
-            <td class="p-3.5 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
+            <td class="p-3.5 font-bold text-white">${(s.amount || 0).toLocaleString()} ฿</td>
             <td class="p-3.5">
               <div class="font-medium text-white">${s.staffName || '-'}</div>
               <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
@@ -1814,9 +1881,9 @@
     }
 
     async function showAdminView() {
-      await syncCloudSubmissions();
       renderAdminDashboard();
       switchView('viewAdmin');
+      syncCloudSubmissions().then(() => renderAdminDashboard()).catch(() => {});
     }
 
     function renderAdminDashboard() {
@@ -1831,6 +1898,8 @@
       document.getElementById('statTotalVoucherValue').textContent = totalVal.toLocaleString() + ' THB';
 
       const tbody = document.getElementById('adminSubmissionsTbody');
+      if (!tbody) return;
+
       tbody.innerHTML = submissions.map(s => {
         let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">รอตรวจสอบ</span>';
         if (s.status === 'issued' || s.status === 'approved') {
@@ -1847,7 +1916,7 @@
               <span class="font-mono font-bold text-sky-400">${s.id}</span>
               <div class="text-[10px] text-slate-400">${s.timestamp}</div>
             </td>
-            <td class="p-3">${s.storeName}</td>
+            <td class="p-3 font-medium text-slate-200">${s.storeName || '-'}</td>
             <td class="p-3">
               <div class="font-medium text-white">${s.customerName}</div>
               <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
@@ -1857,7 +1926,7 @@
               <div class="text-white">${s.modelCode}</div>
               <span class="text-[10px] text-slate-400">${s.category} • ${s.subCategory || '-'}</span>
             </td>
-            <td class="p-3 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
+            <td class="p-3 font-bold text-white">${(s.amount || 0).toLocaleString()} ฿</td>
             <td class="p-3">
               <div class="text-white">${s.staffName || '-'}</div>
               <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
@@ -1944,7 +2013,7 @@
       closeAdminRevisionModal();
     }
 
-    // --- 2. RICH EXCEL EXPORT (.xlsx) WITH EMBEDDED THUMBNAIL PICTURES & HYPERLINK URLS ---
+    // --- EXCEL EXPORT (.xlsx) ---
     async function exportSubmissionsExcel() {
       if (submissions.length === 0) {
         alert('ไม่มีข้อมูลการลงทะเบียนสำหรับส่งออก');
@@ -2076,9 +2145,13 @@
     }
 
     function switchView(viewId) {
-      const views = ['viewLandingCheckIn', 'viewStoreMenu', 'viewRegisterForm', 'viewConfirmation', 'viewStoreLogs', 'viewAdmin'];
-      views.forEach(v => document.getElementById(v).classList.add('hidden'));
-      document.getElementById(viewId).classList.remove('hidden');
+      const views = ['viewLandingCheckIn', 'viewStoreMenu', 'viewRegisterForm', 'viewStoreLogs', 'viewAdmin'];
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.classList.add('hidden');
+      });
+      const targetEl = document.getElementById(viewId);
+      if (targetEl) targetEl.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       lucide.createIcons();
     }
