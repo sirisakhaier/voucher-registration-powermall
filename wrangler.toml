@@ -2,5 +2,11 @@ name = "voucher-registration-powermall"
 compatibility_date = "2026-08-20"
 pages_build_output_dir = "."
 
-# Note: D1 (DB) and R2 (BUCKET) bindings are connected via
-# Cloudflare Pages Dashboard -> Settings -> Functions -> D1 / R2 Bindings
+[[d1_databases]]
+binding = "DB"
+database_name = "voucher-db"
+database_id = "dd94f98f-2ecd-4951-8fd3-7e75969793a6"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "voucher-photos"

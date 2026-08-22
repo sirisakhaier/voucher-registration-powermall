@@ -1,8 +1,10 @@
 // Cloudflare Pages Function: /api/image/[[path]]
-// Serves images stored in Cloudflare R2 Bucket, with automatic fallback to D1 database
+// Serves images stored in Cloudflare R2 Bucket, with fallback to D1 database
 
 export async function onRequestGet(context) {
   const { params, env } = context;
+  const db = env.DB || env.voucher_db;
+  const bucket = env.BUCKET || env.voucher_photos;
   const path = Array.isArray(params.path) ? params.path.join("/") : params.path;
 
   if (!path) {
@@ -10,10 +12,10 @@ export async function onRequestGet(context) {
   }
 
   // 1. Try fetching from Cloudflare R2 Bucket first
-  if (env.BUCKET) {
+  if (bucket) {
     try {
       const cleanKey = path.replace(/^\/+/, "");
-      const object = await env.BUCKET.get(cleanKey);
+      const object = await bucket.get(cleanKey);
 
       if (object) {
         const headers = new Headers();
@@ -31,10 +33,9 @@ export async function onRequestGet(context) {
     }
   }
 
-  // 2. Fallback: Lookup in Cloudflare D1 database if image is stored as base64 in database
-  if (env.DB) {
+  // 2. Fallback: Lookup in Cloudflare D1 database
+  if (db) {
     try {
-      // Extract submission ID from filename (e.g. vouchers/HR-20260822-7527_voucher.jpg -> HR-20260822-7527)
       const filename = path.split("/").pop() || "";
       const match = filename.match(/(HR-[0-9]+-[0-9]+)/i);
 
@@ -42,7 +43,7 @@ export async function onRequestGet(context) {
         const subId = match[1];
         const isVoucher = filename.toLowerCase().includes("voucher");
 
-        const row = await env.DB.prepare(
+        const row = await db.prepare(
           "SELECT receipt_photo_url, voucher_photo_url FROM submissions WHERE submission_id = ?"
         ).bind(subId).first();
 

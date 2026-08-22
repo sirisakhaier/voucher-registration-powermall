@@ -5,11 +5,12 @@
 
 export async function onRequestGet(context) {
   const { request, env } = context;
+  const db = env.DB || env.voucher_db;
   const url = new URL(request.url);
   const storeId = url.searchParams.get("store_id");
   const campaignId = url.searchParams.get("campaign_id");
 
-  if (!env.DB) {
+  if (!db) {
     return new Response(JSON.stringify({ submissions: [] }), {
       headers: { "Content-Type": "application/json" }
     });
@@ -42,7 +43,7 @@ export async function onRequestGet(context) {
 
     query += " ORDER BY s.submitted_at DESC LIMIT 500";
 
-    const { results } = await env.DB.prepare(query).bind(...params).all();
+    const { results } = await db.prepare(query).bind(...params).all();
 
     return new Response(JSON.stringify({ submissions: results || [] }), {
       headers: { "Content-Type": "application/json" }
@@ -57,7 +58,8 @@ export async function onRequestGet(context) {
 
 export async function onRequestPut(context) {
   const { request, env } = context;
-  if (!env.DB) return new Response(JSON.stringify({ success: true }));
+  const db = env.DB || env.voucher_db;
+  if (!db) return new Response(JSON.stringify({ success: true }));
 
   try {
     const { submissionId, status, remark } = await request.json();
@@ -65,7 +67,7 @@ export async function onRequestPut(context) {
       return new Response(JSON.stringify({ error: "Missing submissionId or status" }), { status: 400 });
     }
 
-    await env.DB.prepare(`
+    await db.prepare(`
       UPDATE submissions
       SET voucher_status = ?, admin_remark = ?
       WHERE submission_id = ?
@@ -79,7 +81,8 @@ export async function onRequestPut(context) {
 
 export async function onRequestDelete(context) {
   const { request, env } = context;
-  if (!env.DB) return new Response(JSON.stringify({ success: true }));
+  const db = env.DB || env.voucher_db;
+  if (!db) return new Response(JSON.stringify({ success: true }));
 
   try {
     const { confirmation } = await request.json();
@@ -87,7 +90,7 @@ export async function onRequestDelete(context) {
       return new Response(JSON.stringify({ error: "Invalid reset confirmation code" }), { status: 400 });
     }
 
-    await env.DB.prepare("DELETE FROM submissions").run();
+    await db.prepare("DELETE FROM submissions").run();
 
     return new Response(JSON.stringify({ success: true, message: "All submissions reset successfully" }));
   } catch (err) {

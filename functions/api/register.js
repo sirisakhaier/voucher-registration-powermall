@@ -3,6 +3,8 @@
 
 export async function onRequestPost(context) {
   const { request, env } = context;
+  const db = env.DB || env.voucher_db;
+  const bucket = env.BUCKET || env.voucher_photos;
 
   try {
     const body = await request.json();
@@ -47,80 +49,88 @@ export async function onRequestPost(context) {
       submissionId = `HR-${dateStr}-${randomSuffix}`;
     }
 
-    // Upload images to Cloudflare R2 Bucket if binding exists and if new base64 image provided
-    let receiptUrl = receiptImageBase64;
-    let voucherUrl = voucherImageBase64;
+    // Upload images to Cloudflare R2 Bucket if binding exists and if base64 image provided
+    let receiptUrl = `/api/image/receipts/${submissionId}_receipt.jpg`;
+    let voucherUrl = `/api/image/vouchers/${submissionId}_voucher.jpg`;
 
-    if (env.BUCKET) {
-      if (receiptImageBase64.startsWith("data:")) {
-        const receiptKey = `receipts/${submissionId}_receipt.jpg`;
-        const receiptBuffer = decodeBase64Image(receiptImageBase64);
-        await env.BUCKET.put(receiptKey, receiptBuffer, {
-          httpMetadata: { contentType: "image/jpeg" }
-        });
-        receiptUrl = `/api/image/${receiptKey}`;
-      }
+    if (bucket) {
+      try {
+        if (receiptImageBase64.startsWith("data:")) {
+          const receiptKey = `receipts/${submissionId}_receipt.jpg`;
+          const receiptBuffer = decodeBase64Image(receiptImageBase64);
+          await bucket.put(receiptKey, receiptBuffer, {
+            httpMetadata: { contentType: "image/jpeg" }
+          });
+        }
 
-      if (voucherImageBase64.startsWith("data:")) {
-        const voucherKey = `vouchers/${submissionId}_voucher.jpg`;
-        const voucherBuffer = decodeBase64Image(voucherImageBase64);
-        await env.BUCKET.put(voucherKey, voucherBuffer, {
-          httpMetadata: { contentType: "image/jpeg" }
-        });
-        voucherUrl = `/api/image/${voucherKey}`;
+        if (voucherImageBase64.startsWith("data:")) {
+          const voucherKey = `vouchers/${submissionId}_voucher.jpg`;
+          const voucherBuffer = decodeBase64Image(voucherImageBase64);
+          await bucket.put(voucherKey, voucherBuffer, {
+            httpMetadata: { contentType: "image/jpeg" }
+          });
+        }
+      } catch (r2PutErr) {
+        console.warn("R2 Put Error:", r2PutErr);
       }
     }
 
     // Save or Update Record in Cloudflare D1 Database if binding exists
-    if (env.DB) {
-      if (existingSubmissionId) {
-        // Update existing revised record
-        await env.DB.prepare(`
-          UPDATE submissions
-          SET customer_name = ?, customer_phone = ?, category = ?, sub_category = ?,
-              model_code = ?, purchase_date = ?, purchase_amount_thb = ?,
-              receipt_photo_url = ?, voucher_photo_url = ?, staff_name = ?, staff_emp_id = ?,
-              voucher_status = 'pending', admin_remark = 'แก้ไขและส่งข้อมูลใหม่แล้ว'
-          WHERE submission_id = ?
-        `).bind(
-          customerName,
-          customerPhone,
-          category,
-          subCategory,
-          modelCode,
-          purchaseDate,
-          parseFloat(purchaseAmount),
-          receiptUrl,
-          voucherUrl,
-          staffName || "พนักงานประจำสาขา",
-          staffId || "-",
-          existingSubmissionId
-        ).run();
-      } else {
-        // Insert new record
-        await env.DB.prepare(`
-          INSERT INTO submissions (
-            submission_id, store_id, campaign_id, customer_name, customer_phone,
-            category, sub_category, model_code, purchase_date, purchase_amount_thb,
-            receipt_photo_url, voucher_photo_url, staff_name, staff_emp_id, voucher_status, voucher_code
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
-        `).bind(
-          submissionId,
-          storeId,
-          campaignId,
-          customerName,
-          customerPhone,
-          category,
-          subCategory,
-          modelCode,
-          purchaseDate,
-          parseFloat(purchaseAmount),
-          receiptUrl,
-          voucherUrl,
-          staffName || "พนักงานประจำสาขา",
-          staffId || "-",
-          submissionId
-        ).run();
+    if (db) {
+      try {
+        // Fallback: If no R2 bucket, store base64 in DB so image route can decode on demand
+        const dbReceiptUrl = bucket ? receiptUrl : receiptImageBase64;
+        const dbVoucherUrl = bucket ? voucherUrl : voucherImageBase64;
+
+        if (existingSubmissionId) {
+          await db.prepare(`
+            UPDATE submissions
+            SET customer_name = ?, customer_phone = ?, category = ?, sub_category = ?,
+                model_code = ?, purchase_date = ?, purchase_amount_thb = ?,
+                receipt_photo_url = ?, voucher_photo_url = ?, staff_name = ?, staff_emp_id = ?,
+                voucher_status = 'pending', admin_remark = 'แก้ไขและส่งข้อมูลใหม่แล้ว'
+            WHERE submission_id = ?
+          `).bind(
+            customerName,
+            customerPhone,
+            category,
+            subCategory,
+            modelCode,
+            purchaseDate,
+            parseFloat(purchaseAmount),
+            dbReceiptUrl,
+            dbVoucherUrl,
+            staffName || "พนักงานประจำสาขา",
+            staffId || "-",
+            existingSubmissionId
+          ).run();
+        } else {
+          await db.prepare(`
+            INSERT INTO submissions (
+              submission_id, store_id, campaign_id, customer_name, customer_phone,
+              category, sub_category, model_code, purchase_date, purchase_amount_thb,
+              receipt_photo_url, voucher_photo_url, staff_name, staff_emp_id, voucher_status, voucher_code
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+          `).bind(
+            submissionId,
+            storeId,
+            campaignId,
+            customerName,
+            customerPhone,
+            category,
+            subCategory,
+            modelCode,
+            purchaseDate,
+            parseFloat(purchaseAmount),
+            dbReceiptUrl,
+            dbVoucherUrl,
+            staffName || "พนักงานประจำสาขา",
+            staffId || "-",
+            submissionId
+          ).run();
+        }
+      } catch (dbErr) {
+        console.warn("D1 Insert/Update Error:", dbErr);
       }
     }
 
