@@ -149,12 +149,6 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <!-- Browse All Submissions Top Link (Always functional) -->
-        <button type="button" onclick="showStoreSubmissions()" class="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-sky-300 border border-sky-500/20 transition">
-          <i data-lucide="list-checks" class="w-3.5 h-3.5 text-sky-400"></i>
-          <span>ดูรายการทั้งหมด</span>
-        </button>
-
         <!-- PC & Store Info Badge (Active when logged in) -->
         <div id="headerSessionBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-haier-900/80 border border-sky-500/30 text-xs">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -270,7 +264,7 @@
 
             <form onsubmit="handleLandingCheckIn(event)" class="space-y-4">
               
-              <!-- 1. Store Selection (All 8 stores - Only Thai Names) -->
+              <!-- 1. Store Selection (All 8 stores - Clean Thai Names) -->
               <div class="space-y-1.5">
                 <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
                   <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
@@ -278,7 +272,6 @@
                 </label>
                 <select id="landingStoreSelect" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
                   <option value="">-- โปรดเลือกสาขา --</option>
-                  <!-- Populated via JS with clean Thai names -->
                 </select>
               </div>
 
@@ -336,7 +329,7 @@
             </button>
             <button type="button" onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2 shadow">
               <i data-lucide="list-checks" class="w-5 h-5 text-sky-400"></i>
-              <span>ดูรายการทั้งหมด (Browse)</span>
+              <span>รายการของสาขานี้</span>
               <span id="storeBadgeRevisionNotice" class="hidden px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30 animate-pulse">มีรายการต้องแก้ไข</span>
             </button>
           </div>
@@ -660,7 +653,7 @@
       </div>
     </section>
 
-    <!-- VIEW 4: Store Historical Submissions Log (Browse All Submissions) -->
+    <!-- VIEW 4: Store Submissions Log (STRICTLY FOR CURRENT STORE - PC CANNOT SEE OTHER STORES) -->
     <section id="viewStoreLogs" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
@@ -668,17 +661,13 @@
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>กลับหน้าหลักสาขา</span>
           </button>
-          <h2 class="text-xl font-bold font-display text-white">รายการลงทะเบียนทั้งหมด (Submissions List)</h2>
-          <p class="text-xs text-slate-400">ค้นหา ตรวจสอบสถานะการอนุมัติ หรือแก้ไขข้อมูลที่ Admin ร้องขอ</p>
+          <h2 class="text-xl font-bold font-display text-white">รายการที่ลงทะเบียนแล้วประจำสาขา: <span id="logStoreTitle" class="text-sky-300 font-semibold">สยามพารากอน</span></h2>
+          <p class="text-xs text-slate-400">ตรวจสอบประวัติและสถานะการอนุมัติเฉพาะจุดบริการสาขานี้</p>
         </div>
 
-        <!-- Store Filter & Search Bar -->
-        <div class="flex flex-wrap items-center gap-2">
-          <select id="logStoreFilterSelect" onchange="renderStoreSubmissionsTable()" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500">
-            <option value="ALL">ทุกสาขา (All Stores)</option>
-            <!-- Populated via JS -->
-          </select>
-          <input type="text" id="logSearchInput" oninput="filterStoreSubmissions()" placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่ซื้อ, รหัส..." class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500 w-56">
+        <!-- Search Bar Only (No store selector for PC) -->
+        <div class="flex items-center space-x-2">
+          <input type="text" id="logSearchInput" oninput="filterStoreSubmissions()" placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่ซื้อ, รหัส..." class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500 w-64">
         </div>
       </div>
 
@@ -689,7 +678,6 @@
             <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
               <tr>
                 <th class="p-3.5">รหัสอ้างอิง / เวลา</th>
-                <th class="p-3.5">สาขา</th>
                 <th class="p-3.5">ลูกค้า</th>
                 <th class="p-3.5">แคมเปญ</th>
                 <th class="p-3.5">หมวด / ประเภทย่อย / รุ่น</th>
@@ -706,7 +694,7 @@
           </table>
         </div>
         <div id="storeLogEmpty" class="hidden p-8 text-center text-slate-400 text-xs">
-          ยังไม่พบรายการลงทะเบียนในเงื่อนไขที่เลือก
+          ยังไม่พบรายการลงทะเบียนในสาขานี้
         </div>
       </div>
     </section>
@@ -741,7 +729,7 @@
       <!-- Metrics Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="glass-card p-4 rounded-2xl border border-sky-500/20">
-          <span class="text-xs text-slate-400">ยอดลงทะเบียนรวม</span>
+          <span class="text-xs text-slate-400">ยอดลงทะเบียนรวมทุกสาขา</span>
           <div class="text-2xl font-bold text-white font-display mt-1" id="statTotalSubmissions">0</div>
         </div>
         <div class="glass-card p-4 rounded-2xl border border-emerald-500/20">
@@ -761,7 +749,7 @@
       <!-- Admin Submissions Table with Action Controls -->
       <div class="glass-panel rounded-2xl p-5 border border-white/10 space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดเพื่อตรวจสอบและสั่งแก้ไข</h3>
+          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดทุกสาขาเพื่อตรวจสอบและสั่งแก้ไข</h3>
           <span class="text-xs text-slate-400">คลิกที่รูปภาพเพื่อเปิดดูรูปขนาดเต็ม</span>
         </div>
         <div class="overflow-x-auto">
@@ -866,7 +854,7 @@
         </div>
       </div>
 
-      <!-- 3 Pop-up Action Buttons: Next / Browse All / End -->
+      <!-- 3 Pop-up Action Buttons: Next / Browse Store / End -->
       <div class="flex flex-col sm:flex-row gap-2.5 justify-center pt-2">
         <!-- 1. Next Customer -->
         <button type="button" onclick="handlePopupNextCustomer()" class="flex-1 py-3 px-3 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-xs transition flex items-center justify-center space-x-1.5 shadow-lg">
@@ -874,10 +862,10 @@
           <span>ลงทะเบียนลูกค้ารายต่อไป (Next)</span>
         </button>
 
-        <!-- 2. Browse All Submissions -->
+        <!-- 2. Browse Store Submissions -->
         <button type="button" onclick="handlePopupBrowseSubmissions()" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 font-semibold text-xs border border-sky-400/30 transition flex items-center justify-center space-x-1.5">
           <i data-lucide="list-checks" class="w-4 h-4 text-sky-400"></i>
-          <span>ดูรายการทั้งหมด</span>
+          <span>ดูรายการของสาขา</span>
         </button>
 
         <!-- 3. Exit (ออก) -->
@@ -947,7 +935,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.0</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.1</span>
     </div>
   </footer>
 
@@ -1055,7 +1043,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       populateLandingStoreSelect();
-      populateLogStoreFilterSelect();
       initCalendarPicker();
       switchView('viewLandingCheckIn');
       syncCloudSubmissions();
@@ -1066,15 +1053,6 @@
       const select = document.getElementById('landingStoreSelect');
       select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
         <option value="${s.id}">${s.nameTh} ${s.campB ? '✨ (ร่วมแคมเปญ B)' : ''}</option>
-      `).join('');
-    }
-
-    // Populate Log Filter Store Dropdown (Clean Thai Names Only)
-    function populateLogStoreFilterSelect() {
-      const select = document.getElementById('logStoreFilterSelect');
-      if (!select) return;
-      select.innerHTML = '<option value="ALL">ทุกสาขา (All Stores)</option>' + STORES.filter(s => s.active).map(s => `
-        <option value="${s.id}">${s.nameTh}</option>
       `).join('');
     }
 
@@ -1124,9 +1102,6 @@
       document.getElementById('bannerStoreName').textContent = currentStore.nameTh;
       document.getElementById('bannerPcName').textContent = currentPc.name;
       document.getElementById('bannerPcPhone').textContent = currentPc.phone;
-
-      const logFilter = document.getElementById('logStoreFilterSelect');
-      if (logFilter) logFilter.value = currentStore.id;
 
       const isCampBEligible = currentStore.campB && currentStore.active;
       const overlay = document.getElementById('campBStoreRestrictedOverlay');
@@ -1739,7 +1714,7 @@
       switchView('viewStoreMenu');
     }
 
-    // Pop-up Action 2: Browse All Submissions
+    // Pop-up Action 2: Browse Store Submissions (Strictly for Current Store)
     function handlePopupBrowseSubmissions() {
       closeConfirmationModal();
       showStoreSubmissions();
@@ -1759,42 +1734,37 @@
       }
     }
 
-    // --- BROWSE SUBMISSIONS (ALWAYS FUNCTIONAL) ---
+    // --- BROWSE SUBMISSIONS (STRICTLY FOR CURRENT STORE) ---
     function showStoreSubmissions() {
-      const filterSelect = document.getElementById('logStoreFilterSelect');
-      if (filterSelect) {
-        if (currentStore && currentStore.id) {
-          filterSelect.value = currentStore.id;
-        } else {
-          filterSelect.value = 'ALL';
-        }
+      if (!currentStore) {
+        switchView('viewLandingCheckIn');
+        return;
       }
+      document.getElementById('logStoreTitle').textContent = currentStore.nameTh;
       renderStoreSubmissionsTable();
       switchView('viewStoreLogs');
       syncCloudSubmissions().then(() => renderStoreSubmissionsTable()).catch(() => {});
     }
 
     function renderStoreSubmissionsTable() {
-      const filterSelect = document.getElementById('logStoreFilterSelect');
-      const selectedFilter = filterSelect ? filterSelect.value : 'ALL';
+      if (!currentStore) return;
+      const storeId = currentStore.id;
       
-      let filteredSubs = submissions;
-      if (selectedFilter && selectedFilter !== 'ALL') {
-        filteredSubs = submissions.filter(s => s.storeId === selectedFilter);
-      }
+      // Filter strictly by currentStore.id (Each store CANNOT see other store)
+      const storeSubs = submissions.filter(s => s.storeId === storeId);
 
       const tbody = document.getElementById('storeSubmissionsTbody');
       const emptyBox = document.getElementById('storeLogEmpty');
       if (!tbody) return;
 
-      if (filteredSubs.length === 0) {
+      if (storeSubs.length === 0) {
         tbody.innerHTML = '';
         if (emptyBox) emptyBox.classList.remove('hidden');
         return;
       }
 
       if (emptyBox) emptyBox.classList.add('hidden');
-      tbody.innerHTML = filteredSubs.map(s => {
+      tbody.innerHTML = storeSubs.map(s => {
         let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">รอตรวจสอบ</span>';
         let actionBtn = '';
 
@@ -1820,7 +1790,6 @@
               <span class="font-mono font-bold text-sky-400">${s.id}</span>
               <div class="text-[11px] text-slate-400">${s.timestamp}</div>
             </td>
-            <td class="p-3.5 font-medium text-slate-200">${s.storeName || '-'}</td>
             <td class="p-3.5">
               <div class="font-medium text-white">${s.customerName}</div>
               <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
@@ -2096,7 +2065,6 @@
         const s = submissions[i];
         const rowNum = i + 2;
 
-        // Build 100% valid, clickable HTTPS full URLs
         let receiptFullUrl = '';
         if (s.receiptImage) {
           if (s.receiptImage.startsWith('http://') || s.receiptImage.startsWith('https://')) {
@@ -2155,7 +2123,6 @@
         row.height = 55;
         row.alignment = { vertical: 'middle', horizontal: 'left' };
 
-        // Embed image thumbnails if base64 exists
         if (s.receiptImage && s.receiptImage.includes('base64')) {
           try {
             const base64Data = s.receiptImage.split(',')[1];
