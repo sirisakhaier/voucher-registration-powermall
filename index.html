@@ -158,14 +158,14 @@
           <span id="headerStoreName" class="font-semibold text-sky-300">สยามพารากอน</span>
         </div>
         
-        <!-- End Shift / Switch PC button -->
-        <button id="btnHeaderEndShift" onclick="confirmEndShift()" class="hidden px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-red-900/40 hover:text-red-300 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1">
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-          <span>จบกะ/สลับ</span>
+        <!-- Exit button: "ออก" -->
+        <button id="btnHeaderEndShift" onclick="confirmEndShift()" class="hidden px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-red-300 text-xs font-medium border border-red-500/30 transition flex items-center space-x-1.5">
+          <i data-lucide="log-out" class="w-3.5 h-3.5 text-red-400"></i>
+          <span>ออก</span>
         </button>
 
         <!-- Admin Button (Protected by Password admin1234) -->
-        <button onclick="requestAdminAccess()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
+        <button type="button" onclick="requestAdminAccess()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
           <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>Admin</span>
         </button>
@@ -176,60 +176,134 @@
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- VIEW 0: PC & STORE LANDING / CHECK-IN SCREEN (MANDATORY INITIAL STEP) -->
-    <section id="viewLandingCheckIn" class="max-w-xl mx-auto space-y-6 pt-4">
-      <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-sky-500/30 shadow-2xl space-y-6 text-center relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <!-- VIEW 0: LANDING PAGE WITH STORE SELECTION + 2 AD POSTERS (ALWAYS STARTS HERE) -->
+    <section id="viewLandingCheckIn" class="space-y-6">
+      
+      <!-- Welcome Banner -->
+      <div class="text-center space-y-2 max-w-2xl mx-auto pt-2">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/30 text-sky-300 text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>ระบบลงทะเบียนรับบัตรกำนัล Power Mall x Haier</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black font-display text-white">ยินดีต้อนรับสู่ระบบจุดบริการหน้าร้าน</h1>
+        <p class="text-xs sm:text-sm text-slate-300">
+          โปรดเลือกสาขาประจำจุดขาย และระบุข้อมูลพนักงานขาย (PC) เพื่อเริ่มต้นการให้บริการ
+        </p>
+      </div>
 
-        <div class="space-y-2">
-          <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-haier-600 to-sky-400 text-white flex items-center justify-center shadow-lg shadow-sky-500/30">
-            <i data-lucide="store" class="w-7 h-7"></i>
+      <!-- Main Landing Grid: 2 Campaign Posters + Check-in Form -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left 7 Cols: 2 Campaign Posters Banner Visuals -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold font-display text-white flex items-center space-x-2">
+              <i data-lucide="megaphone" class="w-4 h-4 text-amber-400"></i>
+              <span>โปรโมชั่น Haier ประจำเดือนที่เปิดให้บริการ (Active Campaigns)</span>
+            </h3>
           </div>
-          <h2 class="text-2xl font-bold font-display text-white">เข้าสู่ระบบจุดบริการ Power Mall</h2>
-          <p class="text-xs text-slate-300 max-w-sm mx-auto">
-            โปรดเลือกสาขาประจำจุดขาย และระบุข้อมูลพนักงานขาย (PC) เพื่อเริ่มต้นลงทะเบียนรับบัตรกำนัล
-          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Poster 1: Haier x PTT -->
+            <div class="glass-card rounded-2xl overflow-hidden border-sky-500/30 flex flex-col group">
+              <div class="relative h-56 sm:h-64 overflow-hidden bg-slate-900">
+                <img src="./Ad AC PTT vc.png" alt="Haier x PTT" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                <div class="absolute top-2.5 left-2.5 bg-haier-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white border border-sky-300/30 flex items-center space-x-1">
+                  <i data-lucide="fuel" class="w-3 h-3 text-amber-300"></i>
+                  <span>รับฟรี บัตรน้ำมัน 500.-</span>
+                </div>
+                <div class="absolute bottom-2.5 left-2.5 right-2.5">
+                  <h4 class="text-xs font-bold text-white font-display">เย็นฉ่ำ แล้วยังเติมความสุขให้ทุกเส้นทาง</h4>
+                  <p class="text-[10px] text-sky-200">ซื้อแอร์ Haier 4 รุ่นยอดนิยมที่ร่วมรายการ</p>
+                </div>
+              </div>
+              <div class="p-3 text-[11px] text-slate-300 space-y-1 bg-slate-900/60 border-t border-white/5">
+                <div class="flex justify-between"><span class="text-slate-400">สาขา:</span> <span class="text-emerald-400 font-medium">ทุกสาขา Power Mall</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">รางวัล:</span> <span class="text-amber-300 font-medium">บัตรน้ำมัน PTT 500 บาท</span></div>
+              </div>
+            </div>
+
+            <!-- Poster 2: Shop More Get More -->
+            <div class="glass-card rounded-2xl overflow-hidden border-purple-500/30 flex flex-col group">
+              <div class="relative h-56 sm:h-64 overflow-hidden bg-slate-900">
+                <img src="./Ad PM vc.jpg" alt="Shop More Get More" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+                <div class="absolute top-2.5 left-2.5 bg-red-600/90 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white border border-red-300/30 flex items-center space-x-1">
+                  <i data-lucide="gift" class="w-3 h-3 text-amber-300"></i>
+                  <span>รับฟรี Gift Voucher 1,000.-</span>
+                </div>
+                <div class="absolute bottom-2.5 left-2.5 right-2.5">
+                  <h4 class="text-xs font-bold text-white font-display">Shop More Get More (Haier x Sports)</h4>
+                  <p class="text-[10px] text-purple-200">ซื้อเครื่องใช้ไฟฟ้า Haier ครบ 20,000.- ขึ้นไป</p>
+                </div>
+              </div>
+              <div class="p-3 text-[11px] text-slate-300 space-y-1 bg-slate-900/60 border-t border-white/5">
+                <div class="flex justify-between"><span class="text-slate-400">สาขา:</span> <span class="text-amber-300 font-medium">สยามพารากอน & เอ็มโพเรียม</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">รางวัล:</span> <span class="text-purple-300 font-medium">Voucher The Mall 1,000 บาท</span></div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
-        <form onsubmit="handleLandingCheckIn(event)" class="space-y-4 text-left">
-          
-          <!-- 1. Store Selection (All 8 stores) -->
-          <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
-              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
-              <span>1. เลือกสาขา Power Mall ประจำจุดขาย <span class="text-red-400">*</span></span>
-            </label>
-            <select id="landingStoreSelect" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
-              <option value="">-- โปรดเลือกสาขา --</option>
-              <!-- Populated via JS with all active stores -->
-            </select>
-          </div>
+        <!-- Right 5 Cols: Check-in Card (Store selection + PC info) -->
+        <div class="lg:col-span-5">
+          <div class="glass-panel rounded-3xl p-6 sm:p-7 border border-sky-500/30 shadow-2xl space-y-5">
+            
+            <div class="flex items-center space-x-3 border-b border-white/10 pb-4">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-haier-600 to-sky-400 text-white flex items-center justify-center shadow-md">
+                <i data-lucide="store" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h2 class="text-base font-bold font-display text-white">ลงชื่อเข้าจุดบริการ (PC Check-In)</h2>
+                <p class="text-[11px] text-slate-400">เลือกสาขาและระบุตัวตนพนักงานขาย</p>
+              </div>
+            </div>
 
-          <!-- 2. PC Full Name -->
-          <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
-              <i data-lucide="user" class="w-3.5 h-3.5 text-sky-400"></i>
-              <span>2. ชื่อ-นามสกุล พนักงานขาย (PC / Promoter) <span class="text-red-400">*</span></span>
-            </label>
-            <input type="text" id="landingPcName" required placeholder="เช่น นายสุรศักดิ์ ใจบริการ (PC Haier)" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
-          </div>
+            <form onsubmit="handleLandingCheckIn(event)" class="space-y-4">
+              
+              <!-- 1. Store Selection (All 8 stores) -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
+                  <span>1. เลือกสาขา Power Mall ประจำจุดขาย <span class="text-red-400">*</span></span>
+                </label>
+                <select id="landingStoreSelect" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+                  <option value="">-- โปรดเลือกสาขา --</option>
+                  <!-- Populated via JS with all active stores -->
+                </select>
+              </div>
 
-          <!-- 3. PC Phone Number -->
-          <div class="space-y-1.5">
-            <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
-              <i data-lucide="phone" class="w-3.5 h-3.5 text-sky-400"></i>
-              <span>3. เบอร์โทรศัพท์มือถือ PC <span class="text-red-400">*</span></span>
-            </label>
-            <input type="tel" id="landingPcPhone" required maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
-          </div>
+              <!-- 2. PC Full Name -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
+                  <i data-lucide="user" class="w-3.5 h-3.5 text-sky-400"></i>
+                  <span>2. ชื่อ-นามสกุล พนักงานขาย (PC / Promoter) <span class="text-red-400">*</span></span>
+                </label>
+                <input type="text" id="landingPcName" required placeholder="เช่น นายสุรศักดิ์ ใจบริการ (PC Haier)" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+              </div>
 
-          <div class="pt-2">
-            <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
-              <span>เข้าสู่หน้าขายประจำสาขา</span>
-              <i data-lucide="arrow-right" class="w-4 h-4"></i>
-            </button>
+              <!-- 3. PC Phone Number -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-sky-400"></i>
+                  <span>3. เบอร์โทรศัพท์มือถือ PC <span class="text-red-400">*</span></span>
+                </label>
+                <input type="tel" id="landingPcPhone" required maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
+                  <span>เข้าสู่ระบบประจำสาขา</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </form>
+
           </div>
-        </form>
+        </div>
 
       </div>
     </section>
@@ -250,13 +324,14 @@
             </p>
           </div>
           <div class="flex flex-wrap gap-3">
-            <button onclick="startRegistration()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-semibold shadow-lg shadow-sky-500/25 transition transform active:scale-95 flex items-center space-x-2">
+            <button type="button" onclick="startRegistration()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-semibold shadow-lg shadow-sky-500/25 transition transform active:scale-95 flex items-center space-x-2">
               <i data-lucide="plus-circle" class="w-5 h-5"></i>
               <span>ลงทะเบียนลูกค้าใหม่</span>
             </button>
-            <button onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2">
+            <button type="button" onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2">
               <i data-lucide="list-checks" class="w-5 h-5 text-sky-400"></i>
               <span>รายการของสาขา</span>
+              <span id="storeBadgeRevisionNotice" class="hidden px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30 animate-pulse">มีรายการต้องแก้ไข</span>
             </button>
           </div>
         </div>
@@ -308,7 +383,7 @@
                   </div>
                 </div>
               </div>
-              <button onclick="selectCampaign('CAMP-2026-PTT-AC')" class="w-full py-2.5 rounded-xl bg-haier-600 hover:bg-haier-500 text-white font-medium text-sm transition flex items-center justify-center space-x-2">
+              <button type="button" onclick="selectCampaign('CAMP-2026-PTT-AC')" class="w-full py-2.5 rounded-xl bg-haier-600 hover:bg-haier-500 text-white font-medium text-sm transition flex items-center justify-center space-x-2">
                 <span>เลือกแคมเปญนี้</span>
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
               </button>
@@ -349,7 +424,7 @@
                   <span class="font-medium text-slate-200">เครื่องใช้ไฟฟ้า Haier ทุกหมวด (ยอดรวม ≥ 20,000 บาท)</span>
                 </div>
               </div>
-              <button id="btnSelectCampB" onclick="selectCampaign('CAMP-2026-SPORTS-MALL')" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm transition flex items-center justify-center space-x-2">
+              <button type="button" id="btnSelectCampB" onclick="selectCampaign('CAMP-2026-SPORTS-MALL')" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm transition flex items-center justify-center space-x-2">
                 <span>เลือกแคมเปญนี้</span>
                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
               </button>
@@ -373,6 +448,15 @@
           <span class="text-xs text-slate-400">แคมเปญที่เลือก</span>
           <h2 id="formCampaignTitle" class="text-sm font-bold text-sky-400 font-display">...</h2>
         </div>
+      </div>
+
+      <!-- Revision Alert Box (Shown only if PC is revising a requested submission) -->
+      <div id="revisionAlertBanner" class="hidden p-4 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs space-y-1">
+        <div class="flex items-center space-x-2 font-bold text-amber-300">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i>
+          <span>Admin ขอให้แก้ไขข้อมูลสำหรับรหัส: <span id="revisionRefId" class="font-mono underline">...</span></span>
+        </div>
+        <p id="revisionAdminRemarkText" class="text-white pl-6">...</p>
       </div>
 
       <!-- Registration Box -->
@@ -570,7 +654,7 @@
       </div>
     </section>
 
-    <!-- VIEW 3: Confirmation & Voucher Code Screen (With Add Next or End) -->
+    <!-- VIEW 3: Confirmation & Voucher Code Screen (With Add Next or End: "ออก") -->
     <section id="viewConfirmation" class="hidden max-w-2xl mx-auto space-y-6">
       <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-sky-400/30 shadow-2xl text-center space-y-6 relative overflow-hidden">
         
@@ -650,7 +734,7 @@
           </div>
         </div>
 
-        <!-- Next Customer / Action Buttons: Add Next or End -->
+        <!-- Next Customer / Action Buttons: Add Next or Exit ("ออก") -->
         <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <button type="button" onclick="startNextRegistration()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
             <i data-lucide="user-plus" class="w-4 h-4"></i>
@@ -662,16 +746,16 @@
             <span>พิมพ์ใบรับสิทธิ์</span>
           </button>
 
-          <button type="button" onclick="confirmEndShift()" class="px-4 py-3.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-medium text-sm border border-red-500/30 transition flex items-center justify-center space-x-1.5">
+          <button type="button" onclick="confirmEndShift()" class="px-5 py-3.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-medium text-sm border border-red-500/30 transition flex items-center justify-center space-x-1.5">
             <i data-lucide="power" class="w-4 h-4 text-red-400"></i>
-            <span>จบการทำงาน (End)</span>
+            <span>ออก</span>
           </button>
         </div>
 
       </div>
     </section>
 
-    <!-- VIEW 4: Store Historical Submissions Log -->
+    <!-- VIEW 4: Store Historical Submissions Log (With Revise / Edit Button) -->
     <section id="viewStoreLogs" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -680,7 +764,7 @@
             <span>กลับหน้าหลักสาขา</span>
           </button>
           <h2 class="text-xl font-bold font-display text-white">รายการที่ลงทะเบียนแล้วประจำสาขา</h2>
-          <p class="text-xs text-slate-400">ค้นหาและตรวจสอบประวัติการลงทะเบียนของ <span id="logStoreTitle" class="text-slate-200 font-semibold">สยามพารากอน</span></p>
+          <p class="text-xs text-slate-400">ค้นหาและตรวจสอบสถานะการอนุมัติ หรือแก้ไขข้อมูลที่ Admin ร้องขอ</p>
         </div>
 
         <div class="flex items-center space-x-2">
@@ -702,7 +786,7 @@
                 <th class="p-3.5">ยอดซื้อ</th>
                 <th class="p-3.5">พนักงาน (PC)</th>
                 <th class="p-3.5">ภาพใบเสร็จ / บัตร</th>
-                <th class="p-3.5">สถานะ</th>
+                <th class="p-3.5">สถานะ / การดำเนินการ</th>
               </tr>
             </thead>
             <tbody id="storeSubmissionsTbody" class="divide-y divide-white/5">
@@ -725,10 +809,10 @@
             <span>กลับหน้า Kiosk</span>
           </button>
           <div class="flex items-center space-x-3">
-            <h2 class="text-2xl font-bold font-display text-white">Admin Management Dashboard</h2>
+            <h2 class="text-2xl font-bold font-display text-white">Admin Review & Audit Dashboard</h2>
             <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">Authenticated</span>
           </div>
-          <p class="text-xs text-slate-400">ระบบจัดการแคมเปญ, ตรวจสอบภาพใบเสร็จ/บัตรกำนัล และส่งออกไฟล์ Excel พร้อมรูปภาพ</p>
+          <p class="text-xs text-slate-400">ตรวจสอบความถูกต้องของภาพใบเสร็จ/บัตรกำนัล, อนุมัติสิทธิ์, หรือขอให้ PC ส่งเอกสารแก้ไขใหม่</p>
         </div>
         <div class="flex items-center space-x-2">
           <!-- Excel Export Button with Embedded Thumbnails & Clickable URLs -->
@@ -744,42 +828,46 @@
       </div>
 
       <!-- Metrics Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="glass-card p-5 rounded-2xl border border-sky-500/20">
-          <span class="text-xs text-slate-400">ยอดลงทะเบียนรวมทุกสาขา (Total Cloud)</span>
-          <div class="text-3xl font-bold text-white font-display mt-1" id="statTotalSubmissions">0</div>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="glass-card p-4 rounded-2xl border border-sky-500/20">
+          <span class="text-xs text-slate-400">ยอดลงทะเบียนรวม</span>
+          <div class="text-2xl font-bold text-white font-display mt-1" id="statTotalSubmissions">0</div>
         </div>
-        <div class="glass-card p-5 rounded-2xl border border-emerald-500/20">
-          <span class="text-xs text-slate-400">มูลค่า Voucher ทั้งหมดที่ออกแล้ว</span>
-          <div class="text-3xl font-bold text-emerald-400 font-display mt-1" id="statTotalVoucherValue">0 THB</div>
+        <div class="glass-card p-4 rounded-2xl border border-emerald-500/20">
+          <span class="text-xs text-slate-400">อนุมัติแล้ว (Approved)</span>
+          <div class="text-2xl font-bold text-emerald-400 font-display mt-1" id="statApprovedCount">0</div>
         </div>
-        <div class="glass-card p-5 rounded-2xl border border-purple-500/20">
-          <span class="text-xs text-slate-400">จำนวนรุ่นสินค้าในระบบ (Dimension Model)</span>
-          <div class="text-3xl font-bold text-purple-300 font-display mt-1" id="statTotalModels">415 SKUs</div>
+        <div class="glass-card p-4 rounded-2xl border border-amber-500/20">
+          <span class="text-xs text-slate-400">ขอให้แก้ไข (Revision Needed)</span>
+          <div class="text-2xl font-bold text-amber-300 font-display mt-1" id="statRevisionCount">0</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl border border-purple-500/20">
+          <span class="text-xs text-slate-400">มูลค่า Voucher รวม</span>
+          <div class="text-2xl font-bold text-purple-300 font-display mt-1" id="statTotalVoucherValue">0 THB</div>
         </div>
       </div>
 
-      <!-- Admin Submissions Table -->
+      <!-- Admin Submissions Table with Action Controls -->
       <div class="glass-panel rounded-2xl p-5 border border-white/10 space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดเพื่อตรวจสอบและอนุมัติ</h3>
-          <span class="text-xs text-slate-400">คลิกที่รูปภาพเพื่อเปิดดูรูปต้นฉบับขนาดเต็ม</span>
+          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดเพื่อตรวจสอบและสั่งแก้ไข</h3>
+          <span class="text-xs text-slate-400">คลิกที่รูปภาพเพื่อเปิดดูรูปขนาดเต็ม</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
               <tr>
-                <th class="p-3">Ref ID</th>
+                <th class="p-3">Ref ID / เวลา</th>
                 <th class="p-3">สาขา</th>
                 <th class="p-3">ลูกค้า / เบอร์</th>
                 <th class="p-3">แคมเปญ</th>
-                <th class="p-3">หมวด / ประเภทย่อย / รุ่น</th>
-                <th class="p-3">วันที่ซื้อ</th>
+                <th class="p-3">หมวด / รุ่น</th>
                 <th class="p-3">ยอดซื้อ</th>
                 <th class="p-3">พนักงาน (PC)</th>
                 <th class="p-3">1. ใบเสร็จ</th>
                 <th class="p-3">2. บัตรกำนัล</th>
-                <th class="p-3">สถานะ</th>
+                <th class="p-3">สถานะ / ข้อความ</th>
+                <th class="p-3 text-center">จัดการสิทธิ์ (Admin Action)</th>
               </tr>
             </thead>
             <tbody id="adminSubmissionsTbody" class="divide-y divide-white/5">
@@ -819,11 +907,37 @@
     </div>
   </div>
 
+  <!-- Admin Request Revision Modal -->
+  <div id="adminRevisionModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-md rounded-3xl p-6 border border-amber-500/40 shadow-2xl space-y-4 text-left">
+      <div class="flex items-center space-x-2 text-amber-300 border-b border-white/10 pb-3">
+        <i data-lucide="message-square-warning" class="w-5 h-5"></i>
+        <h3 class="font-bold text-white text-base">ส่งคำขอให้ PC แก้ไขข้อมูลใหม่</h3>
+      </div>
+      <p class="text-xs text-slate-300">
+        ระบุเหตุผลหรือจุดที่ต้องแก้ไขสำหรับรหัส <span id="modalTargetSubmissionId" class="font-mono text-amber-300 font-bold">...</span>
+      </p>
+
+      <form onsubmit="submitAdminRevisionRequest(event)" class="space-y-3">
+        <textarea id="adminRevisionRemarkInput" required rows="3" placeholder="เช่น รูปถ่ายใบเสร็จเบลอ ไม่เห็นยอดรวม หรือ ยอดซื้อไม่ตรงกับเงื่อนไข..." class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-amber-400 transition placeholder:text-slate-500"></textarea>
+        
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeAdminRevisionModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition">
+            ยกเลิก
+          </button>
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white transition shadow-lg shadow-amber-500/25">
+            ส่งคำขอให้แก้ไข
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.6</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.7</span>
     </div>
   </footer>
 
@@ -907,10 +1021,10 @@
         rewardName: 'Gift Voucher The Mall มูลค่า 1,000 บาท',
         rewardValue: 1000,
         minSpend: 20000,
-        eligibleStores: ['S00449', 'S00327'], // Paragon & Emporium only
+        eligibleStores: ['S00449', 'S00327'],
         fixedCategory: null,
         fixedSubCategory: null,
-        eligibleModels: null // All Haier models in Dimension Model
+        eligibleModels: null
       }
     };
 
@@ -924,13 +1038,15 @@
     let datePickerInstance = null;
     let selectedPurchaseDate = '';
     let isAdminLoggedIn = false;
+    let currentEditingSubmissionId = null; // Used when PC is revising a submission
+    let targetRevisionSubmissionId = null; // Used in Admin modal
 
-    // Initialize App
+    // Initialize App: ALWAYS start on Landing View (do not restore old sessions automatically)
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       populateLandingStoreSelect();
       initCalendarPicker();
-      checkSavedSession();
+      switchView('viewLandingCheckIn');
       syncCloudSubmissions();
     });
 
@@ -940,25 +1056,6 @@
       select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
         <option value="${s.id}">${s.nameTh} (${s.name}) - ${s.province} ${s.campB ? '✨ ร่วมแคมเปญ B' : ''}</option>
       `).join('');
-    }
-
-    // Check if PC session already exists
-    function checkSavedSession() {
-      const savedStoreId = localStorage.getItem('haier_session_store_id');
-      const savedPcName = localStorage.getItem('haier_session_pc_name');
-      const savedPcPhone = localStorage.getItem('haier_session_pc_phone');
-
-      if (savedStoreId && savedPcName && savedPcPhone) {
-        const store = STORES.find(s => s.id === savedStoreId);
-        if (store) {
-          currentStore = store;
-          currentPc = { name: savedPcName, phone: savedPcPhone };
-          applyPcSessionUI();
-          switchView('viewStoreMenu');
-          return;
-        }
-      }
-      switchView('viewLandingCheckIn');
     }
 
     // Handle Landing Check-In Submit
@@ -992,12 +1089,9 @@
       currentStore = store;
       currentPc = { name: pcName, phone: pcPhone };
 
-      localStorage.setItem('haier_session_store_id', currentStore.id);
-      localStorage.setItem('haier_session_pc_name', currentPc.name);
-      localStorage.setItem('haier_session_pc_phone', currentPc.phone);
-
       applyPcSessionUI();
       switchView('viewStoreMenu');
+      checkStoreRevisionsNotice();
     }
 
     function applyPcSessionUI() {
@@ -1029,13 +1123,21 @@
       lucide.createIcons();
     }
 
+    function checkStoreRevisionsNotice() {
+      if (!currentStore) return;
+      const hasRevisions = submissions.some(s => s.storeId === currentStore.id && (s.status === 'revision_requested' || s.voucher_status === 'revision_requested'));
+      const badge = document.getElementById('storeBadgeRevisionNotice');
+      if (badge) {
+        if (hasRevisions) badge.classList.remove('hidden');
+        else badge.classList.add('hidden');
+      }
+    }
+
     function confirmEndShift() {
-      if (confirm('คุณต้องการ "จบการทำงาน (End Shift)" และออกจากระบบประจำสาขาใช่หรือไม่?')) {
-        localStorage.removeItem('haier_session_store_id');
-        localStorage.removeItem('haier_session_pc_name');
-        localStorage.removeItem('haier_session_pc_phone');
+      if (confirm('คุณต้องการ "ออก" จากระบบประจำสาขาใช่หรือไม่?')) {
         currentStore = null;
         currentPc = { name: '', phone: '' };
+        currentEditingSubmissionId = null;
         document.getElementById('headerSessionBadge').classList.add('hidden');
         document.getElementById('btnHeaderEndShift').classList.add('hidden');
         document.getElementById('landingStoreSelect').value = '';
@@ -1072,10 +1174,12 @@
               voucherImage: s.voucher_photo_url,
               staffName: s.staff_name,
               staffId: s.staff_emp_id,
-              status: s.voucher_status,
+              status: s.voucher_status || 'issued',
+              adminRemark: s.admin_remark || '',
               timestamp: new Date(s.submitted_at).toLocaleString('th-TH')
             }));
             localStorage.setItem('haier_submissions', JSON.stringify(submissions));
+            checkStoreRevisionsNotice();
           }
         }
       } catch (err) {
@@ -1126,6 +1230,8 @@
     }
 
     function startRegistration() {
+      currentEditingSubmissionId = null;
+      document.getElementById('revisionAlertBanner').classList.add('hidden');
       window.scrollTo({ top: 300, behavior: 'smooth' });
     }
 
@@ -1171,9 +1277,76 @@
         modelSelect.innerHTML = '<option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>';
       }
 
-      resetPurchaseDate();
-      clearReceiptImage();
-      clearVoucherImage();
+      if (!currentEditingSubmissionId) {
+        document.getElementById('regForm').reset();
+        resetPurchaseDate();
+        clearReceiptImage();
+        clearVoucherImage();
+        document.getElementById('revisionAlertBanner').classList.add('hidden');
+      }
+      
+      switchView('viewRegisterForm');
+    }
+
+    // --- REVISE SUBMISSION WORKFLOW (FOR PC) ---
+    function startRevisionForSubmission(subId) {
+      const sub = submissions.find(s => s.id === subId);
+      if (!sub) return;
+
+      currentEditingSubmissionId = sub.id;
+      selectedCampaign = CAMPAIGNS[sub.campaignId] || CAMPAIGNS['CAMP-2026-PTT-AC'];
+
+      // Show Revision Banner with Admin remark
+      document.getElementById('revisionRefId').textContent = sub.id;
+      document.getElementById('revisionAdminRemarkText').textContent = sub.adminRemark || 'Admin ขอให้ตรวจสอบและแนบภาพ/ข้อมูลใหม่อีกครั้ง';
+      document.getElementById('revisionAlertBanner').classList.remove('hidden');
+
+      // Pre-fill form fields
+      document.getElementById('custName').value = sub.customerName;
+      document.getElementById('custPhone').value = sub.customerPhone;
+      document.getElementById('purchaseAmount').value = sub.amount;
+
+      document.getElementById('formCampaignTitle').textContent = sub.campaignName;
+      document.getElementById('rewardBadge').textContent = 'ของรางวัล: ' + sub.rewardName;
+
+      // Category & Subcategory setup
+      const catSelect = document.getElementById('categorySelect');
+      catSelect.value = sub.category;
+      catSelect.disabled = selectedCampaign.fixedCategory ? true : false;
+      populateSubCategoryDropdown(sub.category, sub.subCategory, selectedCampaign.fixedCategory ? true : false);
+      
+      const subCatSelect = document.getElementById('subCategorySelect');
+      subCatSelect.value = sub.subCategory;
+      populateModelDropdown(sub.category, sub.subCategory, selectedCampaign.fixedCategory ? true : false);
+      
+      const modelSelect = document.getElementById('modelSelect');
+      modelSelect.value = sub.modelCode;
+
+      // Date setup
+      if (datePickerInstance && sub.purchaseDate) {
+        datePickerInstance.setDate(sub.purchaseDate, true);
+        selectedPurchaseDate = sub.purchaseDate;
+      }
+
+      // Photos setup
+      if (sub.receiptImage) {
+        currentReceiptImageData = sub.receiptImage;
+        document.getElementById('receiptImagePreview').src = currentReceiptImageData;
+        document.getElementById('receiptUploadPrompt').classList.add('hidden');
+        document.getElementById('receiptPreviewContainer').classList.remove('hidden');
+        document.getElementById('receiptStatusBadge').textContent = '✓ แนบแล้ว';
+        document.getElementById('receiptStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      }
+
+      if (sub.voucherImage) {
+        currentVoucherImageData = sub.voucherImage;
+        document.getElementById('voucherImagePreview').src = currentVoucherImageData;
+        document.getElementById('voucherUploadPrompt').classList.add('hidden');
+        document.getElementById('voucherPreviewContainer').classList.remove('hidden');
+        document.getElementById('voucherStatusBadge').textContent = '✓ แนบแล้ว';
+        document.getElementById('voucherStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      }
+
       switchView('viewRegisterForm');
     }
 
@@ -1208,7 +1381,7 @@
       const subCatsInCat = [...new Set(ALL_MODELS.filter(m => m.c === category).map(m => m.s).filter(Boolean))];
       
       subCatSelect.innerHTML = '<option value="">-- เลือกหมวดหมู่ย่อย (' + subCatsInCat.length + ' ประเภท) --</option>' + subCatsInCat.map(sc => `
-        <option value="${sc}">${SUBCATEGORY_LABELS[sc] || sc}</option>
+        <option value="${sc}" ${sc === defaultSubCat ? 'selected' : ''}>${SUBCATEGORY_LABELS[sc] || sc}</option>
       `).join('');
       
       subCatHelp.textContent = 'พบ ' + subCatsInCat.length + ' หมวดหมู่ย่อยในหมวดนี้';
@@ -1321,49 +1494,43 @@
       const amount = parseFloat(amountInput.value);
       const pDate = selectedPurchaseDate || document.getElementById('purchaseDate').value || new Date().toISOString().slice(0, 10);
 
-      // Validation 1: Customer Name
+      // Validations
       if (!custName) {
         alert('กรุณากรอกชื่อ-นามสกุล ลูกค้า');
         custNameInput.focus();
         return;
       }
 
-      // Validation 2: Customer Phone
       if (!custPhone || custPhone.length < 9) {
         alert('กรุณากรอกเบอร์โทรศัพท์มือถือลูกค้าให้ถูกต้อง');
         custPhoneInput.focus();
         return;
       }
 
-      // Validation 3: Category
       if (!catVal) {
         alert('กรุณาเลือกหมวดหมู่สินค้าหลัก (Category)');
         catSelect.focus();
         return;
       }
 
-      // Validation 4: SubCategory
       if (!subCatVal) {
         alert('กรุณาเลือกหมวดหมู่ย่อย (SubCategory)');
         subCatSelect.focus();
         return;
       }
 
-      // Validation 5: Model
       if (!modelVal) {
         alert('กรุณาเลือกรุ่นสินค้า Haier (Model)');
         modelSelect.focus();
         return;
       }
 
-      // Validation 6: Date
       if (!pDate) {
         alert('กรุณาเลือกวันที่ซื้อสินค้าจากปฏิทิน');
         openDatePicker();
         return;
       }
 
-      // Validation 7: Amount
       if (isNaN(amount) || amount <= 0) {
         alert('กรุณาระบุยอดรวมในใบเสร็จเป็นตัวเลขที่ถูกต้อง');
         amountInput.focus();
@@ -1376,13 +1543,11 @@
         return;
       }
 
-      // Validation 8: Receipt Photo
       if (!currentReceiptImageData) {
         alert('กรุณาแนบภาพที่ 1: รูปถ่ายใบเสร็จรับเงิน (Receipt)');
         return;
       }
 
-      // Validation 9: Voucher Photo
       if (!currentVoucherImageData) {
         alert('กรุณาแนบภาพที่ 2: รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า (Voucher)');
         return;
@@ -1393,12 +1558,13 @@
       submitBtn.disabled = true;
       submitText.textContent = 'กำลังส่งข้อมูลผู้รับบัตรกำนัล...';
 
-      let submissionId = `HR-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+      let submissionId = currentEditingSubmissionId || `HR-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
       let receiptUrl = currentReceiptImageData;
       let voucherUrl = currentVoucherImageData;
 
       try {
         const payload = {
+          existingSubmissionId: currentEditingSubmissionId,
           storeId: currentStore ? currentStore.id : 'S00449',
           campaignId: selectedCampaign.id,
           customerName: custName,
@@ -1456,13 +1622,22 @@
         voucherImage: voucherUrl,
         staffName: currentPc.name || 'พนักงานขาย',
         staffId: currentPc.phone || '-',
-        status: 'issued',
+        status: 'pending',
+        adminRemark: currentEditingSubmissionId ? 'แก้ไขและส่งข้อมูลใหม่แล้ว' : '',
         timestamp: new Date().toLocaleString('th-TH')
       };
 
-      submissions.unshift(newSubmission);
+      // If revising, replace in array, else prepend
+      const existingIdx = submissions.findIndex(s => s.id === submissionId);
+      if (existingIdx >= 0) {
+        submissions[existingIdx] = newSubmission;
+      } else {
+        submissions.unshift(newSubmission);
+      }
       localStorage.setItem('haier_submissions', JSON.stringify(submissions));
 
+      currentEditingSubmissionId = null;
+      document.getElementById('revisionAlertBanner').classList.add('hidden');
       showConfirmation(newSubmission);
     }
 
@@ -1490,10 +1665,12 @@
     }
 
     function startNextRegistration() {
+      currentEditingSubmissionId = null;
       document.getElementById('regForm').reset();
       clearReceiptImage();
       clearVoucherImage();
       resetPurchaseDate();
+      document.getElementById('revisionAlertBanner').classList.add('hidden');
       switchView('viewStoreMenu');
     }
 
@@ -1528,44 +1705,68 @@
       }
 
       emptyBox.classList.add('hidden');
-      tbody.innerHTML = storeSubs.map(s => `
-        <tr class="hover:bg-slate-800/50 transition">
-          <td class="p-3.5">
-            <span class="font-mono font-bold text-sky-400">${s.id}</span>
-            <div class="text-[11px] text-slate-400">${s.timestamp}</div>
-          </td>
-          <td class="p-3.5">
-            <div class="font-medium text-white">${s.customerName}</div>
-            <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
-          </td>
-          <td class="p-3.5 max-w-xs">
-            <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-slate-200 border border-slate-700">${s.rewardName}</span>
-          </td>
-          <td class="p-3.5">
-            <div class="font-medium text-white">${s.modelCode}</div>
-            <span class="text-[11px] text-sky-300">${s.category} • ${s.subCategory || '-'}</span>
-          </td>
-          <td class="p-3.5 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
-          <td class="p-3.5 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
-          <td class="p-3.5">
-            <div class="font-medium text-white">${s.staffName || '-'}</div>
-            <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
-          </td>
-          <td class="p-3.5">
-            <div class="flex items-center space-x-1.5">
-              <a href="${s.receiptImage}" target="_blank" title="คลิกดูรูปใบเสร็จขนาดเต็ม">
-                <img src="${s.receiptImage}" class="w-7 h-7 object-cover rounded border border-sky-400/40 hover:scale-150 transition cursor-pointer">
-              </a>
-              <a href="${s.voucherImage || s.receiptImage}" target="_blank" title="คลิกดูรูปบัตรกำนัลขนาดเต็ม">
-                <img src="${s.voucherImage || s.receiptImage}" class="w-7 h-7 object-cover rounded border border-purple-400/40 hover:scale-150 transition cursor-pointer">
-              </a>
+      tbody.innerHTML = storeSubs.map(s => {
+        let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">รอตรวจสอบ</span>';
+        let actionBtn = '';
+
+        if (s.status === 'issued' || s.status === 'approved') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ อนุมัติแล้ว</span>';
+        } else if (s.status === 'rejected') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">✕ ปฏิเสธ</span>';
+        } else if (s.status === 'revision_requested') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">⚠️ ขอให้แก้ไขข้อมูล</span>';
+          actionBtn = `
+            <div class="mt-1.5">
+              <button type="button" onclick="startRevisionForSubmission('${s.id}')" class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition shadow flex items-center space-x-1">
+                <i data-lucide="edit-3" class="w-3 h-3"></i>
+                <span>แก้ไขข้อมูล</span>
+              </button>
             </div>
-          </td>
-          <td class="p-3.5">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">อนุมัติแล้ว</span>
-          </td>
-        </tr>
-      `).join('');
+          `;
+        }
+
+        return `
+          <tr class="hover:bg-slate-800/50 transition">
+            <td class="p-3.5">
+              <span class="font-mono font-bold text-sky-400">${s.id}</span>
+              <div class="text-[11px] text-slate-400">${s.timestamp}</div>
+            </td>
+            <td class="p-3.5">
+              <div class="font-medium text-white">${s.customerName}</div>
+              <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
+            </td>
+            <td class="p-3.5 max-w-xs">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-slate-200 border border-slate-700">${s.rewardName}</span>
+            </td>
+            <td class="p-3.5">
+              <div class="font-medium text-white">${s.modelCode}</div>
+              <span class="text-[11px] text-sky-300">${s.category} • ${s.subCategory || '-'}</span>
+            </td>
+            <td class="p-3.5 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
+            <td class="p-3.5 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
+            <td class="p-3.5">
+              <div class="font-medium text-white">${s.staffName || '-'}</div>
+              <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
+            </td>
+            <td class="p-3.5">
+              <div class="flex items-center space-x-1.5">
+                <a href="${s.receiptImage}" target="_blank" title="คลิกดูรูปใบเสร็จขนาดเต็ม">
+                  <img src="${s.receiptImage}" class="w-7 h-7 object-cover rounded border border-sky-400/40 hover:scale-150 transition cursor-pointer">
+                </a>
+                <a href="${s.voucherImage || s.receiptImage}" target="_blank" title="คลิกดูรูปบัตรกำนัลขนาดเต็ม">
+                  <img src="${s.voucherImage || s.receiptImage}" class="w-7 h-7 object-cover rounded border border-purple-400/40 hover:scale-150 transition cursor-pointer">
+                </a>
+              </div>
+            </td>
+            <td class="p-3.5">
+              <div>${statusBadge}</div>
+              ${s.adminRemark ? `<div class="text-[10px] text-amber-300 mt-1 max-w-xs">เหตุผล: ${s.adminRemark}</div>` : ''}
+              ${actionBtn}
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
     }
 
     function filterStoreSubmissions() {
@@ -1577,7 +1778,7 @@
       });
     }
 
-    // --- ADMIN MODULE WITH PASSWORD (admin1234) ---
+    // --- ADMIN MODULE WITH PASSWORD (admin1234) & AUDIT ACTIONS ---
     function requestAdminAccess() {
       if (isAdminLoggedIn) {
         showAdminView();
@@ -1620,44 +1821,127 @@
 
     function renderAdminDashboard() {
       document.getElementById('statTotalSubmissions').textContent = submissions.length;
+      
+      const approvedCount = submissions.filter(s => s.status === 'issued' || s.status === 'approved').length;
+      const revisionCount = submissions.filter(s => s.status === 'revision_requested').length;
+      document.getElementById('statApprovedCount').textContent = approvedCount;
+      document.getElementById('statRevisionCount').textContent = revisionCount;
+
       const totalVal = submissions.reduce((sum, s) => sum + (s.rewardValue || 0), 0);
       document.getElementById('statTotalVoucherValue').textContent = totalVal.toLocaleString() + ' THB';
 
       const tbody = document.getElementById('adminSubmissionsTbody');
-      tbody.innerHTML = submissions.map(s => `
-        <tr class="hover:bg-slate-800/50">
-          <td class="p-3 font-mono font-bold text-sky-400">${s.id}</td>
-          <td class="p-3">${s.storeName}</td>
-          <td class="p-3">
-            <div class="font-medium text-white">${s.customerName}</div>
-            <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
-          </td>
-          <td class="p-3">${s.rewardName}</td>
-          <td class="p-3">
-            <div class="text-white">${s.modelCode}</div>
-            <span class="text-[10px] text-slate-400">${s.category} • ${s.subCategory || '-'}</span>
-          </td>
-          <td class="p-3 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
-          <td class="p-3 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
-          <td class="p-3">
-            <div class="text-white">${s.staffName || '-'}</div>
-            <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
-          </td>
-          <td class="p-3">
-            <a href="${s.receiptImage}" target="_blank" title="คลิกดูภาพใบเสร็จ">
-              <img src="${s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-sky-400/40 hover:scale-150 transition cursor-pointer">
-            </a>
-          </td>
-          <td class="p-3">
-            <a href="${s.voucherImage || s.receiptImage}" target="_blank" title="คลิกดูภาพบัตรกำนัล">
-              <img src="${s.voucherImage || s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-purple-400/40 hover:scale-150 transition cursor-pointer">
-            </a>
-          </td>
-          <td class="p-3">
-            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">ISSUED</span>
-          </td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = submissions.map(s => {
+        let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">รอตรวจสอบ</span>';
+        if (s.status === 'issued' || s.status === 'approved') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ อนุมัติแล้ว</span>';
+        } else if (s.status === 'rejected') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">✕ ปฏิเสธ</span>';
+        } else if (s.status === 'revision_requested') {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">⚠️ สั่งแก้ไข</span>';
+        }
+
+        return `
+          <tr class="hover:bg-slate-800/50">
+            <td class="p-3">
+              <span class="font-mono font-bold text-sky-400">${s.id}</span>
+              <div class="text-[10px] text-slate-400">${s.timestamp}</div>
+            </td>
+            <td class="p-3">${s.storeName}</td>
+            <td class="p-3">
+              <div class="font-medium text-white">${s.customerName}</div>
+              <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
+            </td>
+            <td class="p-3">${s.rewardName}</td>
+            <td class="p-3">
+              <div class="text-white">${s.modelCode}</div>
+              <span class="text-[10px] text-slate-400">${s.category} • ${s.subCategory || '-'}</span>
+            </td>
+            <td class="p-3 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
+            <td class="p-3">
+              <div class="text-white">${s.staffName || '-'}</div>
+              <div class="text-[10px] text-slate-400">${s.staffId || ''}</div>
+            </td>
+            <td class="p-3">
+              <a href="${s.receiptImage}" target="_blank" title="คลิกดูภาพใบเสร็จ">
+                <img src="${s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-sky-400/40 hover:scale-150 transition cursor-pointer">
+              </a>
+            </td>
+            <td class="p-3">
+              <a href="${s.voucherImage || s.receiptImage}" target="_blank" title="คลิกดูภาพบัตรกำนัล">
+                <img src="${s.voucherImage || s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-purple-400/40 hover:scale-150 transition cursor-pointer">
+              </a>
+            </td>
+            <td class="p-3">
+              <div>${statusBadge}</div>
+              ${s.adminRemark ? `<div class="text-[10px] text-amber-300 mt-0.5">เหตุผล: ${s.adminRemark}</div>` : ''}
+            </td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center space-x-1.5">
+                <button type="button" onclick="adminSetStatus('${s.id}', 'issued')" class="px-2 py-1 rounded bg-emerald-600/80 hover:bg-emerald-500 text-white text-[10px] font-bold transition flex items-center space-x-1" title="อนุมัติการรับบัตรกำนัล">
+                  <i data-lucide="check" class="w-3 h-3"></i>
+                  <span>อนุมัติ</span>
+                </button>
+                <button type="button" onclick="openAdminRevisionModal('${s.id}')" class="px-2 py-1 rounded bg-amber-600/80 hover:bg-amber-500 text-white text-[10px] font-bold transition flex items-center space-x-1" title="ขอให้ PC ส่งภาพหรือข้อมูลใหม่">
+                  <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                  <span>ขอแก้ไข</span>
+                </button>
+                <button type="button" onclick="adminSetStatus('${s.id}', 'rejected')" class="px-2 py-1 rounded bg-red-800/80 hover:bg-red-600 text-white text-[10px] font-bold transition flex items-center space-x-1" title="ปฏิเสธสิทธิ์">
+                  <i data-lucide="x" class="w-3 h-3"></i>
+                  <span>ปฏิเสธ</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    async function adminSetStatus(subId, newStatus, remark = '') {
+      const sub = submissions.find(s => s.id === subId);
+      if (!sub) return;
+
+      sub.status = newStatus;
+      sub.adminRemark = remark || (newStatus === 'issued' ? 'อนุมัติเรียบร้อย' : 'ปฏิเสธรายการ');
+      localStorage.setItem('haier_submissions', JSON.stringify(submissions));
+
+      try {
+        await fetch('/api/submissions', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ submissionId: subId, status: newStatus, remark: sub.adminRemark })
+        });
+      } catch(e) {
+        console.warn('Updated locally:', e);
+      }
+
+      renderAdminDashboard();
+    }
+
+    function openAdminRevisionModal(subId) {
+      targetRevisionSubmissionId = subId;
+      document.getElementById('modalTargetSubmissionId').textContent = subId;
+      document.getElementById('adminRevisionRemarkInput').value = '';
+      document.getElementById('adminRevisionModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('adminRevisionRemarkInput').focus(), 100);
+    }
+
+    function closeAdminRevisionModal() {
+      document.getElementById('adminRevisionModal').classList.add('hidden');
+      targetRevisionSubmissionId = null;
+    }
+
+    async function submitAdminRevisionRequest(e) {
+      e.preventDefault();
+      const remark = document.getElementById('adminRevisionRemarkInput').value.trim();
+      if (!targetRevisionSubmissionId || !remark) {
+        alert('กรุณากรอกเหตุผลที่ต้องการให้แก้ไข');
+        return;
+      }
+
+      await adminSetStatus(targetRevisionSubmissionId, 'revision_requested', remark);
+      closeAdminRevisionModal();
     }
 
     // --- 2. RICH EXCEL EXPORT (.xlsx) WITH EMBEDDED THUMBNAIL PICTURES & HYPERLINK URLS ---
@@ -1675,7 +1959,6 @@
         views: [{ showGridLines: true }]
       });
 
-      // Define Columns
       worksheet.columns = [
         { header: 'No.', key: 'no', width: 6 },
         { header: 'Voucher Ref Code', key: 'id', width: 18 },
@@ -1695,11 +1978,11 @@
         { header: '1. Receipt URL (คลิกดูภาพจริง)', key: 'receiptUrl', width: 30 },
         { header: '2. Voucher Thumbnail', key: 'voucherThumb', width: 18 },
         { header: '2. Voucher URL (คลิกดูภาพจริง)', key: 'voucherUrl', width: 30 },
-        { header: 'Timestamp', key: 'timestamp', width: 20 },
-        { header: 'Status', key: 'status', width: 12 }
+        { header: 'Status (สถานะ)', key: 'status', width: 16 },
+        { header: 'Admin Remark (หมายเหตุ)', key: 'adminRemark', width: 28 },
+        { header: 'Timestamp', key: 'timestamp', width: 20 }
       ];
 
-      // Header Row Styling
       const headerRow = worksheet.getRow(1);
       headerRow.height = 30;
       headerRow.eachCell((cell) => {
@@ -1717,7 +2000,6 @@
         cell.alignment = { vertical: 'middle', horizontal: 'center' };
       });
 
-      // Insert Data & Pictures
       for (let i = 0; i < submissions.length; i++) {
         const s = submissions[i];
         const rowNum = i + 2;
@@ -1747,8 +2029,9 @@
             text: '🔗 เปิดดูรูปบัตรกำนัลบนเซิร์ฟเวอร์',
             hyperlink: (s.voucherImage || s.receiptImage).startsWith('http') || (s.voucherImage || s.receiptImage).startsWith('/') ? (window.location.origin + (s.voucherImage || s.receiptImage)) : (s.voucherImage || s.receiptImage)
           },
-          timestamp: s.timestamp,
-          status: s.status.toUpperCase()
+          status: s.status.toUpperCase(),
+          adminRemark: s.adminRemark || '',
+          timestamp: s.timestamp
         });
 
         row.height = 55;

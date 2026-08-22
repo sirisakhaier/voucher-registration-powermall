@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: POST /api/register
-// Handles registration, uploads 2 photos to R2, and saves submission to D1
+// Handles registration & revisions, uploads photos to R2, and saves/updates submission in D1
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -7,6 +7,7 @@ export async function onRequestPost(context) {
   try {
     const body = await request.json();
     const {
+      existingSubmissionId,
       storeId,
       campaignId,
       customerName,
@@ -37,59 +38,90 @@ export async function onRequestPost(context) {
       });
     }
 
-    // Generate unique Voucher Reference Code: HR-YYYYMMDD-XXXX
     const now = new Date();
-    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const submissionId = `HR-${dateStr}-${randomSuffix}`;
+    let submissionId = existingSubmissionId;
 
-    // Upload images to Cloudflare R2 Bucket if binding exists
+    if (!submissionId) {
+      const dateStr = now.toISOString().slice(0, 10).replace(/-/g, "");
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      submissionId = `HR-${dateStr}-${randomSuffix}`;
+    }
+
+    // Upload images to Cloudflare R2 Bucket if binding exists and if new base64 image provided
     let receiptUrl = receiptImageBase64;
     let voucherUrl = voucherImageBase64;
 
     if (env.BUCKET) {
-      // 1. Upload Receipt Photo
-      const receiptKey = `receipts/${submissionId}_receipt.jpg`;
-      const receiptBuffer = decodeBase64Image(receiptImageBase64);
-      await env.BUCKET.put(receiptKey, receiptBuffer, {
-        httpMetadata: { contentType: "image/jpeg" }
-      });
-      receiptUrl = `/api/image/${receiptKey}`;
+      if (receiptImageBase64.startsWith("data:")) {
+        const receiptKey = `receipts/${submissionId}_receipt.jpg`;
+        const receiptBuffer = decodeBase64Image(receiptImageBase64);
+        await env.BUCKET.put(receiptKey, receiptBuffer, {
+          httpMetadata: { contentType: "image/jpeg" }
+        });
+        receiptUrl = `/api/image/${receiptKey}`;
+      }
 
-      // 2. Upload Voucher Photo
-      const voucherKey = `vouchers/${submissionId}_voucher.jpg`;
-      const voucherBuffer = decodeBase64Image(voucherImageBase64);
-      await env.BUCKET.put(voucherKey, voucherBuffer, {
-        httpMetadata: { contentType: "image/jpeg" }
-      });
-      voucherUrl = `/api/image/${voucherKey}`;
+      if (voucherImageBase64.startsWith("data:")) {
+        const voucherKey = `vouchers/${submissionId}_voucher.jpg`;
+        const voucherBuffer = decodeBase64Image(voucherImageBase64);
+        await env.BUCKET.put(voucherKey, voucherBuffer, {
+          httpMetadata: { contentType: "image/jpeg" }
+        });
+        voucherUrl = `/api/image/${voucherKey}`;
+      }
     }
 
-    // Save Record to Cloudflare D1 Database if binding exists
+    // Save or Update Record in Cloudflare D1 Database if binding exists
     if (env.DB) {
-      await env.DB.prepare(`
-        INSERT INTO submissions (
-          submission_id, store_id, campaign_id, customer_name, customer_phone,
-          category, sub_category, model_code, purchase_date, purchase_amount_thb,
-          receipt_photo_url, voucher_photo_url, staff_name, staff_emp_id, voucher_status, voucher_code
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'issued', ?)
-      `).bind(
-        submissionId,
-        storeId,
-        campaignId,
-        customerName,
-        customerPhone,
-        category,
-        subCategory,
-        modelCode,
-        purchaseDate,
-        parseFloat(purchaseAmount),
-        receiptUrl,
-        voucherUrl,
-        staffName || "พนักงานประจำสาขา",
-        staffId || "-",
-        submissionId
-      ).run();
+      if (existingSubmissionId) {
+        // Update existing revised record
+        await env.DB.prepare(`
+          UPDATE submissions
+          SET customer_name = ?, customer_phone = ?, category = ?, sub_category = ?,
+              model_code = ?, purchase_date = ?, purchase_amount_thb = ?,
+              receipt_photo_url = ?, voucher_photo_url = ?, staff_name = ?, staff_emp_id = ?,
+              voucher_status = 'pending', admin_remark = 'แก้ไขและส่งข้อมูลใหม่แล้ว'
+          WHERE submission_id = ?
+        `).bind(
+          customerName,
+          customerPhone,
+          category,
+          subCategory,
+          modelCode,
+          purchaseDate,
+          parseFloat(purchaseAmount),
+          receiptUrl,
+          voucherUrl,
+          staffName || "พนักงานประจำสาขา",
+          staffId || "-",
+          existingSubmissionId
+        ).run();
+      } else {
+        // Insert new record
+        await env.DB.prepare(`
+          INSERT INTO submissions (
+            submission_id, store_id, campaign_id, customer_name, customer_phone,
+            category, sub_category, model_code, purchase_date, purchase_amount_thb,
+            receipt_photo_url, voucher_photo_url, staff_name, staff_emp_id, voucher_status, voucher_code
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+        `).bind(
+          submissionId,
+          storeId,
+          campaignId,
+          customerName,
+          customerPhone,
+          category,
+          subCategory,
+          modelCode,
+          purchaseDate,
+          parseFloat(purchaseAmount),
+          receiptUrl,
+          voucherUrl,
+          staffName || "พนักงานประจำสาขา",
+          staffId || "-",
+          submissionId
+        ).run();
+      }
     }
 
     return new Response(JSON.stringify({
@@ -98,6 +130,7 @@ export async function onRequestPost(context) {
       voucherCode: submissionId,
       receiptUrl,
       voucherUrl,
+      status: "pending",
       timestamp: now.toISOString()
     }), {
       status: 200,

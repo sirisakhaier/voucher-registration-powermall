@@ -6,27 +6,26 @@
 
 ## 🌟 ฟังก์ชันหลัก (Core Features)
 
-1. **PC & Store Check-In Landing Page:**
-   - หน้าแรกเริ่มต้นด้วยการเลือก **สาขา Power Mall ประจำจุดขาย (8 สาขา)** พร้อมระบุ **ชื่อ-นามสกุล และเบอร์โทรศัพท์ของ PC**
-   - ในฟอร์มลงทะเบียนลูกค้าจึงไม่ต้องกรอกชื่อ/เบอร์ PC ซ้ำอีก
-2. **Next / End Workflow:**
-   - หน้ายืนยันสิทธิ์มีปุ่ม **"ลงทะเบียนลูกค้ารายต่อไป (Next)"** เพื่อรับลูกค้าใหม่อย่างรวดเร็ว
-   - หรือปุ่ม **"จบการทำงาน (End)"** เพื่อออกจากระบบและสลับกะ/สาขา
-3. **3-Level Cascading Product Selector (เลือกสินค้า 3 ระดับ):**
+1. **Landing Page with Campaign Posters & PC Check-In:**
+   - หน้าแรกแสดง **ภาพโปสเตอร์โปรโมชั่น 2 แคมเปญ (Haier x PTT & Shop More Get More)** เด่นชัด
+   - เลือก **สาขา Power Mall ประจำจุดขาย (8 สาขา)** พร้อมระบุ **ชื่อ-นามสกุล และเบอร์โทรศัพท์ของ PC** เพื่อเริ่มต้นให้บริการ
+2. **Admin Audit & PC Revision Workflow (ระบบตรวจสอบและส่งแก้ไข):**
+   - **Admin:** ตรวจสอบรูปภาพใบเสร็จ/บัตรกำนัล และสามารถกด **"อนุมัติ"**, **"ขอให้แก้ไขข้อมูล (ระบุเหตุผล)"**, หรือ **"ปฏิเสธ"**
+   - **PC:** สามารถดูหน้ารายการของสาขา หากรายการใดต้องแก้ไข จะมีปุ่ม **"แก้ไขข้อมูล"** เพื่อเปิดฟอร์มเดิมพร้อมข้อความเตือนจาก Admin ให้ถ่ายรูปใหม่หรือแก้ข้อมูลแล้วส่งซ้ำ
+3. **ปุ่มออกจากระบบเปลี่ยนเป็น "ออก":**
+   - แสดงปุ่ม **"ออก"** ที่มุมบนของหน้าเว็บ และในหน้าออกรหัสบัตรกำนัล
+4. **Rich Excel Export (`.xlsx` พร้อมภาพ Thumbnail และ Hyperlink):**
+   - ส่งออกไฟล์ Excel แท้ ฝังรูปภาพ Thumbnail ขนาดพอเหมาะในเซลล์ และมีลิงก์กดเปิดดูรูปภาพต้นฉบับบนเซิร์ฟเวอร์
+5. **3-Level Cascading Product Selector (เลือกสินค้า 3 ระดับ):**
    - **Category (หมวดหลัก 6 หมวด):** `AC`, `RF`, `WM`, `TV`, `FZ`, `WH`
    - **SubCategory (หมวดย่อย):** เช่น Inverter, Multi Door, OLED, QLED, Chest, Digital
    - **Model (รุ่นสินค้า):** กรองรุ่นสินค้า (SKU) ตาม Category + SubCategory จากฐานข้อมูล **Dimension Model ทั้งหมด 415 รุ่น**
-4. **Interactive Visual Calendar Picker (ปฏิทินเลือกวันที่ซื้อ):**
-   - ปฏิทิน Pop-up ภาษาไทย รองรับการกดสัมผัสบนจอ POS/แท็บเล็ต/คอมพิวเตอร์
-5. **Dual Photo Uploads (แนบหลักฐานภาพถ่าย 2 รายการ):**
+6. **Dual Photo Uploads (แนบหลักฐานภาพถ่าย 2 รายการ):**
    - **ภาพที่ 1:** รูปถ่ายใบเสร็จรับเงิน (Receipt Photo)
    - **ภาพที่ 2:** รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า (Voucher Photo)
    - อัปโหลดตรงเข้าสู่ **Cloudflare R2 Object Storage**
-6. **Admin Module Protected by Password (`admin1234`):**
+7. **Admin Module Protected by Password (`admin1234`):**
    - ระบบป้องกันความปลอดภัยหน้า Admin ด้วยการยืนยันรหัสผ่าน
-7. **Rich Excel Export (`.xlsx` พร้อมภาพ Thumbnail และ Hyperlink):**
-   - ส่งออกไฟล์ Excel แท้ ฝังรูปภาพ Thumbnail ขนาดพอเหมาะในเซลล์
-   - มีคอลัมน์ลิงก์กดเปิดดูรูปภาพต้นฉบับบนเซิร์ฟเวอร์ได้ทันที
 
 ---
 
@@ -36,8 +35,8 @@
 Voucher Registration/
 ├── functions/                           # Cloudflare Pages Serverless Functions (API)
 │   └── api/
-│       ├── register.js                  # POST /api/register (บันทึก D1 + อัปโหลดรูปภาพ 2 รูปสู่ R2)
-│       ├── submissions.js               # GET /api/submissions (ดึงรายการย้อนหลังตามสาขา / Admin)
+│       ├── register.js                  # POST /api/register (บันทึก/แก้ไข D1 + อัปโหลดรูปภาพ 2 รูปสู่ R2)
+│       ├── submissions.js               # GET & PUT /api/submissions (ดึงรายการ & อัปเดตสถานะ/ขอแก้ไข)
 │       ├── dimensions.js                # GET /api/dimensions (ดึงข้อมูลมิติสาขาและรุ่นสินค้า)
 │       └── image/
 │           └── [[path]].js              # GET /api/image/... (ดึงรูปภาพจาก R2 มาแสดงผล)
