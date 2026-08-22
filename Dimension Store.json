@@ -1,0 +1,82 @@
+[
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "33KB",
+    "STORE_ID": "S00222",
+    "STORE_NAME": "PM-NAKHONRATCHASIMA",
+    "Store Name TH": "เดอะมอลล์ โคราช",
+    "Province TH": "นครราชสีมา",
+    "Region TH": "ภาคตะวันออกเฉียงเหนือ",
+    "Active-Inactive": "Active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "15KB",
+    "STORE_ID": "S00349",
+    "STORE_NAME": "PM:NGAMWONGWAN",
+    "Store Name TH": "เดอะมอลล์ งามวงศ์วาน",
+    "Province TH": "นนทบุรี",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "14KB",
+    "STORE_ID": "S00370",
+    "STORE_NAME": "PM:THAPRA",
+    "Store Name TH": "เดอะมอลล์ ท่าพระ",
+    "Province TH": "กรุงเทพมหานคร",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "16KB",
+    "STORE_ID": "S00190",
+    "STORE_NAME": "PM:BANGKAE",
+    "Store Name TH": "เดอะมอลล์ บางแค",
+    "Province TH": "กรุงเทพมหานคร",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "17KB",
+    "STORE_ID": "S00066",
+    "STORE_NAME": "PM:BANGKAPI",
+    "Store Name TH": "เดอะมอลล์ บางกะปิ",
+    "Province TH": "กรุงเทพมหานคร",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "13KB",
+    "STORE_ID": "S00795",
+    "STORE_NAME": "PM:RAMKAMHANG",
+    "Store Name TH": "เดอะมอลล์ รามคำแหง",
+    "Province TH": "กรุงเทพมหานคร",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Not active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "30KB",
+    "STORE_ID": "S00327",
+    "STORE_NAME": "PM:EMPORIUM",
+    "Store Name TH": "เอ็มโพเรียม",
+    "Province TH": "กรุงเทพมหานคร",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Active"
+  },
+  {
+    "Customer": "เพาเวอร์มอลล์",
+    "Store ID Customer": "34KB",
+    "STORE_ID": "S00449",
+    "STORE_NAME": "PM:SIAM_PARAGON",
+    "Store Name TH": "สยามพารากอน",
+    "Province TH": "กรุงเทพมหานคร",
+    "Region TH": "กรุงเทพฯและภาคกลาง",
+    "Active-Inactive": "Active"
+  }
+]

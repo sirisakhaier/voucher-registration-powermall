@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบลงทะเบียนรับบัตรกำนัล | Haier x Power Mall</title>
+  <!-- Google Fonts: Kanit & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- QRCode.js -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <!-- Flatpickr (Modern Calendar Datepicker) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            haier: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0072CE',
+              600: '#004EA2', // Primary Haier Blue
+              700: '#003B7B',
+              800: '#002B59',
+              900: '#001A38'
+            },
+            powermall: {
+              DEFAULT: '#E60012',
+              dark: '#B8000E'
+            }
+          },
+          fontFamily: {
+            sans: ['Prompt', 'sans-serif'],
+            display: ['Kanit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #0b1528;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(0, 78, 162, 0.35) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(0, 163, 224, 0.2) 0px, transparent 50%);
+      min-height: 100vh;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 114, 206, 0.5);
+      box-shadow: 0 10px 30px -10px rgba(0, 78, 162, 0.4);
+    }
+    
+    /* Modern Flatpickr Calendar Styling for Haier Theme */
+    .flatpickr-calendar {
+      background: #0f172a !important;
+      border: 1px solid rgba(0, 114, 206, 0.4) !important;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 78, 162, 0.3) !important;
+      border-radius: 1rem !important;
+      font-family: 'Prompt', sans-serif !important;
+      padding: 8px !important;
+    }
+    .flatpickr-calendar .flatpickr-months {
+      background: #1e293b !important;
+      border-radius: 0.75rem !important;
+      padding: 4px 0 !important;
+    }
+    .flatpickr-current-month .flatpickr-monthDropdown-months,
+    .flatpickr-current-month input.cur-year {
+      font-weight: 700 !important;
+      color: #38bdf8 !important;
+    }
+    .flatpickr-day {
+      border-radius: 0.5rem !important;
+      color: #cbd5e1 !important;
+    }
+    .flatpickr-day:hover {
+      background: rgba(0, 114, 206, 0.3) !important;
+      color: #ffffff !important;
+    }
+    .flatpickr-day.selected {
+      background: #0072CE !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      box-shadow: 0 0 12px rgba(0, 114, 206, 0.6) !important;
+    }
+    .flatpickr-day.today {
+      border-color: #38bdf8 !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0072CE;
+    }
+  </style>
+</head>
+<body class="text-slate-100 antialiased selection:bg-haier-500 selection:text-white flex flex-col min-h-screen">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-white/10 px-4 lg:px-8 py-3.5 shadow-xl">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl font-black tracking-wider text-white font-display uppercase bg-gradient-to-r from-white via-slate-100 to-sky-300 bg-clip-text text-transparent">Haier</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-haier-600/80 text-sky-200 font-medium border border-sky-400/30">Official</span>
+        </div>
+        <div class="h-6 w-px bg-white/20"></div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-xs font-bold tracking-widest text-red-500 uppercase">POWER</span>
+          <span class="text-xs font-bold tracking-widest text-slate-300 uppercase">MALL</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div id="currentStoreBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-haier-900/80 border border-sky-500/30 text-xs">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
+          <span class="text-slate-400">สาขา:</span>
+          <span id="headerStoreName" class="font-semibold text-white">กำลังเลือกสาขา...</span>
+        </div>
+        
+        <button onclick="openStoreModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-white/10 transition flex items-center space-x-1.5">
+          <i data-lucide="repeat" class="w-3.5 h-3.5"></i>
+          <span>สลับสาขา</span>
+        </button>
+
+        <a href="#admin" onclick="showAdminView()" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 border border-white/5 transition flex items-center space-x-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-haier-500"></i>
+          <span>Admin</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- VIEW 1: Store Menu & Action Selection -->
+    <section id="viewStoreMenu" class="space-y-6">
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-haier-800 via-haier-700 to-slate-900 border border-sky-500/20 p-6 sm:p-8 shadow-2xl">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-sky-400/10 border border-sky-400/20 text-sky-300 text-xs font-medium">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>ระบบพร้อมให้บริการ ณ จุดจำหน่าย</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold font-display text-white">ระบบลงทะเบียนรับบัตรกำนัล</h1>
+            <p class="text-slate-300 text-sm max-w-xl">
+              ยินดีต้อนรับพนักงาน Power Mall ประจำสาขา <span id="bannerStoreName" class="text-sky-300 font-semibold underline decoration-sky-400">สยามพารากอน</span>
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="startRegistration()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-semibold shadow-lg shadow-sky-500/25 transition transform active:scale-95 flex items-center space-x-2">
+              <i data-lucide="plus-circle" class="w-5 h-5"></i>
+              <span>ลงทะเบียนลูกค้าใหม่</span>
+            </button>
+            <button onclick="showStoreSubmissions()" class="px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 font-medium border border-white/10 transition flex items-center space-x-2">
+              <i data-lucide="list-checks" class="w-5 h-5 text-sky-400"></i>
+              <span>รายการลงทะเบียนของสาขา</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Campaigns Overview Cards -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold font-display text-white flex items-center space-x-2">
+            <i data-lucide="flame" class="w-5 h-5 text-amber-400"></i>
+            <span>โปรโมชั่น Haier ประจำเดือนที่เปิดใช้งาน</span>
+          </h2>
+          <span class="text-xs text-slate-400">เลือกโปรโมชั่นเพื่อเริ่มลงทะเบียน</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Campaign A Card -->
+          <div id="cardCampA" class="glass-card rounded-2xl overflow-hidden flex flex-col group border-sky-500/30">
+            <div class="relative h-48 sm:h-56 overflow-hidden bg-slate-900">
+              <img src="./Ad AC PTT vc.png" alt="Haier x PTT" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+              <div class="absolute top-3 left-3 bg-haier-600/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-sky-300/30 flex items-center space-x-1.5">
+                <i data-lucide="fuel" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span>รับฟรี บัตรเติมน้ำมัน PTT 500 บาท</span>
+              </div>
+              <div class="absolute bottom-3 left-3 right-3">
+                <h3 class="text-lg font-bold text-white font-display drop-shadow-md">เย็นฉ่ำ แล้วยังเติมความสุขให้ทุกเส้นทาง</h3>
+                <p class="text-xs text-sky-200 mt-0.5">ซื้อแอร์ Haier 4 รุ่นยอดนิยมที่ร่วมรายการ</p>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+              <div class="space-y-2 text-xs text-slate-300">
+                <div class="flex items-center justify-between py-1 border-b border-white/5">
+                  <span class="text-slate-400">ระยะเวลา:</span>
+                  <span class="font-medium text-slate-200">วันนี้ – 31 ส.ค. 2569</span>
+                </div>
+                <div class="flex items-center justify-between py-1 border-b border-white/5">
+                  <span class="text-slate-400">สาขาที่ร่วมรายการ:</span>
+                  <span class="font-medium text-emerald-400">ทุกสาขา Power Mall</span>
+                </div>
+                <div class="py-1">
+                  <span class="text-slate-400">รุ่นที่ร่วมรายการ (หมวดเครื่องปรับอากาศ Inverter):</span>
+                  <div class="flex flex-wrap gap-1.5 mt-1.5">
+                    <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-sky-300 border border-slate-700">HSU-09VRRA055BF</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-sky-300 border border-slate-700">HSU-12VRRA05BF</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-sky-300 border border-slate-700">HSU-18VRRA05BF</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-sky-300 border border-slate-700">HSU-12VQEC05</span>
+                  </div>
+                </div>
+              </div>
+              <button onclick="selectCampaign('CAMP-2026-PTT-AC')" class="w-full py-2.5 rounded-xl bg-haier-600 hover:bg-haier-500 text-white font-medium text-sm transition flex items-center justify-center space-x-2">
+                <span>เลือกแคมเปญนี้</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Campaign B Card -->
+          <div id="cardCampB" class="glass-card rounded-2xl overflow-hidden flex flex-col group border-purple-500/30">
+            <div class="relative h-48 sm:h-56 overflow-hidden bg-slate-900">
+              <img src="./Ad PM vc.jpg" alt="Shop More Get More" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+              <div class="absolute top-3 left-3 bg-red-600/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-red-300/30 flex items-center space-x-1.5">
+                <i data-lucide="gift" class="w-3.5 h-3.5 text-amber-300"></i>
+                <span>รับฟรี Gift Voucher The Mall 1,000 บาท</span>
+              </div>
+              <div id="campBStoreRestrictedOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-20 p-6 flex flex-col items-center justify-center text-center space-y-2">
+                <i data-lucide="lock" class="w-8 h-8 text-amber-400"></i>
+                <h4 class="text-sm font-bold text-white">จำกัดเฉพาะ 2 สาขาพิเศษ</h4>
+                <p class="text-xs text-slate-300 max-w-xs">แคมเปญนี้เปิดให้ลงทะเบียนเฉพาะสาขา <span class="text-amber-300 font-semibold">สยามพารากอน</span> และ <span class="text-amber-300 font-semibold">เอ็มโพเรียม</span> เท่านั้น</p>
+              </div>
+              <div class="absolute bottom-3 left-3 right-3 z-10">
+                <h3 class="text-lg font-bold text-white font-display drop-shadow-md">Shop More Get More (Haier x Sports)</h3>
+                <p class="text-xs text-purple-200 mt-0.5">ซื้อเครื่องใช้ไฟฟ้า Haier ครบ 20,000 บาทขึ้นไป</p>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+              <div class="space-y-2 text-xs text-slate-300">
+                <div class="flex items-center justify-between py-1 border-b border-white/5">
+                  <span class="text-slate-400">ระยะเวลา:</span>
+                  <span class="font-medium text-slate-200">22 ส.ค. – 30 ก.ย. 2569</span>
+                </div>
+                <div class="flex items-center justify-between py-1 border-b border-white/5">
+                  <span class="text-slate-400">สาขาที่ร่วมรายการ:</span>
+                  <span class="font-medium text-amber-400" id="campBStoreStatus">สยามพารากอน & เอ็มโพเรียม</span>
+                </div>
+                <div class="flex items-center justify-between py-1 border-b border-white/5">
+                  <span class="text-slate-400">รุ่นที่ร่วมรายการ:</span>
+                  <span class="font-medium text-slate-200">เครื่องใช้ไฟฟ้า Haier ทุกหมวด (ยอดรวม ≥ 20,000 บาท)</span>
+                </div>
+              </div>
+              <button id="btnSelectCampB" onclick="selectCampaign('CAMP-2026-SPORTS-MALL')" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-medium text-sm transition flex items-center justify-center space-x-2">
+                <span>เลือกแคมเปญนี้</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: Dynamic Registration Form -->
+    <section id="viewRegisterForm" class="hidden max-w-3xl mx-auto space-y-6">
+      
+      <!-- Back & Form Header -->
+      <div class="flex items-center justify-between">
+        <button onclick="backToStoreMenu()" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>ย้อนกลับ</span>
+        </button>
+        <div class="text-right">
+          <span class="text-xs text-slate-400">แคมเปญที่เลือก</span>
+          <h2 id="formCampaignTitle" class="text-sm font-bold text-sky-400 font-display">...</h2>
+        </div>
+      </div>
+
+      <!-- Registration Box -->
+      <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6">
+        
+        <!-- Step Indicator -->
+        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-haier-600 text-white flex items-center justify-center font-bold text-sm">
+              1
+            </div>
+            <div>
+              <h3 class="font-bold text-white font-display text-base">กรอกข้อมูลการซื้อและแนบหลักฐาน 2 ภาพ</h3>
+              <p class="text-xs text-slate-400">กรุณาตรวจสอบความถูกต้องตามใบเสร็จและบัตรกำนัล</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-amber-400/10 text-amber-300 text-xs border border-amber-400/20 font-medium" id="rewardBadge">
+            ของรางวัล: ...
+          </span>
+        </div>
+
+        <form id="regForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+          
+          <!-- Section 1: Customer Details -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-300">
+                ชื่อ-นามสกุล ลูกค้า <span class="text-red-400">*</span>
+              </label>
+              <input type="text" id="custName" required placeholder="เช่น นายสมชาย ใจดี" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-300">
+                เบอร์โทรศัพท์มือถือ <span class="text-red-400">*</span>
+              </label>
+              <input type="tel" id="custPhone" required maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+            </div>
+          </div>
+
+          <!-- Section 2: 3-Level Cascading Product Dropdowns (Category -> SubCategory -> Model) -->
+          <div class="space-y-4 pt-2 border-t border-white/5">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- 1. Category Dropdown -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-300">
+                  1. หมวดหมู่สินค้าหลัก (Category) <span class="text-red-400">*</span>
+                </label>
+                <select id="categorySelect" required onchange="handleCategoryChange()" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+                  <option value="">-- เลือกหมวดหมู่สินค้า --</option>
+                  <option value="AC">เครื่องปรับอากาศ (AC)</option>
+                  <option value="RF">ตู้เย็น (RF)</option>
+                  <option value="WM">เครื่องซักผ้าและอบผ้า (WM)</option>
+                  <option value="TV">โทรทัศน์ (TV)</option>
+                  <option value="FZ">ตู้แช่แข็งและตู้แช่ไวน์ (FZ)</option>
+                  <option value="WH">เครื่องทำน้ำอุ่น/ตู้น้ำ (WH)</option>
+                </select>
+                <p id="categoryHelpText" class="text-[11px] text-slate-400">เลือกประเภทสินค้าหลัก</p>
+              </div>
+
+              <!-- 2. SubCategory Dropdown (Before Model) -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-300">
+                  2. หมวดหมู่ย่อย (SubCategory) <span class="text-red-400">*</span>
+                </label>
+                <select id="subCategorySelect" required onchange="handleSubCategoryChange()" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+                  <option value="">-- โปรดเลือก Category ก่อน --</option>
+                </select>
+                <p id="subCategoryHelpText" class="text-[11px] text-slate-400">เลือกหมวดหมู่ย่อยเพื่อกรองรุ่น</p>
+              </div>
+            </div>
+
+            <!-- 3. Model Dropdown (Directly below SubCategory) -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-300">
+                3. เลือกรุ่นสินค้า Haier (Model) <span class="text-red-400">*</span>
+              </label>
+              <select id="modelSelect" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+                <option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>
+              </select>
+              <p id="modelHelpText" class="text-[11px] text-slate-400">รายชื่อรุ่นสินค้าที่ดึงจาก Dimension Model ตามหมวดหมู่ที่เลือก</p>
+            </div>
+
+            <!-- Section 3: Interactive Visual Calendar Picker for Date of purchase & Purchase Amount -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              
+              <!-- Date of purchase with Interactive Visual Calendar Picker -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-300 flex items-center justify-between">
+                  <span>วันที่ซื้อสินค้า (Date of purchase) <span class="text-red-400">*</span></span>
+                  <span class="text-[10px] text-sky-400 font-mono">📅 คลิกเพื่อเปิดปฏิทิน</span>
+                </label>
+                <div class="relative cursor-pointer" onclick="document.getElementById('purchaseDate').focus()">
+                  <input type="text" id="purchaseDate" required placeholder="เลือกวันที่ซื้อสินค้า..." class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition cursor-pointer font-medium">
+                  <div class="absolute left-3.5 top-2.5 text-sky-400 pointer-events-none">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-400">เลือกวันที่ตามที่ปรากฏในใบเสร็จรับเงิน</p>
+              </div>
+
+              <!-- Purchase Amount -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-slate-300">
+                  ยอดรวมในใบเสร็จ (บาท) <span class="text-red-400">*</span>
+                </label>
+                <div class="relative">
+                  <input type="number" id="purchaseAmount" required min="1" step="any" placeholder="เช่น 24990" class="w-full pl-4 pr-12 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+                  <span class="absolute right-4 top-2.5 text-xs text-slate-400">บาท</span>
+                </div>
+                <p id="minSpendError" class="hidden text-xs text-red-400 font-medium">⚠️ แคมเปญนี้กำหนดยอดซื้อขั้นต่ำ 20,000 บาทขึ้นไป</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: Dual Pictures Upload (1. Receipt Photo + 2. Voucher Photo) -->
+          <div class="space-y-3 pt-3 border-t border-white/10">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="images" class="w-4 h-4 text-sky-400"></i>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200">แนบหลักฐานภาพถ่าย 2 รายการ (Required 2 Photos)</h4>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <!-- Photo 1: Receipt Photo -->
+              <div class="space-y-2">
+                <label class="block text-xs font-semibold text-slate-300 flex items-center justify-between">
+                  <span>1. รูปถ่ายใบเสร็จรับเงิน (Receipt) <span class="text-red-400">*</span></span>
+                  <span id="receiptStatusBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">ยังไม่แนบ</span>
+                </label>
+                
+                <div class="border-2 border-dashed border-slate-700 hover:border-sky-500/50 rounded-2xl p-4 text-center transition bg-slate-900/50 min-h-[140px] flex flex-col items-center justify-center relative">
+                  <input type="file" id="receiptFile" accept="image/*" class="hidden" onchange="handleReceiptFileSelect(event)">
+                  
+                  <div id="receiptUploadPrompt" onclick="document.getElementById('receiptFile').click()" class="cursor-pointer space-y-1.5">
+                    <div class="w-10 h-10 mx-auto rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center">
+                      <i data-lucide="receipt" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-medium text-sky-400 hover:underline block">กดถ่าย/อัปโหลดภาพใบเสร็จ</span>
+                    <p class="text-[10px] text-slate-400">เห็นวันที่ สาขา และยอดเงินชัดเจน</p>
+                  </div>
+
+                  <div id="receiptPreviewContainer" class="hidden relative">
+                    <img id="receiptImagePreview" src="" alt="Receipt Preview" class="max-h-32 rounded-xl border border-white/20 shadow-md">
+                    <button type="button" onclick="clearReceiptImage()" class="absolute -top-2 -right-2 w-5 h-5 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Photo 2: Voucher / Gift Card Photo -->
+              <div class="space-y-2">
+                <label class="block text-xs font-semibold text-slate-300 flex items-center justify-between">
+                  <span>2. รูปถ่ายบัตรกำนัลที่มอบให้ (Voucher) <span class="text-red-400">*</span></span>
+                  <span id="voucherStatusBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">ยังไม่แนบ</span>
+                </label>
+                
+                <div class="border-2 border-dashed border-slate-700 hover:border-purple-500/50 rounded-2xl p-4 text-center transition bg-slate-900/50 min-h-[140px] flex flex-col items-center justify-center relative">
+                  <input type="file" id="voucherFile" accept="image/*" class="hidden" onchange="handleVoucherFileSelect(event)">
+                  
+                  <div id="voucherUploadPrompt" onclick="document.getElementById('voucherFile').click()" class="cursor-pointer space-y-1.5">
+                    <div class="w-10 h-10 mx-auto rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                      <i data-lucide="gift" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-xs font-medium text-purple-400 hover:underline block">กดถ่าย/อัปโหลดภาพบัตรกำนัล</span>
+                    <p class="text-[10px] text-slate-400">รูปถ่ายบัตร PTT / บัตร The Mall ที่แจก</p>
+                  </div>
+
+                  <div id="voucherPreviewContainer" class="hidden relative">
+                    <img id="voucherImagePreview" src="" alt="Voucher Preview" class="max-h-32 rounded-xl border border-white/20 shadow-md">
+                    <button type="button" onclick="clearVoucherImage()" class="absolute -top-2 -right-2 w-5 h-5 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Staff / Promoter Info -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/5">
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-400">ชื่อพนักงานขาย / PC ผู้ลงทะเบียน</label>
+              <input type="text" id="staffName" placeholder="เช่น สุรศักดิ์ (PC Haier)" class="w-full px-4 py-2 rounded-xl bg-slate-900/70 border border-slate-800 text-white text-xs outline-none focus:border-sky-500">
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-400">รหัสพนักงาน (ถ้ามี)</label>
+              <input type="text" id="staffId" placeholder="เช่น HTH-8821" class="w-full px-4 py-2 rounded-xl bg-slate-900/70 border border-slate-800 text-white text-xs outline-none focus:border-sky-500">
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <button type="submit" id="btnSubmitForm" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-base shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
+              <i data-lucide="check-circle" class="w-5 h-5"></i>
+              <span>ยืนยันการลงทะเบียน & ออกรหัสบัตรกำนัล</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 3: Confirmation & Voucher Code Screen -->
+    <section id="viewConfirmation" class="hidden max-w-2xl mx-auto space-y-6">
+      <div class="glass-panel rounded-3xl p-6 sm:p-10 border border-sky-400/30 shadow-2xl text-center space-y-6 relative overflow-hidden">
+        
+        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex items-center justify-center">
+          <i data-lucide="badge-check" class="w-10 h-10"></i>
+        </div>
+
+        <div class="space-y-1">
+          <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">ลงทะเบียนสำเร็จ (Registration Complete)</span>
+          <h2 class="text-2xl sm:text-3xl font-black font-display text-white">ยินดีด้วย! คุณได้รับสิทธิ์บัตรกำนัล</h2>
+          <p class="text-xs text-slate-300" id="confRewardDescription">บัตรเติมน้ำมัน PTT Privilege Card มูลค่า 500 บาท</p>
+        </div>
+
+        <!-- Voucher Card Ticket -->
+        <div class="bg-gradient-to-br from-slate-900 to-haier-900 border border-sky-400/40 rounded-2xl p-6 text-left relative shadow-inner space-y-4">
+          <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider">รหัสอ้างอิงรับสิทธิ์ (VOUCHER REFERENCE CODE)</span>
+              <div class="text-2xl sm:text-3xl font-black font-mono tracking-wider text-amber-300" id="confVoucherCode">
+                HR-2026-8892
+              </div>
+            </div>
+            <div id="qrcodeCanvas" class="bg-white p-2 rounded-xl shadow-md"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span class="text-slate-400">ชื่อลูกค้า:</span>
+              <p class="font-semibold text-white" id="confCustName">-</p>
+            </div>
+            <div>
+              <span class="text-slate-400">เบอร์โทรศัพท์:</span>
+              <p class="font-semibold text-white" id="confCustPhone">-</p>
+            </div>
+            <div>
+              <span class="text-slate-400">สาขา Power Mall:</span>
+              <p class="font-semibold text-sky-300" id="confStoreName">-</p>
+            </div>
+            <div>
+              <span class="text-slate-400">วันที่ซื้อสินค้า:</span>
+              <p class="font-semibold text-amber-300" id="confPurchaseDate">-</p>
+            </div>
+            <div>
+              <span class="text-slate-400">รุ่นสินค้าที่ซื้อ:</span>
+              <p class="font-semibold text-slate-200" id="confModelCode">-</p>
+            </div>
+            <div>
+              <span class="text-slate-400">หมวดหมู่สินค้า:</span>
+              <p class="font-semibold text-sky-300" id="confCategoryCode">-</p>
+            </div>
+          </div>
+
+          <!-- Dual Photo Thumbnail Attachments in Confirmation -->
+          <div class="pt-2 border-t border-white/10">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider block mb-2">หลักฐานภาพถ่ายที่บันทึกเข้าระบบ (2 Photos Attached):</span>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-slate-950/60 p-2 rounded-xl border border-white/10 flex items-center space-x-2">
+                <img id="confReceiptThumb" src="" class="w-10 h-10 object-cover rounded-lg border border-sky-400/40">
+                <div class="text-[11px]">
+                  <span class="font-medium text-slate-200 block">รูปใบเสร็จ</span>
+                  <span class="text-[10px] text-emerald-400">✓ บันทึกสำเร็จ</span>
+                </div>
+              </div>
+              <div class="bg-slate-950/60 p-2 rounded-xl border border-white/10 flex items-center space-x-2">
+                <img id="confVoucherThumb" src="" class="w-10 h-10 object-cover rounded-lg border border-purple-400/40">
+                <div class="text-[11px]">
+                  <span class="font-medium text-slate-200 block">รูปบัตรกำนัล</span>
+                  <span class="text-[10px] text-emerald-400">✓ บันทึกสำเร็จ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/60 rounded-xl p-3 text-[11px] text-slate-300 border border-white/5 flex items-center space-x-2">
+            <i data-lucide="info" class="w-4 h-4 text-sky-400 shrink-0"></i>
+            <span>โปรดแสดงหน้าจอนี้ หรือรหัสอ้างอิง ณ จุดบริการลูกค้าเพื่อรับบัตรกำนัล</span>
+          </div>
+        </div>
+
+        <!-- Next Customer / Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+          <button onclick="startNextRegistration()" class="px-6 py-3 rounded-xl bg-haier-600 hover:bg-haier-500 text-white font-semibold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>ลงทะเบียนลูกค้ารายต่อไป</span>
+          </button>
+          <button onclick="window.print()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-2">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>พิมพ์ใบรับสิทธิ์</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 4: Store Historical Submissions Log -->
+    <section id="viewStoreLogs" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <button onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
+            <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+            <span>กลับหน้าหลักสาขา</span>
+          </button>
+          <h2 class="text-xl font-bold font-display text-white">รายการที่ลงทะเบียนแล้วประจำสาขา</h2>
+          <p class="text-xs text-slate-400">ค้นหาและตรวจสอบประวัติการลงทะเบียนของ <span id="logStoreTitle" class="text-slate-200 font-semibold">สยามพารากอน</span></p>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <input type="text" id="logSearchInput" oninput="filterStoreSubmissions()" placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่ซื้อ..." class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500 w-64">
+        </div>
+      </div>
+
+      <!-- Submissions Table -->
+      <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
+              <tr>
+                <th class="p-3.5">รหัสอ้างอิง / เวลา</th>
+                <th class="p-3.5">ลูกค้า</th>
+                <th class="p-3.5">แคมเปญ</th>
+                <th class="p-3.5">หมวด / ประเภทย่อย / รุ่น</th>
+                <th class="p-3.5">วันที่ซื้อ</th>
+                <th class="p-3.5">ยอดซื้อ</th>
+                <th class="p-3.5">ภาพใบเสร็จ / บัตร</th>
+                <th class="p-3.5">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="storeSubmissionsTbody" class="divide-y divide-white/5">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="storeLogEmpty" class="hidden p-8 text-center text-slate-400 text-xs">
+          ยังไม่พบรายการลงทะเบียนในสาขานี้
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: Admin Panel -->
+    <section id="viewAdmin" class="hidden space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div>
+          <button onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
+            <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+            <span>กลับหน้า Kiosk</span>
+          </button>
+          <h2 class="text-2xl font-bold font-display text-white">Admin Management Dashboard</h2>
+          <p class="text-xs text-slate-400">ระบบจัดการแคมเปญ, ข้อมูลสาขา/รุ่นสินค้า (Dimensions) และอนุมัติ Voucher</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="exportSubmissionsCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center space-x-1.5">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Export Submissions (CSV)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="glass-card p-5 rounded-2xl border border-sky-500/20">
+          <span class="text-xs text-slate-400">ยอดลงทะเบียนรวมทุกสาขา</span>
+          <div class="text-3xl font-bold text-white font-display mt-1" id="statTotalSubmissions">0</div>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border border-emerald-500/20">
+          <span class="text-xs text-slate-400">มูลค่า Voucher ทั้งหมดที่ออกแล้ว</span>
+          <div class="text-3xl font-bold text-emerald-400 font-display mt-1" id="statTotalVoucherValue">0 THB</div>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border border-purple-500/20">
+          <span class="text-xs text-slate-400">จำนวนรุ่นสินค้าในระบบ (Dimension Model)</span>
+          <div class="text-3xl font-bold text-purple-300 font-display mt-1" id="statTotalModels">415 SKUs</div>
+        </div>
+      </div>
+
+      <!-- Admin Submissions Table -->
+      <div class="glass-panel rounded-2xl p-5 border border-white/10 space-y-4">
+        <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดเพื่อตรวจสอบและอนุมัติ</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
+              <tr>
+                <th class="p-3">Ref ID</th>
+                <th class="p-3">สาขา</th>
+                <th class="p-3">ลูกค้า / เบอร์</th>
+                <th class="p-3">แคมเปญ</th>
+                <th class="p-3">หมวด / ประเภทย่อย / รุ่น</th>
+                <th class="p-3">วันที่ซื้อ</th>
+                <th class="p-3">ยอดซื้อ</th>
+                <th class="p-3">1. ใบเสร็จ</th>
+                <th class="p-3">2. บัตรกำนัล</th>
+                <th class="p-3">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="adminSubmissionsTbody" class="divide-y divide-white/5">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Store Picker Modal -->
+  <div id="storeModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-lg rounded-3xl p-6 border border-white/15 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="store" class="w-5 h-5 text-sky-400"></i>
+          <h3 class="font-bold text-white font-display text-base">เลือกสาขา Power Mall ประจำจุดบริการ</h3>
+        </div>
+        <button onclick="closeStoreModal()" class="text-slate-400 hover:text-white text-xs">ปิด</button>
+      </div>
+
+      <p class="text-xs text-slate-300">โปรดเลือกสาขาที่คุณกำลังปฏิบัติหน้าที่ เพื่อให้ระบบคำนวณสิทธิ์แคมเปญได้อย่างถูกต้อง</p>
+
+      <div class="space-y-2 max-h-72 overflow-y-auto pr-1" id="storeListContainer">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall. All rights reserved.</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.0</span>
+    </div>
+  </footer>
+
+  <!-- Application Logic & Model Dimension Data -->
+  <script>
+    // --- 1. FULL DIMENSION MODEL (415 SKUs) ---
+    const ALL_MODELS = [{"m": "SC-240BC", "c": "FZ", "s": "Beverage"}, {"m": "SC-340BC-V3", "c": "FZ", "s": "Beverage"}, {"m": "SC-763BC2", "c": "FZ", "s": "Beverage"}, {"m": "SC-2100PCS3-V3", "c": "FZ", "s": "Beverage"}, {"m": "SC-180VC3", "c": "FZ", "s": "Beverage"}, {"m": "HCF-LF108", "c": "FZ", "s": "Chest"}, {"m": "HCF-200DP60", "c": "FZ", "s": "Chest"}, {"m": "HCF-905M", "c": "FZ", "s": "Chest"}, {"m": "HCF-200HM2", "c": "FZ", "s": "Chest"}, {"m": "HCF-478C", "c": "FZ", "s": "Chest"}, {"m": "BD-272", "c": "FZ", "s": "Vertical"}, {"m": "HWD100-BD14756", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HW70-BP10829", "c": "WM", "s": "Front Load"}, {"m": "HW80-BP12929", "c": "WM", "s": "Front Load"}, {"m": "HW100-B14876", "c": "WM", "s": "Front Load"}, {"m": "HW100-BP10HBI", "c": "WM", "s": "Front Load"}, {"m": "HWM100-1826T", "c": "WM", "s": "Top Load"}, {"m": "HWM120-1826T", "c": "WM", "s": "Top Load"}, {"m": "HWM140", "c": "WM", "s": "Top Load"}, {"m": "HWM140-1701RS", "c": "WM", "s": "Top Load"}, {"m": "HWM150-1701RS", "c": "WM", "s": "Top Load"}, {"m": "HTW75OXSY", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T85N2", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T130N2", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T140N2", "c": "WM", "s": "Twin Tub"}, {"m": "HRF-MDM448 KS", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-SBS550 MS", "c": "RF", "s": "SBS"}, {"m": "HRF-SBS600 GBR", "c": "RF", "s": "SBS"}, {"m": "HRF-THM18NS", "c": "RF", "s": "2Dr"}, {"m": "HRF-THM209I", "c": "RF", "s": "2Dr"}, {"m": "HRF-THM20NS", "c": "RF", "s": "2Dr"}, {"m": "HRF-TMB34I", "c": "RF", "s": "2Dr"}, {"m": "HR-DMBX15 CS", "c": "RF", "s": "1Dr"}, {"m": "HR-DMBX18", "c": "RF", "s": "1Dr"}, {"m": "HRF-BM325MI", "c": "RF", "s": "BM"}, {"m": "H50K7UG", "c": "TV", "s": "QLED"}, {"m": "H65S6UG PRO", "c": "TV", "s": "QLED"}, {"m": "H98S900UX", "c": "TV", "s": "QLED"}, {"m": "H58K6UG", "c": "TV", "s": "UHD"}, {"m": "LE58K6500UA", "c": "TV", "s": "UHD"}, {"m": "H32K66G", "c": "TV", "s": "FHD"}, {"m": "H32K66G PLUS", "c": "TV", "s": "FHD"}, {"m": "LE32K6500A", "c": "TV", "s": "FHD"}, {"m": "H40K66G", "c": "TV", "s": "FHD"}, {"m": "LE40K6000", "c": "TV", "s": "FHD"}, {"m": "LE42K8000", "c": "TV", "s": "FHD"}, {"m": "LE42K8000A", "c": "TV", "s": "FHD"}, {"m": "H43D6FG", "c": "TV", "s": "FHD"}, {"m": "LE43B9600T", "c": "TV", "s": "FHD"}, {"m": "EI45E(DG)", "c": "WH", "s": "Digital"}, {"m": "CE-09VPCT", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VNS03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VQEC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VQEC05", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VQRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VQRC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VRRA05", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VRWA05", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VRWA05SBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-09VTRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-10VFA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-10VIP03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-10VNR03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-10VRRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-10VRWA03T", "c": "AC", "s": "Inverter"}, {"m": "CE-12VPCT", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VNS03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQEA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQEC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQEC05", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQMC03", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQRC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VQRC05", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VRRA05", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VRRA05BF", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VRWA05BF", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VTBA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VTRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-12VTRZ03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VFRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VIP03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05B", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05BBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05P", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05PBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05SBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05W", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRSA05WBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VRWA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VSWA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-13VSWA03TBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-15VQRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-15VQRC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-15VQRC05", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VNR03T(N)", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VNS03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VQEC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VQMC03", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VQRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VQRC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRSA05B", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRSA05BBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRSA05P", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRSA05PBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRSA05SBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRSA05W", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRWA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRWA05", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VRWA05BF", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VSWA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VSWA03TBF", "c": "AC", "s": "Inverter"}, {"m": "HSU-18VTRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-24VQRC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-24VRRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-24VRRA05BF", "c": "AC", "s": "Inverter"}, {"m": "HSU-24VRWA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-24VRWA05BF", "c": "AC", "s": "Inverter"}, {"m": "HSU-24VTRA03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-30VQAC03T", "c": "AC", "s": "Inverter"}, {"m": "HSU-10CQAA03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-10CQRD03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-10CTC03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-12CQRB03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-12CTB03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-13CQAA03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-13CQRD03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-13CTC03T(H)", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-13CTR03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-18CQRA03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-18CQRB03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-18CQRD03T(PIPE_IN)", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-18CTB03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-24CQAA03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-24CQRA03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-24CTB03T", "c": "AC", "s": "Fix Speed"}, {"m": "HSU-24CTC03T(H)", "c": "AC", "s": "Fix Speed"}, {"m": "HPU-24FSE03T", "c": "AC", "s": "Floor Standing"}, {"m": "LC-90", "c": "FZ", "s": "Wine"}, {"m": "JC-116", "c": "FZ", "s": "Wine"}, {"m": "TCFW-190U", "c": "FZ", "s": "Wine"}, {"m": "JC-198", "c": "FZ", "s": "Wine"}, {"m": "JC-360", "c": "FZ", "s": "Wine"}, {"m": "JC-366DZ", "c": "FZ", "s": "Wine"}, {"m": "SC-240BC-V3", "c": "FZ", "s": "Beverage"}, {"m": "SC-310BC", "c": "FZ", "s": "Beverage"}, {"m": "SC-340BC-V4", "c": "FZ", "s": "Beverage"}, {"m": "SC-340BPC", "c": "FZ", "s": "Beverage"}, {"m": "SC-340M", "c": "FZ", "s": "Beverage"}, {"m": "SC-412BC-V2", "c": "FZ", "s": "Beverage"}, {"m": "SC-412BPC", "c": "FZ", "s": "Beverage"}, {"m": "SC-763BC3", "c": "FZ", "s": "Beverage"}, {"m": "SC-768BPCS3", "c": "FZ", "s": "Beverage"}, {"m": "SC-652BPC", "c": "FZ", "s": "Beverage"}, {"m": "SC-781WSC", "c": "FZ", "s": "Beverage"}, {"m": "SC-1700PCS2-V5", "c": "FZ", "s": "Beverage"}, {"m": "SC-1065VC3", "c": "FZ", "s": "Beverage"}, {"m": "SC-2100PCS3-V4", "c": "FZ", "s": "Beverage"}, {"m": "SC-1080VC3", "c": "FZ", "s": "Beverage"}, {"m": "SC-2600PCS3-V3", "c": "FZ", "s": "Beverage"}, {"m": "BD-91", "c": "FZ", "s": "Chest"}, {"m": "HCF-108C2", "c": "FZ", "s": "Chest"}, {"m": "HCF-108P2", "c": "FZ", "s": "Chest"}, {"m": "HCF-100HM", "c": "FZ", "s": "Chest"}, {"m": "HCF-208C2", "c": "FZ", "s": "Chest"}, {"m": "HCF-208P2", "c": "FZ", "s": "Chest"}, {"m": "HCF-LF208", "c": "FZ", "s": "Chest"}, {"m": "HCF-SB208", "c": "FZ", "s": "Chest"}, {"m": "HCF-145HM", "c": "FZ", "s": "Chest"}, {"m": "HCF-145HM2", "c": "FZ", "s": "Chest"}, {"m": "HCF-228C2", "c": "FZ", "s": "Chest"}, {"m": "HCF-228P2", "c": "FZ", "s": "Chest"}, {"m": "HCF-LF228", "c": "FZ", "s": "Chest"}, {"m": "HCF-SB228", "c": "FZ", "s": "Chest"}, {"m": "HCF-200GLF", "c": "FZ", "s": "Chest"}, {"m": "HCF-200HM", "c": "FZ", "s": "Chest"}, {"m": "SD-217P", "c": "FZ", "s": "Chest"}, {"m": "HCF-300DP", "c": "FZ", "s": "Chest"}, {"m": "HCF-350DP", "c": "FZ", "s": "Chest"}, {"m": "HCF-428DP", "c": "FZ", "s": "Chest"}, {"m": "HCF-478DPV2", "c": "FZ", "s": "Chest"}, {"m": "HCF-478DP", "c": "FZ", "s": "Chest"}, {"m": "HCF-478M", "c": "FZ", "s": "Chest"}, {"m": "HCF-568DP", "c": "FZ", "s": "Chest"}, {"m": "HCF-568DPV2", "c": "FZ", "s": "Chest"}, {"m": "HCF-568M", "c": "FZ", "s": "Chest"}, {"m": "HCF-728C", "c": "FZ", "s": "Chest"}, {"m": "HCF-728DP", "c": "FZ", "s": "Chest"}, {"m": "HCF-728DPV2", "c": "FZ", "s": "Chest"}, {"m": "SD-332D", "c": "FZ", "s": "Glass"}, {"m": "SD-332DP", "c": "FZ", "s": "Glass"}, {"m": "SD-407DP", "c": "FZ", "s": "Glass"}, {"m": "SD-517DP", "c": "FZ", "s": "Glass"}, {"m": "BD-151B", "c": "FZ", "s": "Vertical"}, {"m": "BD-151C", "c": "FZ", "s": "Vertical"}, {"m": "BD-276B", "c": "FZ", "s": "Vertical"}, {"m": "HDV70E1", "c": "WM", "s": "Dryer"}, {"m": "HDV70E1(CB)", "c": "WM", "s": "Dryer"}, {"m": "HDV80E1", "c": "WM", "s": "Dryer"}, {"m": "HD100-A357S8", "c": "WM", "s": "Dryer"}, {"m": "HD100-AR959S", "c": "WM", "s": "Dryer"}, {"m": "HD140-AR367S8U1", "c": "WM", "s": "Dryer"}, {"m": "HWD100-BP12357S8", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD100-BP14959S8", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD100-B14876U1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD130-BP14959S8", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD140-BD14LCGNU1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD140-BP14367S8U1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD140-BPD14387GNU1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD150-B1601U1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD150-BP14986ES8U1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HWD210-BD12LGNU1", "c": "WM", "s": "FL Wash&Dry"}, {"m": "HW80-BP10829(CB)", "c": "WM", "s": "Front Load"}, {"m": "HW80-BP12929A", "c": "WM", "s": "Front Load"}, {"m": "HW90-BP12357S8", "c": "WM", "s": "Front Load"}, {"m": "HW90-BP14959", "c": "WM", "s": "Front Load"}, {"m": "HW95-BP14929AS6", "c": "WM", "s": "Front Load"}, {"m": "HW100-BP12357S8", "c": "WM", "s": "Front Load"}, {"m": "HW100-BP14959S6", "c": "WM", "s": "Front Load"}, {"m": "HW105-BP14929AS6", "c": "WM", "s": "Front Load"}, {"m": "HW120-BP12357S8", "c": "WM", "s": "Front Load"}, {"m": "HW120-BP14367S8U1", "c": "WM", "s": "Front Load"}, {"m": "HW120-BP14929AS6", "c": "WM", "s": "Front Load"}, {"m": "HW120-BP14959S6", "c": "WM", "s": "Front Load"}, {"m": "HW140-BD14697WU1", "c": "WM", "s": "Front Load"}, {"m": "HW140-BP14367S8U1", "c": "WM", "s": "Front Load"}, {"m": "HW140-BPD14387GNU1", "c": "WM", "s": "Front Load"}, {"m": "HW150-BP14986ES9", "c": "WM", "s": "Front Load"}, {"m": "HW180-BPD14387GNU1", "c": "WM", "s": "Front Load"}, {"m": "HWM80-316S6", "c": "WM", "s": "Top Load"}, {"m": "HWM100-1701R(CB)", "c": "WM", "s": "Top Load"}, {"m": "HWM100-316S6", "c": "WM", "s": "Top Load"}, {"m": "HWM120-1701RS", "c": "WM", "s": "Top Load"}, {"m": "HWM120-316S6", "c": "WM", "s": "Top Load"}, {"m": "HWM130-B1678ES8", "c": "WM", "s": "Top Load"}, {"m": "HWM140-1701D", "c": "WM", "s": "Top Load"}, {"m": "HWM140-1702DS", "c": "WM", "s": "Top Load"}, {"m": "HWM140-1826T", "c": "WM", "s": "Top Load"}, {"m": "HWM150-316S6", "c": "WM", "s": "Top Load"}, {"m": "HWM150-B1678ES8", "c": "WM", "s": "Top Load"}, {"m": "HWM160-1701D", "c": "WM", "s": "Top Load"}, {"m": "HWM160-B2178S8", "c": "WM", "s": "Top Load"}, {"m": "HWM160-B278S6", "c": "WM", "s": "Top Load"}, {"m": "HWM180-B1678S8", "c": "WM", "s": "Top Load"}, {"m": "HWM180-B2178S8", "c": "WM", "s": "Top Load"}, {"m": "HWM180-B278S6", "c": "WM", "s": "Top Load"}, {"m": "HWM200-B1678ES8", "c": "WM", "s": "Top Load"}, {"m": "HWM200-B2158B", "c": "WM", "s": "Top Load"}, {"m": "HWM250-1701D", "c": "WM", "s": "Top Load"}, {"m": "HTW70-1217BS", "c": "WM", "s": "Twin Tub"}, {"m": "HTW90-1217BS", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T100 OXI", "c": "WM", "s": "Twin Tub"}, {"m": "HTW110-1217BS", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T120 OXI", "c": "WM", "s": "Twin Tub"}, {"m": "HTW130-1217BS", "c": "WM", "s": "Twin Tub"}, {"m": "HTW150-1217BS", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T160N2", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T180N2", "c": "WM", "s": "Twin Tub"}, {"m": "HWM-T200N2", "c": "WM", "s": "Twin Tub"}, {"m": "HRF-MD350 GB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD419M", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD456 GB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD469G GB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD469G HPW", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD469M MB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD469WG", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD529I(MLW)GU1", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-FD529I(MLW)GU1", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD539IW(GL)U1", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD539GBT", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD550GB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD620GB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD758SIBGU1", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-MD679GB", "c": "RF", "s": "Multi Dr"}, {"m": "HRF-SBS490 SV", "c": "RF", "s": "SBS"}, {"m": "RSB59CRFD1OL", "c": "RF", "s": "SBS"}, {"m": "HRF-SBS569MS CB", "c": "RF", "s": "SBS"}, {"m": "HRF-SBS569MS HP", "c": "RF", "s": "SBS"}, {"m": "HRF-SBS636 MS", "c": "RF", "s": "SBS"}, {"m": "HRF-SBS636IW(SLB)U1", "c": "RF", "s": "SBS"}, {"m": "HRF-185MN", "c": "RF", "s": "2Dr"}, {"m": "HRF-209MNI BK", "c": "RF", "s": "2Dr"}, {"m": "HRF-209MNI HPMS", "c": "RF", "s": "2Dr"}, {"m": "HRF-215MN SS", "c": "RF", "s": "2Dr"}, {"m": "HRF-RT205MN NS", "c": "RF", "s": "2Dr"}, {"m": "HRF-239MNI BK", "c": "RF", "s": "2Dr"}, {"m": "HRF-245MN SS", "c": "RF", "s": "2Dr"}, {"m": "HRF-RT235MN NS", "c": "RF", "s": "2Dr"}, {"m": "HRF-240MNI", "c": "RF", "s": "2Dr"}, {"m": "HRF-THM259I", "c": "RF", "s": "2Dr"}, {"m": "HRF-THM25NS", "c": "RF", "s": "2Dr"}, {"m": "HRF-260MGI", "c": "RF", "s": "2Dr"}, {"m": "HRF-285MNI", "c": "RF", "s": "2Dr"}, {"m": "HRF-350MNI BK", "c": "RF", "s": "2Dr"}, {"m": "HRF-320MNI BK", "c": "RF", "s": "2Dr"}, {"m": "HRF-THM42I", "c": "RF", "s": "2Dr"}, {"m": "HRF-THM42N", "c": "RF", "s": "2Dr"}, {"m": "HRF-455MNI", "c": "RF", "s": "2Dr"}, {"m": "HRF-460IMGU1", "c": "RF", "s": "2Dr"}, {"m": "HRF-460MGI", "c": "RF", "s": "2Dr"}, {"m": "HRF-460MNI", "c": "RF", "s": "2Dr"}, {"m": "HRF-490IWMGU1", "c": "RF", "s": "2Dr"}, {"m": "HRF-490MGI", "c": "RF", "s": "2Dr"}, {"m": "HR-SD55", "c": "RF", "s": "1Dr"}, {"m": "HR-SD95", "c": "RF", "s": "1Dr"}, {"m": "HR-ADBX15 CB", "c": "RF", "s": "1Dr"}, {"m": "HR-ADBX15 CS", "c": "RF", "s": "1Dr"}, {"m": "HR-DMBX15 CB", "c": "RF", "s": "1Dr"}, {"m": "HR-DMBX15 CG", "c": "RF", "s": "1Dr"}, {"m": "HR-SD149M MB", "c": "RF", "s": "1Dr"}, {"m": "HR-SD159F BE", "c": "RF", "s": "1Dr"}, {"m": "HR-SD159F CS", "c": "RF", "s": "1Dr"}, {"m": "HR-SD159F HPG", "c": "RF", "s": "1Dr"}, {"m": "HR-DMBX18 CB", "c": "RF", "s": "1Dr"}, {"m": "HR-DMBX18 CS", "c": "RF", "s": "1Dr"}, {"m": "HR-SD189M MB", "c": "RF", "s": "1Dr"}, {"m": "HR-SD199F BE", "c": "RF", "s": "1Dr"}, {"m": "HR-SD199F CS", "c": "RF", "s": "1Dr"}, {"m": "HRF-BM329MI", "c": "RF", "s": "BM"}, {"m": "H65C900UX", "c": "TV", "s": "OLED"}, {"m": "H55M80FUX", "c": "TV", "s": "MINI-LED"}, {"m": "H65M80FUX", "c": "TV", "s": "MINI-LED"}, {"m": "H75M80FUX", "c": "TV", "s": "MINI-LED"}, {"m": "H75M95EUX", "c": "TV", "s": "MINI-LED"}, {"m": "H85M80FUX", "c": "TV", "s": "MINI-LED"}, {"m": "H32S80EFX", "c": "TV", "s": "QLED"}, {"m": "H43S80EUX", "c": "TV", "s": "QLED"}, {"m": "H43S80GUX", "c": "TV", "s": "QLED"}, {"m": "H50S80EUX", "c": "TV", "s": "QLED"}, {"m": "H50S80GUX", "c": "TV", "s": "QLED"}, {"m": "H55K7UG", "c": "TV", "s": "QLED"}, {"m": "H55S80EUX", "c": "TV", "s": "QLED"}, {"m": "H55S80GUX", "c": "TV", "s": "QLED"}, {"m": "H55S900UX", "c": "TV", "s": "QLED"}, {"m": "H55S90EUX", "c": "TV", "s": "QLED"}, {"m": "H65K7UG", "c": "TV", "s": "QLED"}, {"m": "H65S80EUX", "c": "TV", "s": "QLED"}, {"m": "H65S80GUX", "c": "TV", "s": "QLED"}, {"m": "H65S90EUX", "c": "TV", "s": "QLED"}, {"m": "H75K7UG", "c": "TV", "s": "QLED"}, {"m": "H75S800UX", "c": "TV", "s": "QLED"}, {"m": "H75S80GUX", "c": "TV", "s": "QLED"}, {"m": "H75S90EUX", "c": "TV", "s": "QLED"}, {"m": "H85S800UX", "c": "TV", "s": "QLED"}, {"m": "H85S80GUX", "c": "TV", "s": "QLED"}, {"m": "H100S90GUX", "c": "TV", "s": "QLED"}, {"m": "H32K70G", "c": "TV", "s": "UHD"}, {"m": "H43K85FFX", "c": "TV", "s": "UHD"}, {"m": "H50K66UG", "c": "TV", "s": "UHD"}, {"m": "H50K6UG PLUS", "c": "TV", "s": "UHD"}, {"m": "H50K85FUX", "c": "TV", "s": "UHD"}, {"m": "LE50K8000UA", "c": "TV", "s": "UHD"}, {"m": "H55K66UG", "c": "TV", "s": "UHD"}, {"m": "H55K6UG PLUS", "c": "TV", "s": "UHD"}, {"m": "H55K85FUX", "c": "TV", "s": "UHD"}, {"m": "H55K85GUX", "c": "TV", "s": "UHD"}, {"m": "H58K66UG", "c": "TV", "s": "UHD"}, {"m": "H58K67UG", "c": "TV", "s": "UHD"}, {"m": "H65K6UG", "c": "TV", "s": "UHD"}, {"m": "H65K85FUX", "c": "TV", "s": "UHD"}, {"m": "H65K85GUX", "c": "TV", "s": "UHD"}, {"m": "H70D6UG", "c": "TV", "s": "UHD"}, {"m": "H75K85FUX", "c": "TV", "s": "UHD"}, {"m": "H75K85GUX", "c": "TV", "s": "UHD"}, {"m": "32H5F", "c": "TV", "s": "FHD"}, {"m": "H32D6M", "c": "TV", "s": "FHD"}, {"m": "H32F6000", "c": "TV", "s": "FHD"}, {"m": "H32S70GFX", "c": "TV", "s": "FHD"}, {"m": "LE32B9600T", "c": "TV", "s": "FHD"}, {"m": "LE32K6000", "c": "TV", "s": "FHD"}, {"m": "LE39K8000", "c": "TV", "s": "FHD"}, {"m": "LE39K8000A", "c": "TV", "s": "FHD"}, {"m": "H40K6FG PLUS", "c": "TV", "s": "FHD"}, {"m": "H43D5F", "c": "TV", "s": "FHD"}, {"m": "H43K6FG", "c": "TV", "s": "FHD"}, {"m": "H43K6FG PLUS", "c": "TV", "s": "FHD"}, {"m": "H43S70GFX", "c": "TV", "s": "FHD"}, {"m": "H50S70GFX", "c": "TV", "s": "FHD"}, {"m": "H55D6UG", "c": "TV", "s": "FHD"}, {"m": "EI35E(DW)", "c": "WH", "s": "Digital"}, {"m": "EI35E-F3CS(TH)", "c": "WH", "s": "Digital"}, {"m": "EI35G1(S)", "c": "WH", "s": "Digital"}, {"m": "EI35G2(G)", "c": "WH", "s": "Digital"}, {"m": "EI35H2(B)", "c": "WH", "s": "Digital"}, {"m": "EI45E-F3CS(TH)", "c": "WH", "s": "Digital"}, {"m": "EI45E-K5CB(TH)", "c": "WH", "s": "Digital"}, {"m": "EI45G2(G)", "c": "WH", "s": "Digital"}, {"m": "EI45H2(B)", "c": "WH", "s": "Digital"}, {"m": "EI55E-K5CB-RS(TH)", "c": "WH", "s": "Digital"}, {"m": "EI60C1(W)", "c": "WH", "s": "Digital"}, {"m": "EI60E(DB)", "c": "WH", "s": "Digital"}, {"m": "EI60E-PAD5AB(TH)", "c": "WH", "s": "Digital"}, {"m": "EI60G2(G)", "c": "WH", "s": "Digital"}, {"m": "EI35A1(W)", "c": "WH", "s": "Manual"}, {"m": "EI35A2(W)", "c": "WH", "s": "Manual"}, {"m": "EI35L1(W)", "c": "WH", "s": "Manual"}, {"m": "EI35M(AES)", "c": "WH", "s": "Manual"}, {"m": "EI35M-D1W(TH)", "c": "WH", "s": "Manual"}, {"m": "EI35M-F1CWB(TH)", "c": "WH", "s": "Manual"}, {"m": "EI35M-F1W(TH)", "c": "WH", "s": "Manual"}, {"m": "EI35M1(W)", "c": "WH", "s": "Manual"}, {"m": "EI45A1(W)", "c": "WH", "s": "Manual"}, {"m": "EI45A2(W)", "c": "WH", "s": "Manual"}, {"m": "EI45H1(W)", "c": "WH", "s": "Manual"}, {"m": "EI45M(AE)", "c": "WH", "s": "Manual"}, {"m": "EI45M-B1W(TH)", "c": "WH", "s": "Manual"}, {"m": "EI45M-D1W(TH)", "c": "WH", "s": "Manual"}, {"m": "EI45M-F1CWB(TH)", "c": "WH", "s": "Manual"}, {"m": "EI45M-F1W(TH)", "c": "WH", "s": "Manual"}, {"m": "EI45M-J1CW-F(TH)", "c": "WH", "s": "Manual"}, {"m": "EI45M1(W)", "c": "WH", "s": "Manual"}, {"m": "HDC-BB3A1B-TH", "c": "WH", "s": "Water Dispenser"}, {"m": "HDC-TB3B1W-TH", "c": "WH", "s": "Water Dispenser"}];
+
+    // Category Metadata mapping
+    const CATEGORY_NAMES = {
+      'AC': 'เครื่องปรับอากาศ (Air Conditioner)',
+      'RF': 'ตู้เย็น (Refrigerator)',
+      'WM': 'เครื่องซักผ้าและเครื่องอบผ้า (Washing Machine & Dryer)',
+      'TV': 'โทรทัศน์ (Television)',
+      'FZ': 'ตู้แช่แข็งและตู้แช่ไวน์ (Freezer & Beverage)',
+      'WH': 'เครื่องทำน้ำอุ่นและตู้น้ำดื่ม (Water Heater & Dispenser)'
+    };
+
+    // SubCategory Thai Labels
+    const SUBCATEGORY_LABELS = {
+      // AC
+      'Inverter': 'Inverter (อินเวอร์เตอร์)',
+      'Fix Speed': 'Fix Speed (ระบบธรรมดา)',
+      'Floor Standing': 'Floor Standing (ตั้งพื้น)',
+      // RF
+      'Multi Dr': 'Multi Door (หลายประตู)',
+      'SBS': 'Side-by-Side (ไซด์บายไซด์)',
+      '2Dr': '2-Door (2 ประตู)',
+      '1Dr': '1-Door (1 ประตู)',
+      'BM': 'Bottom Mount (ช่องแช่แข็งล่าง)',
+      // WM
+      'FL Wash&Dry': 'FL Wash & Dry (ฝาหน้า ซักและอบ)',
+      'Front Load': 'Front Load (ฝาหน้า)',
+      'Top Load': 'Top Load (ฝาบน)',
+      'Twin Tub': 'Twin Tub (2 ถัง)',
+      'Dryer': 'Dryer (เครื่องอบผ้า)',
+      // TV
+      'OLED': 'OLED TV',
+      'MINI-LED': 'Mini-LED TV',
+      'QLED': 'QLED TV',
+      'UHD': '4K UHD TV',
+      'FHD': 'Full HD / Smart TV',
+      // FZ
+      'Beverage': 'Beverage Cooler (ตู้แช่เครื่องดื่ม)',
+      'Chest': 'Chest Freezer (ตู้แช่แข็งฝาทึบ)',
+      'Vertical': 'Vertical Freezer (ตู้แช่แข็งแนวตั้ง)',
+      'Wine': 'Wine Cellar (ตู้แช่ไวน์)',
+      'Glass': 'Glass Door (ตู้แช่ประตูกระจก)',
+      // WH
+      'Digital': 'Digital (ดิจิทัล)',
+      'Manual': 'Manual (แมนนวล)',
+      'Water Dispenser': 'Water Dispenser (ตู้น้ำดื่ม)'
+    };
+
+    // --- 2. STORE DIMENSION DATA ---
+    const STORES = [
+      { id: "S00449", name: "PM:SIAM_PARAGON", nameTh: "สยามพารากอน", province: "กรุงเทพมหานคร", active: true, campB: true },
+      { id: "S00327", name: "PM:EMPORIUM", nameTh: "เอ็มโพเรียม", province: "กรุงเทพมหานคร", active: true, campB: true },
+      { id: "S00222", name: "PM-NAKHONRATCHASIMA", nameTh: "เดอะมอลล์ โคราช", province: "นครราชสีมา", active: true, campB: false },
+      { id: "S00349", name: "PM:NGAMWONGWAN", nameTh: "เดอะมอลล์ งามวงศ์วาน", province: "นนทบุรี", active: true, campB: false },
+      { id: "S00370", name: "PM:THAPRA", nameTh: "เดอะมอลล์ ท่าพระ", province: "กรุงเทพมหานคร", active: true, campB: false },
+      { id: "S00190", name: "PM:BANGKAE", nameTh: "เดอะมอลล์ บางแค", province: "กรุงเทพมหานคร", active: true, campB: false },
+      { id: "S00066", name: "PM:BANGKAPI", nameTh: "เดอะมอลล์ บางกะปิ", province: "กรุงเทพมหานคร", active: true, campB: false },
+      { id: "S00795", name: "PM:RAMKAMHANG", nameTh: "เดอะมอลล์ รามคำแหง", province: "กรุงเทพมหานคร", active: false, campB: false }
+    ];
+
+    // --- 3. CAMPAIGN DEFINITIONS ---
+    const CAMPAIGNS = {
+      'CAMP-2026-PTT-AC': {
+        id: 'CAMP-2026-PTT-AC',
+        nameTh: 'เย็นฉ่ำ แล้วยังเติมความสุขให้ทุกเส้นทาง (Haier x PTT)',
+        rewardName: 'บัตรเติมน้ำมัน PTT มูลค่า 500 บาท',
+        rewardValue: 500,
+        minSpend: 0,
+        fixedCategory: 'AC',
+        fixedSubCategory: 'Inverter',
+        eligibleModels: [
+          { code: 'HSU-09VRRA055BF', name: 'HSU-09VRRA055BF (UV Cool Smart 9,200 BTU)' },
+          { code: 'HSU-12VRRA05BF', name: 'HSU-12VRRA05BF (UV Cool Smart 12,300 BTU)' },
+          { code: 'HSU-18VRRA05BF', name: 'HSU-18VRRA05BF (UV Cool Smart 18,000 BTU)' },
+          { code: 'HSU-12VQEC05', name: 'HSU-12VQEC05 (Clean Cool 12,000 BTU)' }
+        ]
+      },
+      'CAMP-2026-SPORTS-MALL': {
+        id: 'CAMP-2026-SPORTS-MALL',
+        nameTh: 'Shop More Get More (Haier x LFC x PSG)',
+        rewardName: 'Gift Voucher The Mall มูลค่า 1,000 บาท',
+        rewardValue: 1000,
+        minSpend: 20000,
+        eligibleStores: ['S00449', 'S00327'], // Paragon & Emporium only
+        fixedCategory: null,
+        fixedSubCategory: null,
+        eligibleModels: null // All Haier models in Dimension Model
+      }
+    };
+
+    // State
+    let currentStore = STORES[0]; // default Paragon
+    let selectedCampaign = null;
+    let submissions = JSON.parse(localStorage.getItem('haier_submissions') || '[]');
+    let currentReceiptImageData = '';
+    let currentVoucherImageData = '';
+    let datePickerInstance = null;
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadSavedStore();
+      renderStorePickerModal();
+      updateStoreUI();
+      initCalendarPicker();
+    });
+
+    // Initialize Interactive Flatpickr Calendar Date Picker
+    function initCalendarPicker() {
+      datePickerInstance = flatpickr("#purchaseDate", {
+        locale: "th",
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d F Y (วันl)",
+        defaultDate: new Date(),
+        maxDate: "today",
+        disableMobile: false,
+        theme: "dark",
+        animate: true,
+        monthSelectorType: "dropdown",
+        onReady: function(selectedDates, dateStr, instance) {
+          // ensure styling on custom alt input
+          if (instance.altInput) {
+            instance.altInput.className = "w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition cursor-pointer font-medium";
+          }
+        }
+      });
+    }
+
+    function resetPurchaseDate() {
+      if (datePickerInstance) {
+        datePickerInstance.setDate(new Date(), true);
+      }
+    }
+
+    function loadSavedStore() {
+      const savedStoreId = localStorage.getItem('haier_kiosk_store_id');
+      if (savedStoreId) {
+        const found = STORES.find(s => s.id === savedStoreId);
+        if (found) currentStore = found;
+      }
+    }
+
+    function updateStoreUI() {
+      document.getElementById('headerStoreName').textContent = currentStore.nameTh;
+      document.getElementById('bannerStoreName').textContent = currentStore.nameTh;
+      document.getElementById('currentStoreBadge').classList.remove('hidden');
+
+      const isCampBEligible = currentStore.campB && currentStore.active;
+      const overlay = document.getElementById('campBStoreRestrictedOverlay');
+      const btnB = document.getElementById('btnSelectCampB');
+      const cardB = document.getElementById('cardCampB');
+
+      if (isCampBEligible) {
+        overlay.classList.add('hidden');
+        btnB.disabled = false;
+        btnB.classList.remove('opacity-50', 'cursor-not-allowed');
+        cardB.classList.remove('opacity-60');
+      } else {
+        overlay.classList.remove('hidden');
+        btnB.disabled = true;
+        btnB.classList.add('opacity-50', 'cursor-not-allowed');
+        cardB.classList.add('opacity-60');
+      }
+      lucide.createIcons();
+    }
+
+    function openStoreModal() {
+      document.getElementById('storeModal').classList.remove('hidden');
+    }
+
+    function closeStoreModal() {
+      document.getElementById('storeModal').classList.add('hidden');
+    }
+
+    function renderStorePickerModal() {
+      const container = document.getElementById('storeListContainer');
+      container.innerHTML = STORES.map(store => `
+        <button onclick="setStore('${store.id}')" class="w-full text-left p-3 rounded-xl border transition flex items-center justify-between ${store.id === currentStore.id ? 'bg-sky-500/20 border-sky-400 text-white' : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800'} ${!store.active ? 'opacity-40 cursor-not-allowed' : ''}">
+          <div>
+            <div class="font-medium text-sm">${store.nameTh} <span class="text-xs text-slate-400 font-mono">(${store.name})</span></div>
+            <div class="text-[11px] text-slate-400">${store.province} • ${store.campB ? '✨ ร่วมแคมเปญ B' : 'ร่วมเฉพาะแคมเปญ A'}</div>
+          </div>
+          ${store.id === currentStore.id ? '<span class="text-xs text-sky-400 font-semibold">กำลังเลือก</span>' : ''}
+        </button>
+      `).join('');
+    }
+
+    function setStore(storeId) {
+      const target = STORES.find(s => s.id === storeId);
+      if (!target || !target.active) return;
+      currentStore = target;
+      localStorage.setItem('haier_kiosk_store_id', target.id);
+      renderStorePickerModal();
+      updateStoreUI();
+      closeStoreModal();
+    }
+
+    function startRegistration() {
+      window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+
+    function selectCampaign(campId) {
+      selectedCampaign = CAMPAIGNS[campId];
+      if (!selectedCampaign) return;
+
+      if (campId === 'CAMP-2026-SPORTS-MALL' && !currentStore.campB) {
+        alert('ขออภัย สาขานี้ไม่ร่วมรายการแคมเปญ Shop More Get More');
+        return;
+      }
+
+      document.getElementById('formCampaignTitle').textContent = selectedCampaign.nameTh;
+      document.getElementById('rewardBadge').textContent = 'ของรางวัล: ' + selectedCampaign.rewardName;
+
+      const catSelect = document.getElementById('categorySelect');
+      const catHelp = document.getElementById('categoryHelpText');
+      const subCatSelect = document.getElementById('subCategorySelect');
+      const subCatHelp = document.getElementById('subCategoryHelpText');
+      const minSpendError = document.getElementById('minSpendError');
+      minSpendError.classList.add('hidden');
+
+      if (selectedCampaign.fixedCategory) {
+        catSelect.value = selectedCampaign.fixedCategory;
+        catSelect.disabled = true;
+        catHelp.textContent = 'แคมเปญนี้กำหนดเฉพาะหมวดเครื่องปรับอากาศ (AC)';
+        populateSubCategoryDropdown('AC', selectedCampaign.fixedSubCategory, true);
+      } else {
+        catSelect.value = '';
+        catSelect.disabled = false;
+        catHelp.textContent = 'เลือกหมวดหมู่สินค้าหลัก';
+        
+        subCatSelect.innerHTML = '<option value="">-- โปรดเลือก Category ก่อน --</option>';
+        subCatSelect.disabled = false;
+        subCatHelp.textContent = 'เลือกหมวดหมู่ย่อยเพื่อกรองรุ่น';
+
+        const modelSelect = document.getElementById('modelSelect');
+        modelSelect.innerHTML = '<option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>';
+      }
+
+      resetPurchaseDate();
+      clearReceiptImage();
+      clearVoucherImage();
+      switchView('viewRegisterForm');
+    }
+
+    function handleCategoryChange() {
+      const cat = document.getElementById('categorySelect').value;
+      populateSubCategoryDropdown(cat, '', false);
+    }
+
+    function populateSubCategoryDropdown(category, defaultSubCat, isFixedCampaignA) {
+      const subCatSelect = document.getElementById('subCategorySelect');
+      const subCatHelp = document.getElementById('subCategoryHelpText');
+      const modelSelect = document.getElementById('modelSelect');
+
+      if (!category) {
+        subCatSelect.innerHTML = '<option value="">-- โปรดเลือก Category ก่อน --</option>';
+        subCatSelect.disabled = false;
+        subCatHelp.textContent = 'เลือกหมวดหมู่ย่อยเพื่อกรองรุ่น';
+        modelSelect.innerHTML = '<option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>';
+        return;
+      }
+
+      if (isFixedCampaignA) {
+        subCatSelect.innerHTML = '<option value="Inverter">Inverter (4 รุ่นที่ร่วมรายการ)</option>';
+        subCatSelect.value = 'Inverter';
+        subCatSelect.disabled = true;
+        subCatHelp.textContent = 'ล็อกเฉพาะหมวด Inverter ที่ร่วมรายการ';
+        populateModelDropdown('AC', 'Inverter', true);
+        return;
+      }
+
+      subCatSelect.disabled = false;
+      const subCatsInCat = [...new Set(ALL_MODELS.filter(m => m.c === category).map(m => m.s).filter(Boolean))];
+      
+      subCatSelect.innerHTML = '<option value="">-- เลือกหมวดหมู่ย่อย (' + subCatsInCat.length + ' ประเภท) --</option>' + subCatsInCat.map(sc => `
+        <option value="${sc}">${SUBCATEGORY_LABELS[sc] || sc}</option>
+      `).join('');
+      
+      subCatHelp.textContent = 'พบ ' + subCatsInCat.length + ' หมวดหมู่ย่อยในหมวดนี้';
+      modelSelect.innerHTML = '<option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>';
+    }
+
+    function handleSubCategoryChange() {
+      const cat = document.getElementById('categorySelect').value;
+      const subCat = document.getElementById('subCategorySelect').value;
+      populateModelDropdown(cat, subCat, false);
+    }
+
+    function populateModelDropdown(category, subCategory, isFixedCampaignA) {
+      const modelSelect = document.getElementById('modelSelect');
+      const modelHelp = document.getElementById('modelHelpText');
+
+      if (!category || !subCategory) {
+        modelSelect.innerHTML = '<option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>';
+        modelHelp.textContent = 'รายชื่อรุ่นสินค้าจะปรากฏหลังจากเลือก SubCategory';
+        return;
+      }
+
+      if (isFixedCampaignA && selectedCampaign.eligibleModels) {
+        modelSelect.innerHTML = selectedCampaign.eligibleModels.map(m => `
+          <option value="${m.code}">${m.name}</option>
+        `).join('');
+        modelHelp.textContent = 'เลือกรุ่นเครื่องปรับอากาศ 4 รุ่นที่ร่วมรายการรับบัตรเติมน้ำมัน 500 บาท';
+      } else {
+        const filtered = ALL_MODELS.filter(m => m.c === category && m.s === subCategory);
+        if (filtered.length === 0) {
+          modelSelect.innerHTML = '<option value="">-- ไม่พบรุ่นในหมวดหมู่นี้ --</option>';
+          modelHelp.textContent = 'ไม่พบสินค้า';
+        } else {
+          modelSelect.innerHTML = '<option value="">-- เลือกรุ่นสินค้า (' + filtered.length + ' รุ่น) --</option>' + filtered.map(m => `
+            <option value="${m.m}">${m.m}</option>
+          `).join('');
+          modelHelp.textContent = 'พบสินค้า ' + filtered.length + ' รุ่นในหมวด ' + (SUBCATEGORY_LABELS[subCategory] || subCategory);
+        }
+      }
+    }
+
+    // Photo 1: Receipt Image Handling
+    function handleReceiptFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentReceiptImageData = e.target.result;
+        document.getElementById('receiptImagePreview').src = currentReceiptImageData;
+        document.getElementById('receiptUploadPrompt').classList.add('hidden');
+        document.getElementById('receiptPreviewContainer').classList.remove('hidden');
+        document.getElementById('receiptStatusBadge').textContent = '✓ แนบแล้ว';
+        document.getElementById('receiptStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      }
+      reader.readAsDataURL(file);
+    }
+
+    function clearReceiptImage() {
+      currentReceiptImageData = '';
+      document.getElementById('receiptFile').value = '';
+      document.getElementById('receiptUploadPrompt').classList.remove('hidden');
+      document.getElementById('receiptPreviewContainer').classList.add('hidden');
+      document.getElementById('receiptStatusBadge').textContent = 'ยังไม่แนบ';
+      document.getElementById('receiptStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
+    }
+
+    // Photo 2: Voucher Image Handling
+    function handleVoucherFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentVoucherImageData = e.target.result;
+        document.getElementById('voucherImagePreview').src = currentVoucherImageData;
+        document.getElementById('voucherUploadPrompt').classList.add('hidden');
+        document.getElementById('voucherPreviewContainer').classList.remove('hidden');
+        document.getElementById('voucherStatusBadge').textContent = '✓ แนบแล้ว';
+        document.getElementById('voucherStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      }
+      reader.readAsDataURL(file);
+    }
+
+    function clearVoucherImage() {
+      currentVoucherImageData = '';
+      document.getElementById('voucherFile').value = '';
+      document.getElementById('voucherUploadPrompt').classList.remove('hidden');
+      document.getElementById('voucherPreviewContainer').classList.add('hidden');
+      document.getElementById('voucherStatusBadge').textContent = 'ยังไม่แนบ';
+      document.getElementById('voucherStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById('purchaseAmount').value);
+      const catVal = document.getElementById('categorySelect').value;
+      const subCatVal = document.getElementById('subCategorySelect').value;
+      const modelVal = document.getElementById('modelSelect').value;
+      const pDate = document.getElementById('purchaseDate').value;
+
+      if (!catVal) {
+        alert('กรุณาเลือกหมวดหมู่สินค้าหลัก (Category)');
+        document.getElementById('categorySelect').focus();
+        return;
+      }
+
+      if (!subCatVal) {
+        alert('กรุณาเลือกหมวดหมู่ย่อย (SubCategory)');
+        document.getElementById('subCategorySelect').focus();
+        return;
+      }
+
+      if (!modelVal) {
+        alert('กรุณาเลือกรุ่นสินค้า Haier (Model)');
+        document.getElementById('modelSelect').focus();
+        return;
+      }
+
+      if (!pDate) {
+        alert('กรุณาเลือกวันที่ซื้อสินค้าจากปฏิทิน');
+        document.getElementById('purchaseDate').focus();
+        return;
+      }
+
+      if (selectedCampaign.minSpend > 0 && amount < selectedCampaign.minSpend) {
+        document.getElementById('minSpendError').classList.remove('hidden');
+        document.getElementById('purchaseAmount').focus();
+        return;
+      }
+
+      // Validate both required photos
+      if (!currentReceiptImageData) {
+        alert('กรุณาแนบภาพที่ 1: รูปถ่ายใบเสร็จรับเงิน (Receipt)');
+        return;
+      }
+
+      if (!currentVoucherImageData) {
+        alert('กรุณาแนบภาพที่ 2: รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า (Voucher)');
+        return;
+      }
+
+      // Generate Reference Code
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      const voucherCode = 'HR-' + new Date().getFullYear() + String(new Date().getMonth()+1).padStart(2,'0') + '-' + randomSuffix;
+
+      const newSubmission = {
+        id: voucherCode,
+        storeId: currentStore.id,
+        storeName: currentStore.nameTh,
+        campaignId: selectedCampaign.id,
+        campaignName: selectedCampaign.nameTh,
+        rewardName: selectedCampaign.rewardName,
+        rewardValue: selectedCampaign.rewardValue,
+        customerName: document.getElementById('custName').value,
+        customerPhone: document.getElementById('custPhone').value,
+        category: catVal,
+        categoryName: CATEGORY_NAMES[catVal] || catVal,
+        subCategory: subCatVal,
+        subCategoryName: SUBCATEGORY_LABELS[subCatVal] || subCatVal,
+        modelCode: modelVal,
+        purchaseDate: pDate,
+        amount: amount,
+        receiptImage: currentReceiptImageData,
+        voucherImage: currentVoucherImageData,
+        staffName: document.getElementById('staffName').value || 'พนักงานประจำสาขา',
+        staffId: document.getElementById('staffId').value || '-',
+        status: 'issued',
+        timestamp: new Date().toLocaleString('th-TH')
+      };
+
+      submissions.unshift(newSubmission);
+      localStorage.setItem('haier_submissions', JSON.stringify(submissions));
+
+      showConfirmation(newSubmission);
+    }
+
+    function showConfirmation(sub) {
+      document.getElementById('confRewardDescription').textContent = sub.rewardName;
+      document.getElementById('confVoucherCode').textContent = sub.id;
+      document.getElementById('confCustName').textContent = sub.customerName;
+      document.getElementById('confCustPhone').textContent = sub.customerPhone;
+      document.getElementById('confStoreName').textContent = sub.storeName;
+      document.getElementById('confPurchaseDate').textContent = sub.purchaseDate;
+      document.getElementById('confModelCode').textContent = sub.modelCode;
+      document.getElementById('confCategoryCode').textContent = `${sub.category} • ${sub.subCategory}`;
+      document.getElementById('confTimestamp').textContent = sub.timestamp;
+
+      // Update Photo Thumbnails in confirmation
+      document.getElementById('confReceiptThumb').src = sub.receiptImage;
+      document.getElementById('confVoucherThumb').src = sub.voucherImage;
+
+      // Generate QR Code
+      const qrContainer = document.getElementById('qrcodeCanvas');
+      qrContainer.innerHTML = '';
+      QRCode.toCanvas(document.createElement('canvas'), sub.id, { width: 90, margin: 1 }, function (error, canvas) {
+        if (!error && canvas) qrContainer.appendChild(canvas);
+      });
+
+      switchView('viewConfirmation');
+    }
+
+    function startNextRegistration() {
+      document.getElementById('regForm').reset();
+      clearReceiptImage();
+      clearVoucherImage();
+      resetPurchaseDate();
+      switchView('viewStoreMenu');
+    }
+
+    function backToStoreMenu() {
+      switchView('viewStoreMenu');
+    }
+
+    function showStoreSubmissions() {
+      document.getElementById('logStoreTitle').textContent = currentStore.nameTh;
+      renderStoreSubmissionsTable();
+      switchView('viewStoreLogs');
+    }
+
+    function renderStoreSubmissionsTable() {
+      const storeSubs = submissions.filter(s => s.storeId === currentStore.id);
+      const tbody = document.getElementById('storeSubmissionsTbody');
+      const emptyBox = document.getElementById('storeLogEmpty');
+
+      if (storeSubs.length === 0) {
+        tbody.innerHTML = '';
+        emptyBox.classList.remove('hidden');
+        return;
+      }
+
+      emptyBox.classList.add('hidden');
+      tbody.innerHTML = storeSubs.map(s => `
+        <tr class="hover:bg-slate-800/50 transition">
+          <td class="p-3.5">
+            <span class="font-mono font-bold text-sky-400">${s.id}</span>
+            <div class="text-[11px] text-slate-400">${s.timestamp}</div>
+          </td>
+          <td class="p-3.5">
+            <div class="font-medium text-white">${s.customerName}</div>
+            <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
+          </td>
+          <td class="p-3.5 max-w-xs">
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-slate-200 border border-slate-700">${s.rewardName}</span>
+          </td>
+          <td class="p-3.5">
+            <div class="font-medium text-white">${s.modelCode}</div>
+            <span class="text-[11px] text-sky-300">${s.category} • ${s.subCategory || '-'}</span>
+          </td>
+          <td class="p-3.5 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
+          <td class="p-3.5 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
+          <td class="p-3.5">
+            <div class="flex items-center space-x-1.5">
+              <img src="${s.receiptImage}" title="รูปใบเสร็จ" class="w-7 h-7 object-cover rounded border border-sky-400/40 hover:scale-150 transition cursor-pointer">
+              <img src="${s.voucherImage || s.receiptImage}" title="รูปบัตรกำนัล" class="w-7 h-7 object-cover rounded border border-purple-400/40 hover:scale-150 transition cursor-pointer">
+            </div>
+          </td>
+          <td class="p-3.5">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">อนุมัติแล้ว</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterStoreSubmissions() {
+      const query = document.getElementById('logSearchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#storeSubmissionsTbody tr');
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+
+    function showAdminView() {
+      renderAdminDashboard();
+      switchView('viewAdmin');
+    }
+
+    function renderAdminDashboard() {
+      document.getElementById('statTotalSubmissions').textContent = submissions.length;
+      const totalVal = submissions.reduce((sum, s) => sum + (s.rewardValue || 0), 0);
+      document.getElementById('statTotalVoucherValue').textContent = totalVal.toLocaleString() + ' THB';
+
+      const tbody = document.getElementById('adminSubmissionsTbody');
+      tbody.innerHTML = submissions.map(s => `
+        <tr class="hover:bg-slate-800/50">
+          <td class="p-3 font-mono font-bold text-sky-400">${s.id}</td>
+          <td class="p-3">${s.storeName}</td>
+          <td class="p-3">
+            <div class="font-medium text-white">${s.customerName}</div>
+            <div class="text-[11px] text-slate-400">${s.customerPhone}</div>
+          </td>
+          <td class="p-3">${s.rewardName}</td>
+          <td class="p-3">
+            <div class="text-white">${s.modelCode}</div>
+            <span class="text-[10px] text-slate-400">${s.category} • ${s.subCategory || '-'}</span>
+          </td>
+          <td class="p-3 font-mono text-amber-300">${s.purchaseDate || '-'}</td>
+          <td class="p-3 font-bold text-white">${s.amount.toLocaleString()} ฿</td>
+          <td class="p-3">
+            <img src="${s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-sky-400/40 hover:scale-150 transition cursor-pointer" title="รูปใบเสร็จ">
+          </td>
+          <td class="p-3">
+            <img src="${s.voucherImage || s.receiptImage}" class="w-8 h-8 object-cover rounded-lg border border-purple-400/40 hover:scale-150 transition cursor-pointer" title="รูปบัตรกำนัล">
+          </td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">ISSUED</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function exportSubmissionsCSV() {
+      if (submissions.length === 0) {
+        alert('ไม่มีข้อมูลการลงทะเบียนสำหรับส่งออก');
+        return;
+      }
+      const headers = ['Voucher Code', 'Store ID', 'Store Name', 'Campaign', 'Customer Name', 'Phone', 'Category', 'SubCategory', 'Model', 'Purchase Date', 'Amount (THB)', 'Receipt Attached', 'Voucher Attached', 'Timestamp', 'Status'];
+      const rows = submissions.map(s => [
+        s.id, s.storeId, `"${s.storeName}"`, `"${s.campaignName}"`, `"${s.customerName}"`, s.customerPhone, s.category, `"${s.subCategory || ''}"`, s.modelCode, s.purchaseDate, s.amount, s.receiptImage ? 'YES' : 'NO', s.voucherImage ? 'YES' : 'NO', `"${s.timestamp}"`, s.status
+      ]);
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'haier_voucher_submissions_' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click();
+    }
+
+    function switchView(viewId) {
+      const views = ['viewStoreMenu', 'viewRegisterForm', 'viewConfirmation', 'viewStoreLogs', 'viewAdmin'];
+      views.forEach(v => document.getElementById(v).classList.add('hidden'));
+      document.getElementById(viewId).classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
