@@ -270,7 +270,7 @@
 
             <form onsubmit="handleLandingCheckIn(event)" class="space-y-4">
               
-              <!-- 1. Store Selection (All 8 stores) -->
+              <!-- 1. Store Selection (All 8 stores - Only Thai Names) -->
               <div class="space-y-1.5">
                 <label class="block text-xs font-semibold text-slate-200 flex items-center space-x-1.5">
                   <i data-lucide="map-pin" class="w-3.5 h-3.5 text-sky-400"></i>
@@ -278,7 +278,7 @@
                 </label>
                 <select id="landingStoreSelect" required class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
                   <option value="">-- โปรดเลือกสาขา --</option>
-                  <!-- Populated via JS with all active stores -->
+                  <!-- Populated via JS with clean Thai names -->
                 </select>
               </div>
 
@@ -947,7 +947,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.9</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.0</span>
     </div>
   </footer>
 
@@ -996,16 +996,16 @@
       'Water Dispenser': 'Water Dispenser (ตู้น้ำดื่ม)'
     };
 
-    // --- 2. STORE DIMENSION DATA ---
+    // --- 2. STORE DIMENSION DATA (CLEAN THAI NAMES) ---
     const STORES = [
-      { id: "S00449", name: "PM:SIAM_PARAGON", nameTh: "สยามพารากอน", province: "กรุงเทพมหานคร", active: true, campB: true },
-      { id: "S00327", name: "PM:EMPORIUM", nameTh: "เอ็มโพเรียม", province: "กรุงเทพมหานคร", active: true, campB: true },
-      { id: "S00222", name: "PM-NAKHONRATCHASIMA", nameTh: "เดอะมอลล์ โคราช", province: "นครราชสีมา", active: true, campB: false },
-      { id: "S00349", name: "PM:NGAMWONGWAN", nameTh: "เดอะมอลล์ งามวงศ์วาน", province: "นนทบุรี", active: true, campB: false },
-      { id: "S00370", name: "PM:THAPRA", nameTh: "เดอะมอลล์ ท่าพระ", province: "กรุงเทพมหานคร", active: true, campB: false },
-      { id: "S00190", name: "PM:BANGKAE", nameTh: "เดอะมอลล์ บางแค", province: "กรุงเทพมหานคร", active: true, campB: false },
-      { id: "S00066", name: "PM:BANGKAPI", nameTh: "เดอะมอลล์ บางกะปิ", province: "กรุงเทพมหานคร", active: true, campB: false },
-      { id: "S00795", name: "PM:RAMKAMHANG", nameTh: "เดอะมอลล์ รามคำแหง", province: "กรุงเทพมหานคร", active: false, campB: false }
+      { id: "S00449", nameTh: "สยามพารากอน", active: true, campB: true },
+      { id: "S00327", nameTh: "เอ็มโพเรียม", active: true, campB: true },
+      { id: "S00222", nameTh: "เดอะมอลล์ โคราช", active: true, campB: false },
+      { id: "S00349", nameTh: "เดอะมอลล์ งามวงศ์วาน", active: true, campB: false },
+      { id: "S00370", nameTh: "เดอะมอลล์ ท่าพระ", active: true, campB: false },
+      { id: "S00190", nameTh: "เดอะมอลล์ บางแค", active: true, campB: false },
+      { id: "S00066", nameTh: "เดอะมอลล์ บางกะปิ", active: true, campB: false },
+      { id: "S00795", nameTh: "เดอะมอลล์ รามคำแหง", active: false, campB: false }
     ];
 
     // --- 3. CAMPAIGN DEFINITIONS ---
@@ -1061,19 +1061,20 @@
       syncCloudSubmissions();
     });
 
-    // Populate Landing Store Dropdown
+    // Populate Landing Store Dropdown (Clean Thai Names Only)
     function populateLandingStoreSelect() {
       const select = document.getElementById('landingStoreSelect');
       select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
-        <option value="${s.id}">${s.nameTh} (${s.name}) - ${s.province} ${s.campB ? '✨ ร่วมแคมเปญ B' : ''}</option>
+        <option value="${s.id}">${s.nameTh} ${s.campB ? '✨ (ร่วมแคมเปญ B)' : ''}</option>
       `).join('');
     }
 
+    // Populate Log Filter Store Dropdown (Clean Thai Names Only)
     function populateLogStoreFilterSelect() {
       const select = document.getElementById('logStoreFilterSelect');
       if (!select) return;
       select.innerHTML = '<option value="ALL">ทุกสาขา (All Stores)</option>' + STORES.filter(s => s.active).map(s => `
-        <option value="${s.id}">${s.nameTh} (${s.name})</option>
+        <option value="${s.id}">${s.nameTh}</option>
       `).join('');
     }
 
@@ -1273,7 +1274,7 @@
         return;
       }
 
-      // Reset form BEFORE applying campaign values so we don't wipe out campaign defaults
+      // Reset form BEFORE applying campaign values
       if (!currentEditingSubmissionId) {
         document.getElementById('regForm').reset();
         resetPurchaseDate();
@@ -1514,7 +1515,7 @@
       const custName = custNameInput ? custNameInput.value.trim() : '';
       const custPhone = custPhoneInput ? custPhoneInput.value.trim() : '';
       
-      // Auto-assign fixed category/subCategory for Campaign A to bypass dropdown constraints
+      // Auto-assign fixed category/subCategory for Campaign A
       let catVal = catSelect ? catSelect.value : '';
       let subCatVal = subCatSelect ? subCatSelect.value : '';
       let modelVal = modelSelect ? modelSelect.value : '';
@@ -2035,7 +2036,7 @@
       closeAdminRevisionModal();
     }
 
-    // --- EXCEL EXPORT (.xlsx) ---
+    // --- ACCURATE EXCEL EXPORT (.xlsx) WITH INTERNET BROWSABLE FULL URLS & THUMBNAILS ---
     async function exportSubmissionsExcel() {
       if (submissions.length === 0) {
         alert('ไม่มีข้อมูลการลงทะเบียนสำหรับส่งออก');
@@ -2052,26 +2053,26 @@
 
       worksheet.columns = [
         { header: 'No.', key: 'no', width: 6 },
-        { header: 'Voucher Ref Code', key: 'id', width: 18 },
+        { header: 'Voucher Ref Code', key: 'id', width: 20 },
         { header: 'Store ID', key: 'storeId', width: 10 },
         { header: 'Store Name (สาขา)', key: 'storeName', width: 22 },
-        { header: 'Campaign Name (แคมเปญ)', key: 'campaignName', width: 28 },
+        { header: 'Campaign Name (แคมเปญ)', key: 'campaignName', width: 30 },
         { header: 'Customer Name (ลูกค้า)', key: 'customerName', width: 20 },
-        { header: 'Customer Phone (เบอร์โทร)', key: 'customerPhone', width: 15 },
+        { header: 'Customer Phone (เบอร์โทร)', key: 'customerPhone', width: 16 },
         { header: 'Category (หมวดหลัก)', key: 'category', width: 12 },
         { header: 'SubCategory (หมวดย่อย)', key: 'subCategory', width: 18 },
         { header: 'Model Code (รุ่นสินค้า)', key: 'modelCode', width: 22 },
-        { header: 'Purchase Date (วันที่ซื้อ)', key: 'purchaseDate', width: 15 },
+        { header: 'Purchase Date (วันที่ซื้อ)', key: 'purchaseDate', width: 16 },
         { header: 'Amount (THB)', key: 'amount', width: 14 },
         { header: 'PC Name (พนักงาน)', key: 'staffName', width: 18 },
-        { header: 'PC Phone', key: 'staffPhone', width: 15 },
+        { header: 'PC Phone', key: 'staffPhone', width: 16 },
         { header: '1. Receipt Thumbnail', key: 'receiptThumb', width: 18 },
-        { header: '1. Receipt URL (คลิกดูภาพจริง)', key: 'receiptUrl', width: 30 },
+        { header: '1. Receipt Photo URL (คลิกดูภาพต้นฉบับ)', key: 'receiptUrl', width: 50 },
         { header: '2. Voucher Thumbnail', key: 'voucherThumb', width: 18 },
-        { header: '2. Voucher URL (คลิกดูภาพจริง)', key: 'voucherUrl', width: 30 },
+        { header: '2. Voucher Photo URL (คลิกดูภาพต้นฉบับ)', key: 'voucherUrl', width: 50 },
         { header: 'Status (สถานะ)', key: 'status', width: 16 },
         { header: 'Admin Remark (หมายเหตุ)', key: 'adminRemark', width: 28 },
-        { header: 'Timestamp', key: 'timestamp', width: 20 }
+        { header: 'Timestamp (เวลาลงทะเบียน)', key: 'timestamp', width: 20 }
       ];
 
       const headerRow = worksheet.getRow(1);
@@ -2095,6 +2096,30 @@
         const s = submissions[i];
         const rowNum = i + 2;
 
+        // Build 100% valid, clickable HTTPS full URLs
+        let receiptFullUrl = '';
+        if (s.receiptImage) {
+          if (s.receiptImage.startsWith('http://') || s.receiptImage.startsWith('https://')) {
+            receiptFullUrl = s.receiptImage;
+          } else if (s.receiptImage.startsWith('/')) {
+            receiptFullUrl = window.location.origin + s.receiptImage;
+          } else {
+            receiptFullUrl = `${window.location.origin}/api/image/receipts/${s.id}_receipt.jpg`;
+          }
+        }
+
+        let voucherFullUrl = '';
+        const vImg = s.voucherImage || s.receiptImage;
+        if (vImg) {
+          if (vImg.startsWith('http://') || vImg.startsWith('https://')) {
+            voucherFullUrl = vImg;
+          } else if (vImg.startsWith('/')) {
+            voucherFullUrl = window.location.origin + vImg;
+          } else {
+            voucherFullUrl = `${window.location.origin}/api/image/vouchers/${s.id}_voucher.jpg`;
+          }
+        }
+
         const row = worksheet.addRow({
           no: i + 1,
           id: s.id,
@@ -2111,16 +2136,18 @@
           staffName: s.staffName || '',
           staffPhone: s.staffId || '',
           receiptThumb: '',
-          receiptUrl: {
-            text: '🔗 เปิดดูรูปใบเสร็จบนเซิร์ฟเวอร์',
-            hyperlink: s.receiptImage.startsWith('http') || s.receiptImage.startsWith('/') ? (window.location.origin + s.receiptImage) : s.receiptImage
-          },
+          receiptUrl: receiptFullUrl ? {
+            text: receiptFullUrl,
+            hyperlink: receiptFullUrl,
+            tooltip: 'คลิกเพื่อเปิดดูรูปใบเสร็จบนเบราว์เซอร์'
+          } : '-',
           voucherThumb: '',
-          voucherUrl: {
-            text: '🔗 เปิดดูรูปบัตรกำนัลบนเซิร์ฟเวอร์',
-            hyperlink: (s.voucherImage || s.receiptImage).startsWith('http') || (s.voucherImage || s.receiptImage).startsWith('/') ? (window.location.origin + (s.voucherImage || s.receiptImage)) : (s.voucherImage || s.receiptImage)
-          },
-          status: s.status.toUpperCase(),
+          voucherUrl: voucherFullUrl ? {
+            text: voucherFullUrl,
+            hyperlink: voucherFullUrl,
+            tooltip: 'คลิกเพื่อเปิดดูรูปบัตรกำนัลบนเบราว์เซอร์'
+          } : '-',
+          status: (s.status || 'pending').toUpperCase(),
           adminRemark: s.adminRemark || '',
           timestamp: s.timestamp
         });
@@ -2128,6 +2155,7 @@
         row.height = 55;
         row.alignment = { vertical: 'middle', horizontal: 'left' };
 
+        // Embed image thumbnails if base64 exists
         if (s.receiptImage && s.receiptImage.includes('base64')) {
           try {
             const base64Data = s.receiptImage.split(',')[1];
