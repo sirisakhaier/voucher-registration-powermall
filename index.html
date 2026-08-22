@@ -149,8 +149,8 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <!-- PC & Store Info Badge (Active when logged in) -->
-        <div id="headerSessionBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-haier-900/80 border border-sky-500/30 text-xs">
+        <!-- PC & Store Info Badge (Active ONLY when logged in, HIDDEN on Landing page) -->
+        <div id="headerSessionBadge" class="hidden items-center space-x-2 px-3 py-1.5 rounded-xl bg-haier-900/80 border border-sky-500/30 text-xs">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
           <span id="headerPcName" class="font-medium text-slate-200">PC Name</span>
           <span class="text-slate-500">•</span>
@@ -158,8 +158,8 @@
           <span id="headerStoreName" class="font-semibold text-sky-300">สยามพารากอน</span>
         </div>
         
-        <!-- Exit button: "ออก" -->
-        <button id="btnHeaderEndShift" type="button" onclick="confirmEndShift()" class="hidden px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-red-300 text-xs font-medium border border-red-500/30 transition flex items-center space-x-1.5">
+        <!-- Exit button: "ออก" (Active ONLY when logged in, HIDDEN on Landing page) -->
+        <button id="btnHeaderEndShift" type="button" onclick="confirmEndShift()" class="hidden px-3 py-1.5 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-red-300 text-xs font-medium border border-red-500/30 transition items-center space-x-1.5">
           <i data-lucide="log-out" class="w-3.5 h-3.5 text-red-400"></i>
           <span>ออก</span>
         </button>
@@ -176,7 +176,7 @@
   <!-- Main Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- VIEW 0: LANDING PAGE WITH STORE SELECTION + 2 AD POSTERS (ALWAYS STARTS HERE) -->
+    <!-- VIEW 0: LANDING PAGE WITH STORE SELECTION + 2 AD POSTERS (NO PC NAME AT TOP) -->
     <section id="viewLandingCheckIn" class="space-y-6">
       
       <!-- Welcome Banner -->
@@ -653,7 +653,7 @@
       </div>
     </section>
 
-    <!-- VIEW 4: Store Submissions Log (STRICTLY FOR CURRENT STORE - PC CANNOT SEE OTHER STORES) -->
+    <!-- VIEW 4: Store Submissions Log (STRICTLY FOR CURRENT STORE) -->
     <section id="viewStoreLogs" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
@@ -665,7 +665,7 @@
           <p class="text-xs text-slate-400">ตรวจสอบประวัติและสถานะการอนุมัติเฉพาะจุดบริการสาขานี้</p>
         </div>
 
-        <!-- Search Bar Only (No store selector for PC) -->
+        <!-- Search Bar Only -->
         <div class="flex items-center space-x-2">
           <input type="text" id="logSearchInput" oninput="filterStoreSubmissions()" placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่ซื้อ, รหัส..." class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white outline-none focus:border-sky-500 w-64">
         </div>
@@ -711,14 +711,22 @@
             <h2 class="text-2xl font-bold font-display text-white">Admin Review & Audit Dashboard</h2>
             <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">Authenticated</span>
           </div>
-          <p class="text-xs text-slate-400">ตรวจสอบความถูกต้องของภาพใบเสร็จ/บัตรกำนัล, อนุมัติสิทธิ์, หรือขอให้ PC ส่งเอกสารแก้ไขใหม่</p>
+          <p class="text-xs text-slate-400">ตรวจสอบความถูกต้องของภาพใบเสร็จ/บัตรกำนัล, อนุมัติสิทธิ์, ขอให้ PC แก้ไข, หรือลบรายการ</p>
         </div>
-        <div class="flex items-center space-x-2">
+        <div class="flex flex-wrap items-center gap-2">
           <!-- Excel Export Button with Embedded Thumbnails & Clickable URLs -->
-          <button type="button" onclick="exportSubmissionsExcel()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
+          <button type="button" id="btnExportExcel" onclick="exportSubmissionsExcel()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-            <span>Export to Excel (.xlsx + ภาพ Thumbnail)</span>
+            <span id="btnExportExcelText">Export to Excel (.xlsx + ภาพ Thumbnail)</span>
           </button>
+          
+          <!-- Delete All Button -->
+          <button type="button" onclick="adminDeleteAllSubmissions()" class="px-3.5 py-2 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-500/40 text-xs font-bold transition flex items-center space-x-1.5 shadow" title="ลบข้อมูลทั้งหมดในระบบ">
+            <i data-lucide="trash-2" class="w-4 h-4 text-red-400"></i>
+            <span>ลบข้อมูลทั้งหมด</span>
+          </button>
+
+          <!-- Logout Admin Button -->
           <button type="button" onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center space-x-1">
             <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
             <span>ออกจาก Admin</span>
@@ -749,7 +757,7 @@
       <!-- Admin Submissions Table with Action Controls -->
       <div class="glass-panel rounded-2xl p-5 border border-white/10 space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดทุกสาขาเพื่อตรวจสอบและสั่งแก้ไข</h3>
+          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดทุกสาขา</h3>
           <span class="text-xs text-slate-400">คลิกที่รูปภาพเพื่อเปิดดูรูปขนาดเต็ม</span>
         </div>
         <div class="overflow-x-auto">
@@ -935,7 +943,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.1</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.2</span>
     </div>
   </footer>
 
@@ -1096,8 +1104,6 @@
       if (!currentStore) return;
       document.getElementById('headerPcName').textContent = currentPc.name;
       document.getElementById('headerStoreName').textContent = currentStore.nameTh;
-      document.getElementById('headerSessionBadge').classList.remove('hidden');
-      document.getElementById('btnHeaderEndShift').classList.remove('hidden');
 
       document.getElementById('bannerStoreName').textContent = currentStore.nameTh;
       document.getElementById('bannerPcName').textContent = currentPc.name;
@@ -1137,7 +1143,9 @@
         currentStore = null;
         currentPc = { name: '', phone: '' };
         currentEditingSubmissionId = null;
+        document.getElementById('headerSessionBadge').classList.remove('flex');
         document.getElementById('headerSessionBadge').classList.add('hidden');
+        document.getElementById('btnHeaderEndShift').classList.remove('flex');
         document.getElementById('btnHeaderEndShift').classList.add('hidden');
         document.getElementById('landingStoreSelect').value = '';
         document.getElementById('landingPcName').value = '';
@@ -1152,7 +1160,7 @@
         const res = await fetch('/api/submissions');
         if (res.ok) {
           const data = await res.json();
-          if (data.submissions && data.submissions.length > 0) {
+          if (data.submissions) {
             submissions = data.submissions.map(s => ({
               id: s.submission_id,
               storeId: s.store_id,
@@ -1476,7 +1484,7 @@
       document.getElementById('voucherStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
     }
 
-    // Robust Form Submission Handler with Campaign A Category Bypassing
+    // Robust Form Submission Handler
     async function handleFormSubmit(e) {
       if (e) e.preventDefault();
 
@@ -1837,7 +1845,7 @@
       });
     }
 
-    // --- ADMIN MODULE WITH PASSWORD (admin1234) & AUDIT ACTIONS ---
+    // --- ADMIN MODULE WITH PASSWORD (admin1234), AUDIT ACTIONS & DELETION ---
     function requestAdminAccess() {
       if (isAdminLoggedIn) {
         showAdminView();
@@ -1938,18 +1946,23 @@
               ${s.adminRemark ? `<div class="text-[10px] text-amber-300 mt-0.5">เหตุผล: ${s.adminRemark}</div>` : ''}
             </td>
             <td class="p-3 text-center">
-              <div class="flex items-center justify-center space-x-1.5">
-                <button type="button" onclick="adminSetStatus('${s.id}', 'issued')" class="px-2 py-1 rounded bg-emerald-600/80 hover:bg-emerald-500 text-white text-[10px] font-bold transition flex items-center space-x-1" title="อนุมัติการรับบัตรกำนัล">
+              <div class="flex items-center justify-center space-x-1">
+                <button type="button" onclick="adminSetStatus('${s.id}', 'issued')" class="px-2 py-1 rounded bg-emerald-600/80 hover:bg-emerald-500 text-white text-[10px] font-bold transition flex items-center space-x-0.5" title="อนุมัติ">
                   <i data-lucide="check" class="w-3 h-3"></i>
                   <span>อนุมัติ</span>
                 </button>
-                <button type="button" onclick="openAdminRevisionModal('${s.id}')" class="px-2 py-1 rounded bg-amber-600/80 hover:bg-amber-500 text-white text-[10px] font-bold transition flex items-center space-x-1" title="ขอให้ PC ส่งภาพหรือข้อมูลใหม่">
+                <button type="button" onclick="openAdminRevisionModal('${s.id}')" class="px-2 py-1 rounded bg-amber-600/80 hover:bg-amber-500 text-white text-[10px] font-bold transition flex items-center space-x-0.5" title="ขอให้แก้ไข">
                   <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                  <span>ขอแก้ไข</span>
+                  <span>สั่งแก้</span>
                 </button>
-                <button type="button" onclick="adminSetStatus('${s.id}', 'rejected')" class="px-2 py-1 rounded bg-red-800/80 hover:bg-red-600 text-white text-[10px] font-bold transition flex items-center space-x-1" title="ปฏิเสธสิทธิ์">
+                <button type="button" onclick="adminSetStatus('${s.id}', 'rejected')" class="px-2 py-1 rounded bg-red-800/80 hover:bg-red-600 text-white text-[10px] font-bold transition flex items-center space-x-0.5" title="ปฏิเสธ">
                   <i data-lucide="x" class="w-3 h-3"></i>
                   <span>ปฏิเสธ</span>
+                </button>
+                <!-- Single Delete Button -->
+                <button type="button" onclick="adminDeleteSingle('${s.id}')" class="px-2 py-1 rounded bg-red-950 hover:bg-red-800 text-red-300 hover:text-white border border-red-500/40 text-[10px] font-bold transition flex items-center space-x-0.5" title="ลบรายการนี้ถาวร">
+                  <i data-lucide="trash-2" class="w-3 h-3 text-red-400"></i>
+                  <span>ลบ</span>
                 </button>
               </div>
             </td>
@@ -1980,6 +1993,59 @@
       renderAdminDashboard();
     }
 
+    // --- ADMIN DELETE INDIVIDUAL SUBMISSION ---
+    async function adminDeleteSingle(subId) {
+      if (!confirm(`คุณแน่ใจหรือไม่ที่จะ "ลบรายการ ${subId}" อย่างถาวร?`)) {
+        return;
+      }
+
+      submissions = submissions.filter(s => s.id !== subId);
+      localStorage.setItem('haier_submissions', JSON.stringify(submissions));
+      renderAdminDashboard();
+
+      try {
+        const res = await fetch('/api/submissions', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ submissionId: subId })
+        });
+        if (res.ok) {
+          console.log(`Deleted ${subId} from cloud`);
+        }
+      } catch (err) {
+        console.warn('Delete cloud notice:', err);
+      }
+    }
+
+    // --- ADMIN DELETE ALL SUBMISSIONS ---
+    async function adminDeleteAllSubmissions() {
+      const confirmInput = prompt('⚠️ คำเตือน: คุณกำลังจะลบข้อมูลการลงทะเบียนและรูปภาพทั้งหมดในระบบ!
+
+หากต้องการยืนยัน โปรดพิมพ์คำว่า "CONFIRM-RESET" ในช่องด้านล่าง:');
+      if (confirmInput !== 'CONFIRM-RESET') {
+        if (confirmInput !== null) alert('ยกเลิก: คำยืนยันไม่ถูกต้อง ข้อมูลยังคงปลอดภัย');
+        return;
+      }
+
+      submissions = [];
+      localStorage.setItem('haier_submissions', JSON.stringify([]));
+      renderAdminDashboard();
+
+      try {
+        const res = await fetch('/api/submissions', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ confirmation: 'CONFIRM-RESET' })
+        });
+        if (res.ok) {
+          alert('ลบข้อมูลการลงทะเบียนทั้งหมดในระบบและ R2 สำเร็จเรียบร้อย');
+        }
+      } catch (err) {
+        console.warn('Reset cloud error:', err);
+        alert('ลบข้อมูลในเบราว์เซอร์สำเร็จ');
+      }
+    }
+
     function openAdminRevisionModal(subId) {
       targetRevisionSubmissionId = subId;
       document.getElementById('modalTargetSubmissionId').textContent = subId;
@@ -2005,160 +2071,206 @@
       closeAdminRevisionModal();
     }
 
-    // --- ACCURATE EXCEL EXPORT (.xlsx) WITH INTERNET BROWSABLE FULL URLS & THUMBNAILS ---
+    // --- HELPER: FETCH IMAGE BUFFER / BASE64 FOR EMBEDDING IN EXCEL ---
+    async function resolveImageForExcel(imgUrlOrBase64) {
+      if (!imgUrlOrBase64) return null;
+      try {
+        if (imgUrlOrBase64.startsWith('data:image')) {
+          const parts = imgUrlOrBase64.split(',');
+          if (parts.length > 1) {
+            return { type: 'base64', data: parts[1] };
+          }
+        }
+
+        let fullUrl = imgUrlOrBase64;
+        if (fullUrl.startsWith('/')) {
+          fullUrl = window.location.origin + fullUrl;
+        }
+
+        const response = await fetch(fullUrl);
+        if (response.ok) {
+          const arrayBuffer = await response.arrayBuffer();
+          return { type: 'buffer', data: arrayBuffer };
+        }
+      } catch (err) {
+        console.warn('Could not fetch image buffer for Excel thumbnail:', err);
+      }
+      return null;
+    }
+
+    // --- ACCURATE EXCEL EXPORT (.xlsx) WITH EMBEDDED THUMBNAILS & CLICKABLE URLS ---
     async function exportSubmissionsExcel() {
       if (submissions.length === 0) {
         alert('ไม่มีข้อมูลการลงทะเบียนสำหรับส่งออก');
         return;
       }
 
-      const workbook = new ExcelJS.Workbook();
-      workbook.creator = 'Haier Power Mall System';
-      workbook.created = new Date();
+      const btn = document.getElementById('btnExportExcel');
+      const btnText = document.getElementById('btnExportExcelText');
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.textContent = 'กำลังโหลดรูปภาพและสร้างไฟล์ Excel...';
 
-      const worksheet = workbook.addWorksheet('Submissions', {
-        views: [{ showGridLines: true }]
-      });
+      try {
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = 'Haier Power Mall System';
+        workbook.created = new Date();
 
-      worksheet.columns = [
-        { header: 'No.', key: 'no', width: 6 },
-        { header: 'Voucher Ref Code', key: 'id', width: 20 },
-        { header: 'Store ID', key: 'storeId', width: 10 },
-        { header: 'Store Name (สาขา)', key: 'storeName', width: 22 },
-        { header: 'Campaign Name (แคมเปญ)', key: 'campaignName', width: 30 },
-        { header: 'Customer Name (ลูกค้า)', key: 'customerName', width: 20 },
-        { header: 'Customer Phone (เบอร์โทร)', key: 'customerPhone', width: 16 },
-        { header: 'Category (หมวดหลัก)', key: 'category', width: 12 },
-        { header: 'SubCategory (หมวดย่อย)', key: 'subCategory', width: 18 },
-        { header: 'Model Code (รุ่นสินค้า)', key: 'modelCode', width: 22 },
-        { header: 'Purchase Date (วันที่ซื้อ)', key: 'purchaseDate', width: 16 },
-        { header: 'Amount (THB)', key: 'amount', width: 14 },
-        { header: 'PC Name (พนักงาน)', key: 'staffName', width: 18 },
-        { header: 'PC Phone', key: 'staffPhone', width: 16 },
-        { header: '1. Receipt Thumbnail', key: 'receiptThumb', width: 18 },
-        { header: '1. Receipt Photo URL (คลิกดูภาพต้นฉบับ)', key: 'receiptUrl', width: 50 },
-        { header: '2. Voucher Thumbnail', key: 'voucherThumb', width: 18 },
-        { header: '2. Voucher Photo URL (คลิกดูภาพต้นฉบับ)', key: 'voucherUrl', width: 50 },
-        { header: 'Status (สถานะ)', key: 'status', width: 16 },
-        { header: 'Admin Remark (หมายเหตุ)', key: 'adminRemark', width: 28 },
-        { header: 'Timestamp (เวลาลงทะเบียน)', key: 'timestamp', width: 20 }
-      ];
-
-      const headerRow = worksheet.getRow(1);
-      headerRow.height = 30;
-      headerRow.eachCell((cell) => {
-        cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FF004EA2' }
-        };
-        cell.font = {
-          name: 'Arial',
-          bold: true,
-          color: { argb: 'FFFFFFFF' },
-          size: 11
-        };
-        cell.alignment = { vertical: 'middle', horizontal: 'center' };
-      });
-
-      for (let i = 0; i < submissions.length; i++) {
-        const s = submissions[i];
-        const rowNum = i + 2;
-
-        let receiptFullUrl = '';
-        if (s.receiptImage) {
-          if (s.receiptImage.startsWith('http://') || s.receiptImage.startsWith('https://')) {
-            receiptFullUrl = s.receiptImage;
-          } else if (s.receiptImage.startsWith('/')) {
-            receiptFullUrl = window.location.origin + s.receiptImage;
-          } else {
-            receiptFullUrl = `${window.location.origin}/api/image/receipts/${s.id}_receipt.jpg`;
-          }
-        }
-
-        let voucherFullUrl = '';
-        const vImg = s.voucherImage || s.receiptImage;
-        if (vImg) {
-          if (vImg.startsWith('http://') || vImg.startsWith('https://')) {
-            voucherFullUrl = vImg;
-          } else if (vImg.startsWith('/')) {
-            voucherFullUrl = window.location.origin + vImg;
-          } else {
-            voucherFullUrl = `${window.location.origin}/api/image/vouchers/${s.id}_voucher.jpg`;
-          }
-        }
-
-        const row = worksheet.addRow({
-          no: i + 1,
-          id: s.id,
-          storeId: s.storeId,
-          storeName: s.storeName,
-          campaignName: s.campaignName,
-          customerName: s.customerName,
-          customerPhone: s.customerPhone,
-          category: s.category,
-          subCategory: s.subCategory || '',
-          modelCode: s.modelCode,
-          purchaseDate: s.purchaseDate,
-          amount: s.amount,
-          staffName: s.staffName || '',
-          staffPhone: s.staffId || '',
-          receiptThumb: '',
-          receiptUrl: receiptFullUrl ? {
-            text: receiptFullUrl,
-            hyperlink: receiptFullUrl,
-            tooltip: 'คลิกเพื่อเปิดดูรูปใบเสร็จบนเบราว์เซอร์'
-          } : '-',
-          voucherThumb: '',
-          voucherUrl: voucherFullUrl ? {
-            text: voucherFullUrl,
-            hyperlink: voucherFullUrl,
-            tooltip: 'คลิกเพื่อเปิดดูรูปบัตรกำนัลบนเบราว์เซอร์'
-          } : '-',
-          status: (s.status || 'pending').toUpperCase(),
-          adminRemark: s.adminRemark || '',
-          timestamp: s.timestamp
+        const worksheet = workbook.addWorksheet('Submissions', {
+          views: [{ showGridLines: true }]
         });
 
-        row.height = 55;
-        row.alignment = { vertical: 'middle', horizontal: 'left' };
+        worksheet.columns = [
+          { header: 'No.', key: 'no', width: 6 },
+          { header: 'Voucher Ref Code', key: 'id', width: 20 },
+          { header: 'Store ID', key: 'storeId', width: 10 },
+          { header: 'Store Name (สาขา)', key: 'storeName', width: 22 },
+          { header: 'Campaign Name (แคมเปญ)', key: 'campaignName', width: 30 },
+          { header: 'Customer Name (ลูกค้า)', key: 'customerName', width: 20 },
+          { header: 'Customer Phone (เบอร์โทร)', key: 'customerPhone', width: 16 },
+          { header: 'Category (หมวดหลัก)', key: 'category', width: 12 },
+          { header: 'SubCategory (หมวดย่อย)', key: 'subCategory', width: 18 },
+          { header: 'Model Code (รุ่นสินค้า)', key: 'modelCode', width: 22 },
+          { header: 'Purchase Date (วันที่ซื้อ)', key: 'purchaseDate', width: 16 },
+          { header: 'Amount (THB)', key: 'amount', width: 14 },
+          { header: 'PC Name (พนักงาน)', key: 'staffName', width: 18 },
+          { header: 'PC Phone', key: 'staffPhone', width: 16 },
+          { header: '1. Receipt Thumbnail', key: 'receiptThumb', width: 18 },
+          { header: '1. Receipt Photo URL (คลิกดูภาพต้นฉบับ)', key: 'receiptUrl', width: 50 },
+          { header: '2. Voucher Thumbnail', key: 'voucherThumb', width: 18 },
+          { header: '2. Voucher Photo URL (คลิกดูภาพต้นฉบับ)', key: 'voucherUrl', width: 50 },
+          { header: 'Status (สถานะ)', key: 'status', width: 16 },
+          { header: 'Admin Remark (หมายเหตุ)', key: 'adminRemark', width: 28 },
+          { header: 'Timestamp (เวลาลงทะเบียน)', key: 'timestamp', width: 20 }
+        ];
 
-        if (s.receiptImage && s.receiptImage.includes('base64')) {
-          try {
-            const base64Data = s.receiptImage.split(',')[1];
-            const imageId = workbook.addImage({
-              base64: base64Data,
-              extension: 'jpeg'
-            });
-            worksheet.addImage(imageId, {
-              tl: { col: 14.1, row: rowNum - 1 + 0.1 },
-              ext: { width: 50, height: 50 }
-            });
-          } catch(e) {
-            console.warn('Could not embed thumbnail:', e);
+        const headerRow = worksheet.getRow(1);
+        headerRow.height = 30;
+        headerRow.eachCell((cell) => {
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FF004EA2' }
+          };
+          cell.font = {
+            name: 'Arial',
+            bold: true,
+            color: { argb: 'FFFFFFFF' },
+            size: 11
+          };
+          cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        });
+
+        for (let i = 0; i < submissions.length; i++) {
+          const s = submissions[i];
+          const rowNum = i + 2;
+
+          let receiptFullUrl = '';
+          if (s.receiptImage) {
+            if (s.receiptImage.startsWith('http://') || s.receiptImage.startsWith('https://')) {
+              receiptFullUrl = s.receiptImage;
+            } else if (s.receiptImage.startsWith('/')) {
+              receiptFullUrl = window.location.origin + s.receiptImage;
+            } else {
+              receiptFullUrl = `${window.location.origin}/api/image/receipts/${s.id}_receipt.jpg`;
+            }
+          }
+
+          let voucherFullUrl = '';
+          const vImg = s.voucherImage || s.receiptImage;
+          if (vImg) {
+            if (vImg.startsWith('http://') || vImg.startsWith('https://')) {
+              voucherFullUrl = vImg;
+            } else if (vImg.startsWith('/')) {
+              voucherFullUrl = window.location.origin + vImg;
+            } else {
+              voucherFullUrl = `${window.location.origin}/api/image/vouchers/${s.id}_voucher.jpg`;
+            }
+          }
+
+          const row = worksheet.addRow({
+            no: i + 1,
+            id: s.id,
+            storeId: s.storeId,
+            storeName: s.storeName,
+            campaignName: s.campaignName,
+            customerName: s.customerName,
+            customerPhone: s.customerPhone,
+            category: s.category,
+            subCategory: s.subCategory || '',
+            modelCode: s.modelCode,
+            purchaseDate: s.purchaseDate,
+            amount: s.amount,
+            staffName: s.staffName || '',
+            staffPhone: s.staffId || '',
+            receiptThumb: '',
+            receiptUrl: receiptFullUrl ? {
+              text: receiptFullUrl,
+              hyperlink: receiptFullUrl,
+              tooltip: 'คลิกเพื่อเปิดดูรูปใบเสร็จบนเบราว์เซอร์'
+            } : '-',
+            voucherThumb: '',
+            voucherUrl: voucherFullUrl ? {
+              text: voucherFullUrl,
+              hyperlink: voucherFullUrl,
+              tooltip: 'คลิกเพื่อเปิดดูรูปบัตรกำนัลบนเบราว์เซอร์'
+            } : '-',
+            status: (s.status || 'pending').toUpperCase(),
+            adminRemark: s.adminRemark || '',
+            timestamp: s.timestamp
+          });
+
+          row.height = 55;
+          row.alignment = { vertical: 'middle', horizontal: 'left' };
+
+          // Fetch & Embed 1. Receipt Thumbnail
+          const receiptImgData = await resolveImageForExcel(s.receiptImage);
+          if (receiptImgData) {
+            try {
+              let imgId;
+              if (receiptImgData.type === 'base64') {
+                imgId = workbook.addImage({ base64: receiptImgData.data, extension: 'jpeg' });
+              } else {
+                imgId = workbook.addImage({ buffer: receiptImgData.data, extension: 'jpeg' });
+              }
+              worksheet.addImage(imgId, {
+                tl: { col: 14.1, row: rowNum - 1 + 0.1 },
+                ext: { width: 50, height: 50 }
+              });
+            } catch(e) {
+              console.warn('Embed receipt thumb error:', e);
+            }
+          }
+
+          // Fetch & Embed 2. Voucher Thumbnail
+          const voucherImgData = await resolveImageForExcel(s.voucherImage || s.receiptImage);
+          if (voucherImgData) {
+            try {
+              let imgId2;
+              if (voucherImgData.type === 'base64') {
+                imgId2 = workbook.addImage({ base64: voucherImgData.data, extension: 'jpeg' });
+              } else {
+                imgId2 = workbook.addImage({ buffer: voucherImgData.data, extension: 'jpeg' });
+              }
+              worksheet.addImage(imgId2, {
+                tl: { col: 16.1, row: rowNum - 1 + 0.1 },
+                ext: { width: 50, height: 50 }
+              });
+            } catch(e) {
+              console.warn('Embed voucher thumb error:', e);
+            }
           }
         }
 
-        if (s.voucherImage && s.voucherImage.includes('base64')) {
-          try {
-            const base64Data = s.voucherImage.split(',')[1];
-            const imageId2 = workbook.addImage({
-              base64: base64Data,
-              extension: 'jpeg'
-            });
-            worksheet.addImage(imageId2, {
-              tl: { col: 16.1, row: rowNum - 1 + 0.1 },
-              ext: { width: 50, height: 50 }
-            });
-          } catch(e) {
-            console.warn('Could not embed voucher thumbnail:', e);
-          }
-        }
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        saveAs(blob, `haier_voucher_submissions_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch (err) {
+        console.error('Excel Export Error:', err);
+        alert('เกิดข้อผิดพลาดในการสร้างไฟล์ Excel: ' + err.message);
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.textContent = 'Export to Excel (.xlsx + ภาพ Thumbnail)';
       }
-
-      const buffer = await workbook.xlsx.writeBuffer();
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, `haier_voucher_submissions_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
 
     function switchView(viewId) {
@@ -2169,6 +2281,31 @@
       });
       const targetEl = document.getElementById(viewId);
       if (targetEl) targetEl.classList.remove('hidden');
+
+      // Control header session badge visibility: NEVER show on Landing Page
+      const sessionBadge = document.getElementById('headerSessionBadge');
+      const exitBtn = document.getElementById('btnHeaderEndShift');
+
+      if (viewId === 'viewLandingCheckIn' || !currentStore) {
+        if (sessionBadge) {
+          sessionBadge.classList.remove('flex');
+          sessionBadge.classList.add('hidden');
+        }
+        if (exitBtn) {
+          exitBtn.classList.remove('flex');
+          exitBtn.classList.add('hidden');
+        }
+      } else {
+        if (sessionBadge) {
+          sessionBadge.classList.remove('hidden');
+          sessionBadge.classList.add('flex');
+        }
+        if (exitBtn) {
+          exitBtn.classList.remove('hidden');
+          exitBtn.classList.add('flex');
+        }
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
       lucide.createIcons();
     }

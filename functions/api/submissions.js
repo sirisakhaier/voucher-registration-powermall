@@ -1,7 +1,7 @@
 // Cloudflare Pages Function: /api/submissions
 // GET: Query submissions with filtering by store or campaign
 // PUT: Update voucher status (issued, rejected, redeemed)
-// DELETE: Reset submission data with confirmation
+// DELETE: Delete individual submission or reset all submissions
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -82,18 +82,69 @@ export async function onRequestPut(context) {
 export async function onRequestDelete(context) {
   const { request, env } = context;
   const db = env.DB || env.voucher_db;
-  if (!db) return new Response(JSON.stringify({ success: true }));
+  const bucket = env.BUCKET || env.voucher_photos;
 
   try {
-    const { confirmation } = await request.json();
-    if (confirmation !== "CONFIRM-RESET") {
-      return new Response(JSON.stringify({ error: "Invalid reset confirmation code" }), { status: 400 });
+    const body = await request.json();
+    const { submissionId, confirmation } = body;
+
+    // Case 1: Delete all submissions
+    if (confirmation === "CONFIRM-RESET") {
+      if (db) {
+        await db.prepare("DELETE FROM submissions").run();
+      }
+
+      if (bucket) {
+        try {
+          const listed = await bucket.list();
+          for (const obj of listed.objects) {
+            await bucket.delete(obj.key);
+          }
+        } catch (r2DelAllErr) {
+          console.warn("R2 batch delete notice:", r2DelAllErr);
+        }
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: "All submissions deleted successfully"
+      }), {
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
-    await db.prepare("DELETE FROM submissions").run();
+    // Case 2: Delete individual submission by ID
+    if (submissionId) {
+      if (db) {
+        await db.prepare("DELETE FROM submissions WHERE submission_id = ?").bind(submissionId).run();
+      }
 
-    return new Response(JSON.stringify({ success: true, message: "All submissions reset successfully" }));
+      if (bucket) {
+        try {
+          await bucket.delete(`receipts/${submissionId}_receipt.jpg`);
+          await bucket.delete(`vouchers/${submissionId}_voucher.jpg`);
+        } catch (r2DelErr) {
+          console.warn("R2 delete single error:", r2DelErr);
+        }
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: `Submission ${submissionId} deleted successfully`
+      }), {
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    return new Response(JSON.stringify({ error: "Missing submissionId or confirmation code" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
+
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }
