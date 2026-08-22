@@ -149,12 +149,6 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <!-- Cloud Sync Indicator -->
-        <div id="cloudStatusBadge" class="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-[11px] text-emerald-300">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Cloudflare D1 & R2</span>
-        </div>
-
         <!-- PC & Store Info Badge (Active when logged in) -->
         <div id="headerSessionBadge" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-haier-900/80 border border-sky-500/30 text-xs">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-400"></i>
@@ -366,12 +360,12 @@
       </div>
     </section>
 
-    <!-- VIEW 2: Dynamic Registration Form (Cleaned: PC Name & Phone Removed!) -->
+    <!-- VIEW 2: Dynamic Registration Form -->
     <section id="viewRegisterForm" class="hidden max-w-3xl mx-auto space-y-6">
       
       <!-- Back & Form Header -->
       <div class="flex items-center justify-between">
-        <button onclick="backToStoreMenu()" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
+        <button type="button" onclick="backToStoreMenu()" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-300 border border-white/10 transition flex items-center space-x-1.5">
           <i data-lucide="arrow-left" class="w-4 h-4"></i>
           <span>ย้อนกลับ</span>
         </button>
@@ -400,7 +394,7 @@
           </span>
         </div>
 
-        <form id="regForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+        <form id="regForm" onsubmit="handleFormSubmit(event)" novalidate class="space-y-5">
           
           <!-- Section 1: Customer Details -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -408,14 +402,14 @@
               <label class="block text-xs font-medium text-slate-300">
                 ชื่อ-นามสกุล ลูกค้า <span class="text-red-400">*</span>
               </label>
-              <input type="text" id="custName" required placeholder="เช่น นายสมชาย ใจดี" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+              <input type="text" id="custName" placeholder="เช่น นายสมชาย ใจดี" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
             </div>
 
             <div class="space-y-1.5">
               <label class="block text-xs font-medium text-slate-300">
                 เบอร์โทรศัพท์มือถือลูกค้า <span class="text-red-400">*</span>
               </label>
-              <input type="tel" id="custPhone" required maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+              <input type="tel" id="custPhone" maxlength="10" placeholder="08XXXXXXXX" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
             </div>
           </div>
 
@@ -428,7 +422,7 @@
                 <label class="block text-xs font-medium text-slate-300">
                   1. หมวดหมู่สินค้าหลัก (Category) <span class="text-red-400">*</span>
                 </label>
-                <select id="categorySelect" required onchange="handleCategoryChange()" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+                <select id="categorySelect" onchange="handleCategoryChange()" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
                   <option value="">-- เลือกหมวดหมู่สินค้า --</option>
                   <option value="AC">เครื่องปรับอากาศ (AC)</option>
                   <option value="RF">ตู้เย็น (RF)</option>
@@ -445,7 +439,7 @@
                 <label class="block text-xs font-medium text-slate-300">
                   2. หมวดหมู่ย่อย (SubCategory) <span class="text-red-400">*</span>
                 </label>
-                <select id="subCategorySelect" required onchange="handleSubCategoryChange()" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+                <select id="subCategorySelect" onchange="handleSubCategoryChange()" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
                   <option value="">-- โปรดเลือก Category ก่อน --</option>
                 </select>
                 <p id="subCategoryHelpText" class="text-[11px] text-slate-400">เลือกหมวดหมู่ย่อยเพื่อกรองรุ่น</p>
@@ -457,7 +451,7 @@
               <label class="block text-xs font-medium text-slate-300">
                 3. เลือกรุ่นสินค้า Haier (Model) <span class="text-red-400">*</span>
               </label>
-              <select id="modelSelect" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
+              <select id="modelSelect" class="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition">
                 <option value="">-- โปรดเลือก SubCategory ด้านบนก่อน --</option>
               </select>
               <p id="modelHelpText" class="text-[11px] text-slate-400">รายชื่อรุ่นสินค้าที่ดึงจาก Dimension Model ตามหมวดหมู่ที่เลือก</p>
@@ -472,8 +466,8 @@
                   <span>วันที่ซื้อสินค้า (Date of purchase) <span class="text-red-400">*</span></span>
                   <span class="text-[10px] text-sky-400 font-mono">📅 คลิกเพื่อเปิดปฏิทิน</span>
                 </label>
-                <div class="relative cursor-pointer" onclick="document.getElementById('purchaseDate').focus()">
-                  <input type="text" id="purchaseDate" required placeholder="เลือกวันที่ซื้อสินค้า..." class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition cursor-pointer font-medium">
+                <div class="relative cursor-pointer" onclick="openDatePicker()">
+                  <input type="text" id="purchaseDate" placeholder="เลือกวันที่ซื้อสินค้า..." class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition cursor-pointer font-medium">
                   <div class="absolute left-3.5 top-2.5 text-sky-400 pointer-events-none">
                     <i data-lucide="calendar" class="w-5 h-5"></i>
                   </div>
@@ -487,7 +481,7 @@
                   ยอดรวมในใบเสร็จ (บาท) <span class="text-red-400">*</span>
                 </label>
                 <div class="relative">
-                  <input type="number" id="purchaseAmount" required min="1" step="any" placeholder="เช่น 24990" class="w-full pl-4 pr-12 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
+                  <input type="number" id="purchaseAmount" min="1" step="any" placeholder="เช่น 24990" class="w-full pl-4 pr-12 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition placeholder:text-slate-500">
                   <span class="absolute right-4 top-2.5 text-xs text-slate-400">บาท</span>
                 </div>
                 <p id="minSpendError" class="hidden text-xs text-red-400 font-medium">⚠️ แคมเปญนี้กำหนดยอดซื้อขั้นต่ำ 20,000 บาทขึ้นไป</p>
@@ -564,8 +558,8 @@
           <!-- Submit & Actions Buttons -->
           <div class="pt-4 flex flex-col sm:flex-row gap-3">
             <button type="submit" id="btnSubmitForm" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 via-sky-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-base shadow-xl shadow-sky-500/25 transition transform active:scale-98 flex items-center justify-center space-x-2">
-              <i data-lucide="check-circle" class="w-5 h-5"></i>
-              <span id="btnSubmitText">ยืนยันการลงทะเบียน & ออกรหัสบัตรกำนัล</span>
+              <i data-lucide="send" class="w-5 h-5"></i>
+              <span id="btnSubmitText">ส่งข้อมูลผู้รับบัตรกำนัล</span>
             </button>
             <button type="button" onclick="backToStoreMenu()" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-1.5">
               <span>ยกเลิก</span>
@@ -616,7 +610,7 @@
               <p class="font-semibold text-sky-300" id="confStoreName">-</p>
             </div>
             <div>
-              <span class="text-slate-400">พนักงานผู้ลงทะเบียน:</span>
+              <span class="text-slate-400">พนักงานผู้ลงทะเบียน (PC):</span>
               <p class="font-semibold text-emerald-400" id="confStaffName">-</p>
             </div>
             <div>
@@ -658,17 +652,17 @@
 
         <!-- Next Customer / Action Buttons: Add Next or End -->
         <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <button onclick="startNextRegistration()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
+          <button type="button" onclick="startNextRegistration()" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-haier-600 to-sky-500 hover:from-haier-500 hover:to-sky-400 text-white font-bold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
             <i data-lucide="user-plus" class="w-4 h-4"></i>
             <span>ลงทะเบียนลูกค้ารายต่อไป (Next)</span>
           </button>
           
-          <button onclick="window.print()" class="px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-1.5">
+          <button type="button" onclick="window.print()" class="px-4 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-white/10 transition flex items-center justify-center space-x-1.5">
             <i data-lucide="printer" class="w-4 h-4"></i>
             <span>พิมพ์ใบรับสิทธิ์</span>
           </button>
 
-          <button onclick="confirmEndShift()" class="px-4 py-3.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-medium text-sm border border-red-500/30 transition flex items-center justify-center space-x-1.5">
+          <button type="button" onclick="confirmEndShift()" class="px-4 py-3.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 font-medium text-sm border border-red-500/30 transition flex items-center justify-center space-x-1.5">
             <i data-lucide="power" class="w-4 h-4 text-red-400"></i>
             <span>จบการทำงาน (End)</span>
           </button>
@@ -681,7 +675,7 @@
     <section id="viewStoreLogs" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <button onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
+          <button type="button" onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>กลับหน้าหลักสาขา</span>
           </button>
@@ -726,7 +720,7 @@
     <section id="viewAdmin" class="hidden space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-          <button onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
+          <button type="button" onclick="backToStoreMenu()" class="text-xs text-sky-400 hover:underline flex items-center space-x-1 mb-1">
             <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
             <span>กลับหน้า Kiosk</span>
           </button>
@@ -738,11 +732,11 @@
         </div>
         <div class="flex items-center space-x-2">
           <!-- Excel Export Button with Embedded Thumbnails & Clickable URLs -->
-          <button onclick="exportSubmissionsExcel()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
+          <button type="button" onclick="exportSubmissionsExcel()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
             <span>Export to Excel (.xlsx + ภาพ Thumbnail)</span>
           </button>
-          <button onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center space-x-1">
+          <button type="button" onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition flex items-center space-x-1">
             <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
             <span>ออกจาก Admin</span>
           </button>
@@ -828,8 +822,8 @@
   <!-- Footer -->
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall. Powered by Cloudflare D1 & R2.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.5</span>
+      <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v2.6</span>
     </div>
   </footer>
 
@@ -928,6 +922,7 @@
     let currentReceiptImageData = '';
     let currentVoucherImageData = '';
     let datePickerInstance = null;
+    let selectedPurchaseDate = '';
     let isAdminLoggedIn = false;
 
     // Initialize App
@@ -936,7 +931,7 @@
       populateLandingStoreSelect();
       initCalendarPicker();
       checkSavedSession();
-      checkCloudHealth();
+      syncCloudSubmissions();
     });
 
     // Populate Landing Store Dropdown
@@ -963,7 +958,6 @@
           return;
         }
       }
-      // Otherwise stay on landing check-in view
       switchView('viewLandingCheckIn');
     }
 
@@ -974,8 +968,21 @@
       const pcName = document.getElementById('landingPcName').value.trim();
       const pcPhone = document.getElementById('landingPcPhone').value.trim();
 
-      if (!storeId || !pcName || !pcPhone) {
-        alert('กรุณากรอกข้อมูลสาขา ชื่อพนักงาน และเบอร์โทรศัพท์ให้ครบถ้วน');
+      if (!storeId) {
+        alert('กรุณาเลือกสาขา Power Mall ประจำจุดขาย');
+        document.getElementById('landingStoreSelect').focus();
+        return;
+      }
+
+      if (!pcName) {
+        alert('กรุณากรอกชื่อ-นามสกุล พนักงานขาย (PC)');
+        document.getElementById('landingPcName').focus();
+        return;
+      }
+
+      if (!pcPhone) {
+        alert('กรุณากรอกเบอร์โทรศัพท์มือถือ PC');
+        document.getElementById('landingPcPhone').focus();
         return;
       }
 
@@ -1003,7 +1010,6 @@
       document.getElementById('bannerPcName').textContent = currentPc.name;
       document.getElementById('bannerPcPhone').textContent = currentPc.phone;
 
-      // Update Campaign B gating based on chosen store
       const isCampBEligible = currentStore.campB && currentStore.active;
       const overlay = document.getElementById('campBStoreRestrictedOverlay');
       const btnB = document.getElementById('btnSelectCampB');
@@ -1036,19 +1042,6 @@
         document.getElementById('landingPcName').value = '';
         document.getElementById('landingPcPhone').value = '';
         switchView('viewLandingCheckIn');
-      }
-    }
-
-    // Check Cloudflare backend health
-    async function checkCloudHealth() {
-      try {
-        const res = await fetch('/api/submissions?limit=1');
-        if (res.ok) {
-          document.getElementById('cloudStatusBadge').classList.remove('hidden');
-          await syncCloudSubmissions();
-        }
-      } catch(e) {
-        console.log('Running in local/standalone storage mode.');
       }
     }
 
@@ -1086,24 +1079,31 @@
           }
         }
       } catch (err) {
-        console.warn('Sync failed, using local storage cache:', err);
+        console.warn('Sync notice:', err);
       }
     }
 
     // Initialize Interactive Flatpickr Calendar Date Picker
     function initCalendarPicker() {
+      const today = new Date();
+      selectedPurchaseDate = today.toISOString().slice(0, 10);
+
       datePickerInstance = flatpickr("#purchaseDate", {
         locale: "th",
         dateFormat: "Y-m-d",
         altInput: true,
         altFormat: "d F Y (วันl)",
-        defaultDate: new Date(),
+        defaultDate: today,
         maxDate: "today",
         disableMobile: false,
         theme: "dark",
         animate: true,
         monthSelectorType: "dropdown",
+        onChange: function(selectedDates, dateStr) {
+          selectedPurchaseDate = dateStr;
+        },
         onReady: function(selectedDates, dateStr, instance) {
+          selectedPurchaseDate = dateStr || new Date().toISOString().slice(0, 10);
           if (instance.altInput) {
             instance.altInput.className = "w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white text-sm outline-none transition cursor-pointer font-medium";
           }
@@ -1111,9 +1111,17 @@
       });
     }
 
-    function resetPurchaseDate() {
+    function openDatePicker() {
       if (datePickerInstance) {
-        datePickerInstance.setDate(new Date(), true);
+        datePickerInstance.open();
+      }
+    }
+
+    function resetPurchaseDate() {
+      const today = new Date();
+      selectedPurchaseDate = today.toISOString().slice(0, 10);
+      if (datePickerInstance) {
+        datePickerInstance.setDate(today, true);
       }
     }
 
@@ -1153,7 +1161,7 @@
       } else {
         catSelect.value = '';
         catSelect.disabled = false;
-        catHelp.textContent = 'เลือกหมวดหมู่สินค้าหลัก';
+        catHelp.textContent = 'เลือกประเภทสินค้าหลัก';
         
         subCatSelect.innerHTML = '<option value="">-- โปรดเลือก Category ก่อน --</option>';
         subCatSelect.disabled = false;
@@ -1294,49 +1302,87 @@
       document.getElementById('voucherStatusBadge').className = 'text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700';
     }
 
+    // Explicit Robust Form Submission Handler
     async function handleFormSubmit(e) {
-      e.preventDefault();
-      const amount = parseFloat(document.getElementById('purchaseAmount').value);
-      const catVal = document.getElementById('categorySelect').value;
-      const subCatVal = document.getElementById('subCategorySelect').value;
-      const modelVal = document.getElementById('modelSelect').value;
-      const pDate = document.getElementById('purchaseDate').value;
+      if (e) e.preventDefault();
 
+      const custNameInput = document.getElementById('custName');
+      const custPhoneInput = document.getElementById('custPhone');
+      const catSelect = document.getElementById('categorySelect');
+      const subCatSelect = document.getElementById('subCategorySelect');
+      const modelSelect = document.getElementById('modelSelect');
+      const amountInput = document.getElementById('purchaseAmount');
+
+      const custName = custNameInput.value.trim();
+      const custPhone = custPhoneInput.value.trim();
+      const catVal = catSelect.value;
+      const subCatVal = subCatSelect.value;
+      const modelVal = modelSelect.value;
+      const amount = parseFloat(amountInput.value);
+      const pDate = selectedPurchaseDate || document.getElementById('purchaseDate').value || new Date().toISOString().slice(0, 10);
+
+      // Validation 1: Customer Name
+      if (!custName) {
+        alert('กรุณากรอกชื่อ-นามสกุล ลูกค้า');
+        custNameInput.focus();
+        return;
+      }
+
+      // Validation 2: Customer Phone
+      if (!custPhone || custPhone.length < 9) {
+        alert('กรุณากรอกเบอร์โทรศัพท์มือถือลูกค้าให้ถูกต้อง');
+        custPhoneInput.focus();
+        return;
+      }
+
+      // Validation 3: Category
       if (!catVal) {
         alert('กรุณาเลือกหมวดหมู่สินค้าหลัก (Category)');
-        document.getElementById('categorySelect').focus();
+        catSelect.focus();
         return;
       }
 
+      // Validation 4: SubCategory
       if (!subCatVal) {
         alert('กรุณาเลือกหมวดหมู่ย่อย (SubCategory)');
-        document.getElementById('subCategorySelect').focus();
+        subCatSelect.focus();
         return;
       }
 
+      // Validation 5: Model
       if (!modelVal) {
         alert('กรุณาเลือกรุ่นสินค้า Haier (Model)');
-        document.getElementById('modelSelect').focus();
+        modelSelect.focus();
         return;
       }
 
+      // Validation 6: Date
       if (!pDate) {
         alert('กรุณาเลือกวันที่ซื้อสินค้าจากปฏิทิน');
-        document.getElementById('purchaseDate').focus();
+        openDatePicker();
+        return;
+      }
+
+      // Validation 7: Amount
+      if (isNaN(amount) || amount <= 0) {
+        alert('กรุณาระบุยอดรวมในใบเสร็จเป็นตัวเลขที่ถูกต้อง');
+        amountInput.focus();
         return;
       }
 
       if (selectedCampaign.minSpend > 0 && amount < selectedCampaign.minSpend) {
         document.getElementById('minSpendError').classList.remove('hidden');
-        document.getElementById('purchaseAmount').focus();
+        amountInput.focus();
         return;
       }
 
+      // Validation 8: Receipt Photo
       if (!currentReceiptImageData) {
         alert('กรุณาแนบภาพที่ 1: รูปถ่ายใบเสร็จรับเงิน (Receipt)');
         return;
       }
 
+      // Validation 9: Voucher Photo
       if (!currentVoucherImageData) {
         alert('กรุณาแนบภาพที่ 2: รูปถ่ายบัตรกำนัลที่มอบให้ลูกค้า (Voucher)');
         return;
@@ -1345,19 +1391,18 @@
       const submitBtn = document.getElementById('btnSubmitForm');
       const submitText = document.getElementById('btnSubmitText');
       submitBtn.disabled = true;
-      submitText.textContent = 'กำลังบันทึกข้อมูลและอัปโหลดภาพสู่ Cloud...';
+      submitText.textContent = 'กำลังส่งข้อมูลผู้รับบัตรกำนัล...';
 
       let submissionId = `HR-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}-${Math.floor(1000 + Math.random() * 9000)}`;
       let receiptUrl = currentReceiptImageData;
       let voucherUrl = currentVoucherImageData;
 
       try {
-        // Post to Cloudflare Pages Functions API (/api/register)
         const payload = {
-          storeId: currentStore.id,
+          storeId: currentStore ? currentStore.id : 'S00449',
           campaignId: selectedCampaign.id,
-          customerName: document.getElementById('custName').value,
-          customerPhone: document.getElementById('custPhone').value,
+          customerName: custName,
+          customerPhone: custPhone,
           category: catVal,
           subCategory: subCatVal,
           modelCode: modelVal,
@@ -1384,22 +1429,22 @@
           }
         }
       } catch (cloudErr) {
-        console.warn('Direct cloud API not responding, saved to local cache:', cloudErr);
+        console.warn('Saved to local storage cache:', cloudErr);
       } finally {
         submitBtn.disabled = false;
-        submitText.textContent = 'ยืนยันการลงทะเบียน & ออกรหัสบัตรกำนัล';
+        submitText.textContent = 'ส่งข้อมูลผู้รับบัตรกำนัล';
       }
 
       const newSubmission = {
         id: submissionId,
-        storeId: currentStore.id,
-        storeName: currentStore.nameTh,
+        storeId: currentStore ? currentStore.id : 'S00449',
+        storeName: currentStore ? currentStore.nameTh : 'สาขา',
         campaignId: selectedCampaign.id,
         campaignName: selectedCampaign.nameTh,
         rewardName: selectedCampaign.rewardName,
         rewardValue: selectedCampaign.rewardValue,
-        customerName: document.getElementById('custName').value,
-        customerPhone: document.getElementById('custPhone').value,
+        customerName: custName,
+        customerPhone: custPhone,
         category: catVal,
         categoryName: CATEGORY_NAMES[catVal] || catVal,
         subCategory: subCatVal,
@@ -1409,8 +1454,8 @@
         amount: amount,
         receiptImage: receiptUrl,
         voucherImage: voucherUrl,
-        staffName: currentPc.name,
-        staffId: currentPc.phone,
+        staffName: currentPc.name || 'พนักงานขาย',
+        staffId: currentPc.phone || '-',
         status: 'issued',
         timestamp: new Date().toLocaleString('th-TH')
       };
@@ -1461,6 +1506,10 @@
     }
 
     async function showStoreSubmissions() {
+      if (!currentStore) {
+        switchView('viewLandingCheckIn');
+        return;
+      }
       document.getElementById('logStoreTitle').textContent = currentStore.nameTh;
       await syncCloudSubmissions();
       renderStoreSubmissionsTable();
@@ -1468,7 +1517,7 @@
     }
 
     function renderStoreSubmissionsTable() {
-      const storeSubs = submissions.filter(s => s.storeId === currentStore.id);
+      const storeSubs = submissions.filter(s => s.storeId === (currentStore ? currentStore.id : ''));
       const tbody = document.getElementById('storeSubmissionsTbody');
       const emptyBox = document.getElementById('storeLogEmpty');
 
@@ -1657,7 +1706,7 @@
         cell.fill = {
           type: 'pattern',
           pattern: 'solid',
-          fgColor: { argb: 'FF004EA2' } // Haier Blue
+          fgColor: { argb: 'FF004EA2' }
         };
         cell.font = {
           name: 'Arial',
@@ -1702,10 +1751,9 @@
           status: s.status.toUpperCase()
         });
 
-        row.height = 55; // Height for image thumbnails
+        row.height = 55;
         row.alignment = { vertical: 'middle', horizontal: 'left' };
 
-        // Embed Receipt Image Thumbnail if available
         if (s.receiptImage && s.receiptImage.includes('base64')) {
           try {
             const base64Data = s.receiptImage.split(',')[1];
@@ -1722,7 +1770,6 @@
           }
         }
 
-        // Embed Voucher Image Thumbnail if available
         if (s.voucherImage && s.voucherImage.includes('base64')) {
           try {
             const base64Data = s.voucherImage.split(',')[1];
@@ -1740,7 +1787,6 @@
         }
       }
 
-      // Generate and trigger download
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, `haier_voucher_submissions_${new Date().toISOString().slice(0,10)}.xlsx`);
