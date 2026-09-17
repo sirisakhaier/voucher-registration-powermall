@@ -709,6 +709,7 @@
           <p class="text-xs text-slate-400">ตรวจสอบความถูกต้องของภาพใบเสร็จ/บัตรกำนัล, อนุมัติสิทธิ์, ขอให้ PC แก้ไข, หรือลบรายการ</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          
           <!-- Excel Export Button with Embedded Thumbnails & Clickable URLs -->
           <button type="button" id="btnExportExcel" onclick="exportSubmissionsExcel()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-emerald-500/20">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
@@ -749,16 +750,29 @@
         </div>
       </div>
 
-      <!-- Admin Submissions Table with Action Controls -->
+      <!-- Admin Submissions Table with Selection Controls -->
       <div class="glass-panel rounded-2xl p-5 border border-white/10 space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดทุกสาขา</h3>
-          <span class="text-xs text-slate-400">คลิกที่รูปภาพเพื่อเปิดดูรูปขนาดเต็ม</span>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center space-x-3">
+            <h3 class="font-bold text-white font-display text-sm">รายการลงทะเบียนทั้งหมดทุกสาขา</h3>
+            <span id="adminSelectedBadge" class="hidden px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/40 text-xs font-bold animate-pulse">
+              เลือกแล้ว: <span id="adminSelectedCountText">0</span> รายการ
+            </span>
+          </div>
+          <div class="flex items-center space-x-2 text-xs">
+            <button type="button" onclick="selectAllAdminCheckboxes(true)" class="text-sky-400 hover:underline">เลือกทั้งหมด</button>
+            <span class="text-slate-600">|</span>
+            <button type="button" onclick="selectAllAdminCheckboxes(false)" class="text-slate-400 hover:underline">ยกเลิกการเลือก</button>
+          </div>
         </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900/90 text-slate-400 uppercase font-semibold border-b border-white/10">
               <tr>
+                <th class="p-3 w-10 text-center">
+                  <input type="checkbox" id="adminSelectAllCheckbox" onchange="toggleAdminSelectAll(this)" title="คลิกเพื่อเลือก/ยกเลิกทั้งหมด" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-sky-500 cursor-pointer">
+                </th>
                 <th class="p-3">Ref ID / เวลา</th>
                 <th class="p-3">สาขา</th>
                 <th class="p-3">ลูกค้า / เบอร์</th>
@@ -1898,6 +1912,9 @@
 
         return `
           <tr class="hover:bg-slate-800/50">
+            <td class="p-3 text-center">
+              <input type="checkbox" class="admin-sub-checkbox w-4 h-4 rounded bg-slate-900 border-slate-700 text-sky-500 focus:ring-sky-500 cursor-pointer" value="${s.id}" onchange="updateAdminSelectedCount()">
+            </td>
             <td class="p-3">
               <span class="font-mono font-bold text-sky-400">${s.id}</span>
               <div class="text-[10px] text-slate-400">${s.timestamp}</div>
@@ -1955,7 +1972,48 @@
           </tr>
         `;
       }).join('');
+      
+      updateAdminSelectedCount();
       lucide.createIcons();
+    }
+
+    // --- ADMIN CHECKBOX SELECTION HELPERS ---
+    function toggleAdminSelectAll(masterCheckbox) {
+      const checkboxes = document.querySelectorAll('.admin-sub-checkbox');
+      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+      updateAdminSelectedCount();
+    }
+
+    function selectAllAdminCheckboxes(selectStatus) {
+      const masterCheckbox = document.getElementById('adminSelectAllCheckbox');
+      if (masterCheckbox) masterCheckbox.checked = selectStatus;
+      const checkboxes = document.querySelectorAll('.admin-sub-checkbox');
+      checkboxes.forEach(cb => cb.checked = selectStatus);
+      updateAdminSelectedCount();
+    }
+
+    function updateAdminSelectedCount() {
+      const checkedBoxes = document.querySelectorAll('.admin-sub-checkbox:checked');
+      const totalBoxes = document.querySelectorAll('.admin-sub-checkbox');
+      const count = checkedBoxes.length;
+
+      const masterCheckbox = document.getElementById('adminSelectAllCheckbox');
+      if (masterCheckbox && totalBoxes.length > 0) {
+        masterCheckbox.checked = (count === totalBoxes.length);
+      }
+
+      const badge = document.getElementById('adminSelectedBadge');
+      const countText = document.getElementById('adminSelectedCountText');
+      const btnExportText = document.getElementById('btnExportExcelText');
+
+      if (count > 0) {
+        if (badge) badge.classList.remove('hidden');
+        if (countText) countText.textContent = count;
+        if (btnExportText) btnExportText.textContent = `Export เฉพาะที่เลือก (${count} รายการ)`;
+      } else {
+        if (badge) badge.classList.add('hidden');
+        if (btnExportText) btnExportText.textContent = `Export to Excel ทั้งหมด (${submissions.length} รายการ)`;
+      }
     }
 
     async function adminSetStatus(subId, newStatus, remark = '') {
@@ -2089,10 +2147,26 @@
         return;
       }
 
+      // Check if user selected specific rows via checkboxes
+      const checkedBoxes = document.querySelectorAll('.admin-sub-checkbox:checked');
+      let targetList = submissions;
+      let isSelectiveExport = false;
+
+      if (checkedBoxes.length > 0) {
+        const selectedIds = new Set(Array.from(checkedBoxes).map(cb => cb.value));
+        targetList = submissions.filter(s => selectedIds.has(s.id));
+        isSelectiveExport = true;
+      }
+
+      if (targetList.length === 0) {
+        alert('ไม่มีรายการที่เลือกสำหรับส่งออก');
+        return;
+      }
+
       const btn = document.getElementById('btnExportExcel');
       const btnText = document.getElementById('btnExportExcelText');
       if (btn) btn.disabled = true;
-      if (btnText) btnText.textContent = 'กำลังโหลดรูปภาพและสร้างไฟล์ Excel...';
+      if (btnText) btnText.textContent = `กำลังโหลดรูปภาพและสร้างไฟล์ Excel (${targetList.length} รายการ)...`;
 
       try {
         const workbook = new ExcelJS.Workbook();
@@ -2144,8 +2218,8 @@
           cell.alignment = { vertical: 'middle', horizontal: 'center' };
         });
 
-        for (let i = 0; i < submissions.length; i++) {
-          const s = submissions[i];
+        for (let i = 0; i < targetList.length; i++) {
+          const s = targetList[i];
           const rowNum = i + 2;
 
           let receiptFullUrl = '';
@@ -2247,13 +2321,14 @@
 
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        saveAs(blob, `haier_voucher_submissions_${new Date().toISOString().slice(0,10)}.xlsx`);
+        const filenamePrefix = isSelectiveExport ? `haier_voucher_selected_${targetList.length}` : `haier_voucher_all_${targetList.length}`;
+        saveAs(blob, `${filenamePrefix}_${new Date().toISOString().slice(0,10)}.xlsx`);
       } catch (err) {
         console.error('Excel Export Error:', err);
         alert('เกิดข้อผิดพลาดในการสร้างไฟล์ Excel: ' + err.message);
       } finally {
         if (btn) btn.disabled = false;
-        if (btnText) btnText.textContent = 'Export to Excel (.xlsx + ภาพ Thumbnail)';
+        updateAdminSelectedCount();
       }
     }
 
