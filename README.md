@@ -24,7 +24,7 @@
 | แคมเปญ | รางวัล | สาขาที่ร่วมรายการ | เงื่อนไขสินค้า |
 |---|---|---|---|
 | **Campaign A (Haier x PTT)**<br>เย็นฉ่ำ แล้วยังเติมความสุขให้ทุกเส้นทาง | **บัตรเติมน้ำมัน PTT Privilege Card 500 บาท** | ทุกสาขา Power Mall (8 สาขา) | ซื้อแอร์ Haier Inverter 4 รุ่นยอดนิยม:<br>• `HSU-09VRRA055BF`<br>• `HSU-12VRRA05BF`<br>• `HSU-18VRRA05BF`<br>• `HSU-12VQEC05` |
-| **Campaign B (Shop More Get More)**<br>Haier x Sports (LFC & PSG) | **Gift Voucher The Mall 1,000 บาท** | เฉพาะ 2 สาขา:<br>• **สยามพารากอน** (`S00449`)<br>• **เอ็มโพเรียม** (`S00327`) | ซื้อเครื่องใช้ไฟฟ้า Haier ทุกหมวด รวมยอดซื้อ **≥ 20,000 บาท** ขึ้นไป |
+| **Campaign B (Shop More Get More)**<br>Haier x Sports (LFC & PSG) | **Gift Voucher The Mall 1,000 บาท** | ทุกสาขา Power Mall (8 สาขา) | ซื้อเครื่องใช้ไฟฟ้า Haier ทุกหมวด รวมยอดซื้อ **≥ 20,000 บาท** ขึ้นไป |
 
 ---
 

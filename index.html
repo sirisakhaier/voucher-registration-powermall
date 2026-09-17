@@ -52,7 +52,7 @@
   </script>
   <style>
     body {
-      font-family: 'Prompt', sans-serif;
+      font-family: 'Prompt', 'sans-serif';
       background-color: #0b1528;
       background-image: 
         radial-gradient(at 0% 0%, rgba(0, 78, 162, 0.35) 0px, transparent 50%),
@@ -240,7 +240,7 @@
                 </div>
               </div>
               <div class="p-3 text-[11px] text-slate-300 space-y-1 bg-slate-900/60 border-t border-white/5">
-                <div class="flex justify-between"><span class="text-slate-400">สาขา:</span> <span class="text-amber-300 font-medium">สยามพารากอน & เอ็มโพเรียม</span></div>
+                <div class="flex justify-between"><span class="text-slate-400">สาขา:</span> <span class="text-emerald-400 font-medium">ทุกสาขา Power Mall</span></div>
                 <div class="flex justify-between"><span class="text-slate-400">รางวัล:</span> <span class="text-purple-300 font-medium">Voucher The Mall 1,000 บาท</span></div>
               </div>
             </div>
@@ -389,7 +389,7 @@
             </div>
           </div>
 
-          <!-- Campaign B Card -->
+          <!-- Campaign B Card (Open to All Stores) -->
           <div id="cardCampB" class="glass-card rounded-2xl overflow-hidden flex flex-col group border-purple-500/30">
             <div class="relative h-48 sm:h-56 overflow-hidden bg-slate-900">
               <img src="./Ad PM vc.jpg" alt="Shop More Get More" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -397,11 +397,6 @@
               <div class="absolute top-3 left-3 bg-red-600/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-red-300/30 flex items-center space-x-1.5">
                 <i data-lucide="gift" class="w-3.5 h-3.5 text-amber-300"></i>
                 <span>รับฟรี Gift Voucher The Mall 1,000 บาท</span>
-              </div>
-              <div id="campBStoreRestrictedOverlay" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-20 p-6 flex flex-col items-center justify-center text-center space-y-2">
-                <i data-lucide="lock" class="w-8 h-8 text-amber-400"></i>
-                <h4 class="text-sm font-bold text-white">จำกัดเฉพาะ 2 สาขาพิเศษ</h4>
-                <p class="text-xs text-slate-300 max-w-xs">แคมเปญนี้เปิดให้ลงทะเบียนเฉพาะสาขา <span class="text-amber-300 font-semibold">สยามพารากอน</span> และ <span class="text-amber-300 font-semibold">เอ็มโพเรียม</span> เท่านั้น</p>
               </div>
               <div class="absolute bottom-3 left-3 right-3 z-10">
                 <h3 class="text-lg font-bold text-white font-display drop-shadow-md">Shop More Get More (Haier x Sports)</h3>
@@ -416,7 +411,7 @@
                 </div>
                 <div class="flex items-center justify-between py-1 border-b border-white/5">
                   <span class="text-slate-400">สาขาที่ร่วมรายการ:</span>
-                  <span class="font-medium text-amber-400" id="campBStoreStatus">สยามพารากอน & เอ็มโพเรียม</span>
+                  <span class="font-medium text-emerald-400" id="campBStoreStatus">ทุกสาขา Power Mall</span>
                 </div>
                 <div class="flex items-center justify-between py-1 border-b border-white/5">
                   <span class="text-slate-400">รุ่นที่ร่วมรายการ:</span>
@@ -943,7 +938,7 @@
   <footer class="mt-auto border-t border-white/5 py-4 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
       <span>© 2026 Haier Electrical Appliances (Thailand) Co., Ltd. & Power Mall.</span>
-      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.2</span>
+      <span class="text-[11px] text-slate-600">Voucher Kiosk System v3.3</span>
     </div>
   </footer>
 
@@ -992,16 +987,16 @@
       'Water Dispenser': 'Water Dispenser (ตู้น้ำดื่ม)'
     };
 
-    // --- 2. STORE DIMENSION DATA (CLEAN THAI NAMES) ---
+    // --- 2. STORE DIMENSION DATA (CLEAN THAI NAMES - ALL STORES PARTICIPATE IN ALL CAMPAIGNS) ---
     const STORES = [
       { id: "S00449", nameTh: "สยามพารากอน", active: true, campB: true },
       { id: "S00327", nameTh: "เอ็มโพเรียม", active: true, campB: true },
-      { id: "S00222", nameTh: "เดอะมอลล์ โคราช", active: true, campB: false },
-      { id: "S00349", nameTh: "เดอะมอลล์ งามวงศ์วาน", active: true, campB: false },
-      { id: "S00370", nameTh: "เดอะมอลล์ ท่าพระ", active: true, campB: false },
-      { id: "S00190", nameTh: "เดอะมอลล์ บางแค", active: true, campB: false },
-      { id: "S00066", nameTh: "เดอะมอลล์ บางกะปิ", active: true, campB: false },
-      { id: "S00795", nameTh: "เดอะมอลล์ รามคำแหง", active: false, campB: false }
+      { id: "S00222", nameTh: "เดอะมอลล์ โคราช", active: true, campB: true },
+      { id: "S00349", nameTh: "เดอะมอลล์ งามวงศ์วาน", active: true, campB: true },
+      { id: "S00370", nameTh: "เดอะมอลล์ ท่าพระ", active: true, campB: true },
+      { id: "S00190", nameTh: "เดอะมอลล์ บางแค", active: true, campB: true },
+      { id: "S00066", nameTh: "เดอะมอลล์ บางกะปิ", active: true, campB: true },
+      { id: "S00795", nameTh: "เดอะมอลล์ รามคำแหง", active: false, campB: true }
     ];
 
     // --- 3. CAMPAIGN DEFINITIONS ---
@@ -1027,7 +1022,7 @@
         rewardName: 'Gift Voucher The Mall มูลค่า 1,000 บาท',
         rewardValue: 1000,
         minSpend: 20000,
-        eligibleStores: ['S00449', 'S00327'],
+        eligibleStores: null,
         fixedCategory: null,
         fixedSubCategory: null,
         eligibleModels: null
@@ -1061,7 +1056,7 @@
       const select = document.getElementById('landingStoreSelect');
       if (!select) return;
       select.innerHTML = '<option value="">-- โปรดเลือกสาขา Power Mall --</option>' + STORES.filter(s => s.active).map(s => `
-        <option value="${s.id}">${s.nameTh} ${s.campB ? '✨ (ร่วมแคมเปญ B)' : ''}</option>
+        <option value="${s.id}">${s.nameTh}</option>
       `).join('');
     }
 
@@ -1110,21 +1105,16 @@
       document.getElementById('bannerPcName').textContent = currentPc.name;
       document.getElementById('bannerPcPhone').textContent = currentPc.phone;
 
-      const isCampBEligible = currentStore.campB && currentStore.active;
-      const overlay = document.getElementById('campBStoreRestrictedOverlay');
+      // Both Campaign A & B are always enabled for all active stores
       const btnB = document.getElementById('btnSelectCampB');
       const cardB = document.getElementById('cardCampB');
 
-      if (isCampBEligible) {
-        overlay.classList.add('hidden');
+      if (btnB) {
         btnB.disabled = false;
         btnB.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+      if (cardB) {
         cardB.classList.remove('opacity-60');
-      } else {
-        overlay.classList.remove('hidden');
-        btnB.disabled = true;
-        btnB.classList.add('opacity-50', 'cursor-not-allowed');
-        cardB.classList.add('opacity-60');
       }
       lucide.createIcons();
     }
@@ -1252,11 +1242,6 @@
 
       selectedCampaign = CAMPAIGNS[campId];
       if (!selectedCampaign) return;
-
-      if (campId === 'CAMP-2026-SPORTS-MALL' && !currentStore.campB) {
-        alert('ขออภัย สาขานี้ไม่ร่วมรายการแคมเปญ Shop More Get More');
-        return;
-      }
 
       // Reset form BEFORE applying campaign values
       if (!currentEditingSubmissionId) {
