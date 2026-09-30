@@ -24,7 +24,7 @@ export async function onRequestGet(context) {
           headers.set("Content-Type", object.httpMetadata.contentType);
         }
         if (object.httpEtag) headers.set("etag", object.httpEtag);
-        headers.set("Cache-Control", "public, max-age=31536000, immutable");
+        headers.set("Cache-Control", cleanKey.startsWith("thumbs/") ? "public, max-age=3600" : "public, max-age=31536000, immutable");
 
         return new Response(object.body, { headers });
       }

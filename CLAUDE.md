@@ -30,6 +30,8 @@ Web app for Power Mall promoters (PC) to register Haier purchases and issue vouc
 ## Workflows
 - **Tailwind is compiled**, not CDN. After adding/changing Tailwind classes in `index.html` (or theme colors in `tailwind.config.js`), run `npm run build:css` and commit `tailwind.css` (Pages has no build step).
 - **Update stores/models**: edit `Dimension Store.csv` / `Dimension Model.csv` (Active-Inactive column), then `npm run dims:push` (generates `migrations/dimensions_sync.sql` and applies it to remote D1; `dims:push:local` for local). Rows removed from the CSV are deactivated, never deleted. Campaigns are still edited in SQL (seed in `0001_init.sql`; add a new migration for changes).
+- **Photos**: full images go to R2 `receipts/` and `vouchers/`; the browser also makes ~160px thumbs stored at `thumbs/{id}_receipt|voucher.jpg`. Admin/browse lists use `thumbSrc()`/`thumbImg()` (thumbs only; records from before 2026-09-30 have no thumb and show a placeholder, click opens the full photo). Excel export still fetches full images.
+- Campaign A model list lives in 3 places: `CAMPAIGNS` and the landing badges in `index.html`, and `campaigns.eligible_model_codes` in D1 (migration `0002`).
 - `npm run dev` / scripts now use the production names `voucher-db` / `voucher-photos`.
 - CDN libs are version-pinned (lucide 1.49.0, flatpickr 4.6.13, qrcode, exceljs, file-saver).
 - `.wrangler/` is gitignored (local state only).

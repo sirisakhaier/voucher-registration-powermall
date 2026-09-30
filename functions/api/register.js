@@ -21,6 +21,8 @@ export async function onRequestPost(context) {
       purchaseAmount,
       receiptImageBase64,
       voucherImageBase64,
+      receiptThumbBase64,
+      voucherThumbBase64,
       staffName,
       staffId
     } = body;
@@ -67,6 +69,18 @@ export async function onRequestPost(context) {
           const voucherKey = `vouchers/${submissionId}_voucher.jpg`;
           const voucherBuffer = decodeBase64Image(voucherImageBase64);
           await bucket.put(voucherKey, voucherBuffer, {
+            httpMetadata: { contentType: "image/jpeg" }
+          });
+        }
+
+        // Small thumbnails for list views (optional; older clients don't send them)
+        if (receiptThumbBase64 && receiptThumbBase64.startsWith("data:")) {
+          await bucket.put(`thumbs/${submissionId}_receipt.jpg`, decodeBase64Image(receiptThumbBase64), {
+            httpMetadata: { contentType: "image/jpeg" }
+          });
+        }
+        if (voucherThumbBase64 && voucherThumbBase64.startsWith("data:")) {
+          await bucket.put(`thumbs/${submissionId}_voucher.jpg`, decodeBase64Image(voucherThumbBase64), {
             httpMetadata: { contentType: "image/jpeg" }
           });
         }

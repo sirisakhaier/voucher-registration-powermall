@@ -424,3 +424,4 @@ INSERT OR REPLACE INTO dimension_model (model_code, brand, category, sub_categor
 INSERT OR REPLACE INTO dimension_model (model_code, brand, category, sub_category, is_active, remark, update_by) VALUES ('EI45M1(W)', 'Haier', 'WH', 'Manual', 1, '', 'admin');
 INSERT OR REPLACE INTO dimension_model (model_code, brand, category, sub_category, is_active, remark, update_by) VALUES ('HDC-BB3A1B-TH', 'Haier', 'WH', 'Water Dispenser', 1, '', 'admin');
 INSERT OR REPLACE INTO dimension_model (model_code, brand, category, sub_category, is_active, remark, update_by) VALUES ('HDC-TB3B1W-TH', 'Haier', 'WH', 'Water Dispenser', 1, '', 'admin');
+INSERT OR REPLACE INTO dimension_model (model_code, brand, category, sub_category, is_active, remark, update_by) VALUES ('HSU-30UQAC05', 'Haier', 'AC', 'Inverter', 1, '', 'admin');

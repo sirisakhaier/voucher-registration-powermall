@@ -77,7 +77,7 @@ CREATE INDEX IF NOT EXISTS idx_sub_purchase_date ON submissions(purchase_date);
 -- SEED CAMPAIGNS
 INSERT OR REPLACE INTO campaigns (campaign_id, name_th, name_en, badge_label, start_date, end_date, eligible_store_ids, fixed_category, fixed_sub_category, eligible_model_codes, min_spend_thb, reward_name, reward_value_thb, is_active)
 VALUES 
-('CAMP-2026-PTT-AC', 'เย็นฉ่ำ แล้วยังเติมความสุขให้ทุกเส้นทาง (Haier x PTT)', 'Haier x PTT Campaign', 'รับฟรี บัตรเติมน้ำมัน PTT 500 บาท', '2026-08-01', '2026-08-31', NULL, 'AC', 'Inverter', '["HSU-09VRRA055BF","HSU-12VRRA05BF","HSU-18VRRA05BF","HSU-12VQEC05"]', 0, 'บัตรเติมน้ำมัน PTT มูลค่า 500 บาท', 500, 1),
+('CAMP-2026-PTT-AC', 'เย็นฉ่ำ แล้วยังเติมความสุขให้ทุกเส้นทาง (Haier x PTT)', 'Haier x PTT Campaign', 'รับฟรี บัตรเติมน้ำมัน PTT 500 บาท', '2026-08-01', '2026-08-31', NULL, 'AC', 'Inverter', '["HSU-09VRRA055BF","HSU-12VRRA05BF","HSU-18VRRA05BF","HSU-12VQEC05","HSU-30UQAC05"]', 0, 'บัตรเติมน้ำมัน PTT มูลค่า 500 บาท', 500, 1),
 ('CAMP-2026-SPORTS-MALL', 'Shop More Get More (Haier x LFC x PSG)', 'Shop More Get More', 'รับฟรี Gift Voucher The Mall 1,000 บาท', '2026-08-22', '2026-09-30', '["S00449","S00327"]', NULL, NULL, NULL, 20000, 'Gift Voucher The Mall มูลค่า 1,000 บาท', 1000, 1);
 
 -- SEED STORES
