@@ -25,7 +25,11 @@ Web app for Power Mall promoters (PC) to register Haier purchases and issue vouc
 
 ## Known issues / gotchas
 - Admin password `admin1234` is hard-coded and checked client-side in `index.html` (~line 1867). The admin API endpoints (PUT/DELETE/GET all) have no server-side auth, so anyone can call them. Should move to a server-checked token secret.
-- `package.json` scripts use `haier-voucher-db` / `haier-voucher-photos`, but `wrangler.toml` and production use `voucher-db` / `voucher-photos`. Local dev via `npm run dev` therefore uses different resource names.
-- Dimension data is seeded in the migration; changes to stores/models/campaigns need a new migration (`0002_...sql`), run with `npx wrangler d1 execute voucher-db --remote --file=...`.
+- Admin password issue above is still open (deliberately not changed yet).
+
+## Workflows
+- **Tailwind is compiled**, not CDN. After adding/changing Tailwind classes in `index.html` (or theme colors in `tailwind.config.js`), run `npm run build:css` and commit `tailwind.css` (Pages has no build step).
+- **Update stores/models**: edit `Dimension Store.csv` / `Dimension Model.csv` (Active-Inactive column), then `npm run dims:push` (generates `migrations/dimensions_sync.sql` and applies it to remote D1; `dims:push:local` for local). Rows removed from the CSV are deactivated, never deleted. Campaigns are still edited in SQL (seed in `0001_init.sql`; add a new migration for changes).
+- `npm run dev` / scripts now use the production names `voucher-db` / `voucher-photos`.
+- CDN libs are version-pinned (lucide 1.49.0, flatpickr 4.6.13, qrcode, exceljs, file-saver).
 - `.wrangler/` is gitignored (local state only).
-- Tailwind is loaded from the CDN play script (not for production scale) and `lucide@latest` is unpinned.

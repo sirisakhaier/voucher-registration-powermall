@@ -1,16 +1,19 @@
 {
   "name": "voucher-registration-powermall",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Haier Campaign Voucher Registration for Power Mall on Cloudflare Pages, D1, and R2",
   "scripts": {
-    "dev": "wrangler pages dev . --d1 DB=haier-voucher-db --r2 BUCKET=haier-voucher-photos",
-    "d1:create": "wrangler d1 create haier-voucher-db",
-    "d1:init:local": "wrangler d1 execute haier-voucher-db --local --file=./migrations/0001_init.sql",
-    "d1:init:remote": "wrangler d1 execute haier-voucher-db --remote --file=./migrations/0001_init.sql",
-    "r2:create": "wrangler r2 bucket create haier-voucher-photos",
-    "deploy": "wrangler pages deploy ."
+    "dev": "wrangler pages dev . --d1 DB=voucher-db --r2 BUCKET=voucher-photos",
+    "build:css": "tailwindcss -c tailwind.config.js -i src/input.css -o tailwind.css --minify",
+    "d1:init:local": "wrangler d1 execute voucher-db --local --file=./migrations/0001_init.sql",
+    "d1:init:remote": "wrangler d1 execute voucher-db --remote --file=./migrations/0001_init.sql",
+    "dims:build": "node scripts/sync-dimensions.mjs",
+    "dims:push": "npm run dims:build && wrangler d1 execute voucher-db --remote --file=./migrations/dimensions_sync.sql",
+    "dims:push:local": "npm run dims:build && wrangler d1 execute voucher-db --local --file=./migrations/dimensions_sync.sql",
+    "deploy": "wrangler pages deploy . --project-name=voucher-registration-powermall"
   },
   "devDependencies": {
+    "tailwindcss": "^3.4.19",
     "wrangler": "^3.107.0"
   }
 }
